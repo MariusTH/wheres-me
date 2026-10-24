@@ -3,9 +3,9 @@
 // leaves the device; only the models are downloaded, on first use.
 //
 // Godot can't open a file picker itself: iOS Safari only allows that inside a
-// real tap handler, and Godot handles input a frame later. So Godot registers
-// the selfie button's screen rect with setTarget(), and a pointerup/touchend
-// listener here opens the picker when the tap lands inside it.
+// real tap handler, and Godot handles input a frame later. The selfie button
+// is a WebTap with action "photo", so web/web_tap.js runs openPicker() from
+// inside the tap.
 //
 // Results go to the callback as JSON strings:
 //   {"stage":"analyzing"}                         photo chosen, models running
@@ -22,7 +22,6 @@
   const HAIR = 1, FACE_SKIN = 3, CLOTHES = 4, OTHER = 5;
 
   let modelsPromise = null;
-  let target = null; // {x, y, w, h} normalised to the canvas, plus cb
   let input = null;
 
   function loadModels() {
@@ -181,28 +180,10 @@
     input.click();
   }
 
-  // touchend and pointerup can both fire for one tap; only the first opens.
-  let lastOpen = 0;
-  function onRelease(e) {
-    const canvas = document.querySelector("canvas");
-    if (!target || !canvas || Date.now() - lastOpen < 600) return;
-    const p = e.changedTouches ? e.changedTouches[0] : e;
-    const r = canvas.getBoundingClientRect();
-    const nx = (p.clientX - r.left) / r.width, ny = (p.clientY - r.top) / r.height;
-    if (nx >= target.x && nx <= target.x + target.w && ny >= target.y && ny <= target.y + target.h) {
-      lastOpen = Date.now();
-      openPicker(target.cb);
-      loadModels().catch(() => {}); // warm up while the user picks a photo
-    }
-  }
-  window.addEventListener("pointerup", onRelease, true);
-  window.addEventListener("touchend", onRelease, true);
-
-  window.hfSelfie = {
-    // Rect normalised to the Godot canvas (0..1); cb receives JSON strings.
-    setTarget(x, y, w, h, cb) { target = { x, y, w, h, cb }; },
-    clearTarget() { target = null; },
-    analyzeUrl: (url) => analyzeUrl(url).then((r) => JSON.stringify(r)),
-    debugTarget: () => target && { x: target.x, y: target.y, w: target.w, h: target.h },
-  };
+  // Runs inside the tap handler of web/web_tap.js (loaded first by WebTap).
+  window.wmTap.register("photo", (t) => {
+    openPicker(t.cb);
+    loadModels().catch(() => {}); // warm up while the user picks a photo
+  });
+  window.hfSelfie = { analyzeUrl: (url) => analyzeUrl(url).then((r) => JSON.stringify(r)) };
 })();

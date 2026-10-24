@@ -26,6 +26,13 @@ static func decode(text: String) -> Dictionary:
 	if s == "":
 		return _fail("Paste a challenge code first.")
 	var json_text := s
+	# Shared messages carry text before the code ("Find me in Where's Me! WM1-…").
+	if not s.begins_with("{"):
+		for p: String in [CODE_PREFIX] + LEGACY_PREFIXES:
+			var at := s.find(p)
+			if at > 0:
+				s = s.substr(at)
+				break
 	var prefix := ""
 	for p: String in [CODE_PREFIX] + LEGACY_PREFIXES:
 		if s.begins_with(p):

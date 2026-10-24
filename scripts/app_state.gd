@@ -19,6 +19,21 @@ extends Node
 
 enum Mode { MENU, CREATE, HIDE, SEARCH, DEBUG_VIEW }
 
+## Emitted when the screen's size class (narrow / short) changes, e.g. when a
+## phone rotates. Screens rebuild their layout on it.
+signal layout_changed
+
+## UI scale: the shorter side of the window, in device-independent pixels, is
+## mapped to this many UI units, clamped. Desktop windows (720+ px) keep the
+## 1280x720 design size; a phone (393 px short side) gets 480 units, so a 52-unit
+## button is ~43 px, about Apple's 44 pt minimum tap size.
+const UI_SHORT_MIN := 480.0
+const UI_SHORT_MAX := 720.0
+## Below this viewport width layouts stack vertically (phone in portrait).
+const NARROW_WIDTH := 700.0
+## Below this viewport height layouts get compact (phone in landscape).
+const SHORT_HEIGHT := 600.0
+
 const TOWN_MAP_ID := "town_demo_01"
 const MUSEUM_MAP_ID := "museum_01"
 const DEFAULT_SEED := 481516
@@ -40,6 +55,8 @@ var my_avatar: Dictionary = {}
 
 
 func _ready() -> void:
+	get_tree().root.size_changed.connect(_apply_ui_scale)
+	_apply_ui_scale()
 	dev_args = parse_args(OS.get_cmdline_user_args())
 	if dev_args.has("seed"):
 		map_seed = int(dev_args["seed"])
@@ -53,6 +70,42 @@ func _ready() -> void:
 		_screenshot_later(String(dev_args["shot"]), float(dev_args.get("shot-delay", "2.5")))
 	if dev_args.has("mode"):
 		_apply_dev_mode.call_deferred()
+
+
+## Size class of the current viewport, see NARROW_WIDTH / SHORT_HEIGHT.
+static func is_narrow() -> bool:
+	return viewport_size().x < NARROW_WIDTH
+
+
+static func is_short() -> bool:
+	return viewport_size().y < SHORT_HEIGHT
+
+
+static func viewport_size() -> Vector2:
+	return (Engine.get_main_loop() as SceneTree).root.get_visible_rect().size
+
+
+var _size_class := ""
+
+
+func _apply_ui_scale() -> void:
+	# Headless runs (tests) have no real screen; keep the design size.
+	if DisplayServer.get_name() == "headless":
+		return
+	var win := get_window()
+	# The web canvas is sized in physical pixels (scale = devicePixelRatio);
+	# desktop windows already report logical pixels.
+	var dpr := DisplayServer.screen_get_scale() if OS.has_feature("web") else 1.0
+	var css := Vector2(win.size) / maxf(dpr, 1.0)
+	if css.x <= 0.0 or css.y <= 0.0:
+		return
+	var short := minf(css.x, css.y)
+	var units := clampf(short, UI_SHORT_MIN, UI_SHORT_MAX)
+	win.content_scale_size = Vector2i(roundi(units * css.x / short), roundi(units * css.y / short))
+	var size_class := "%s%s" % [is_narrow(), is_short()]
+	if size_class != _size_class:
+		_size_class = size_class
+		layout_changed.emit()
 
 
 ## Avatar creator; continues to hide mode with [param p_seed] when done.

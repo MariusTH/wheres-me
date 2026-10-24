@@ -29,10 +29,22 @@ var _dragging_object := false
 
 func setup(world_bounds: Rect2) -> void:
 	bounds = world_bounds
-	var vp := get_viewport_rect().size
-	min_zoom = maxf(vp.x / bounds.size.x, vp.y / bounds.size.y)
+	_update_min_zoom()
 	make_current()
 	set_view(bounds.get_center(), 1.0)
+	if not get_viewport().size_changed.is_connected(_on_resized):
+		get_viewport().size_changed.connect(_on_resized)
+
+
+## Phones rotate: keep the map filling the screen.
+func _on_resized() -> void:
+	_update_min_zoom()
+	set_view(position, zoom.x)
+
+
+func _update_min_zoom() -> void:
+	var vp := get_viewport_rect().size
+	min_zoom = maxf(vp.x / bounds.size.x, vp.y / bounds.size.y)
 
 
 func set_view(center: Vector2, z: float) -> void:

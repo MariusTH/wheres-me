@@ -108,6 +108,11 @@ static func title(text: String, size: int = 40, color: Color = Color.WHITE) -> L
 	l.add_theme_color_override("font_outline_color", INK)
 	l.add_theme_constant_override("outline_size", maxi(6, size / 5))
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	# Luckiest Guy's capitals rise above the font's reported ascent; give the
+	# label extra height and sit the text at the bottom so nothing pokes out
+	# over the panel border above it.
+	l.custom_minimum_size.y = size * 1.3
+	l.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	return l
 
 
@@ -122,8 +127,13 @@ static func banner(text: String, width: float, size: int = 34) -> Control:
 	root.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	root.custom_minimum_size = Vector2(width, width * tex.get_height() / tex.get_width())
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Shrink long text ("Find the baby T-rex!") to fit the cream middle.
+	var room := width * BANNER_TEXT_AREA.size.x * 0.9
+	while size > 14 and display_font().get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x > room:
+		size -= 1
 	var l := title(text, size, ACCENT)
 	l.add_theme_constant_override("outline_size", 0)
+	l.custom_minimum_size = Vector2.ZERO
 	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	l.anchor_left = BANNER_TEXT_AREA.position.x
 	l.anchor_top = BANNER_TEXT_AREA.position.y
@@ -259,17 +269,59 @@ static func hbox(separation: int = 10) -> HBoxContainer:
 
 
 ## Full-screen dimmer with a centred panel; blocks map input while open.
+## Scrolls when the panel is taller than the screen (phone in landscape).
 static func modal(content: Control) -> Control:
 	var root := ColorRect.new()
 	root.color = Color(0.1, 0.08, 0.14, 0.45)
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_STOP
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.add_child(center)
-	center.add_child(panel(content))
+	root.add_child(scroll_center(panel(content)))
 	return root
+
+
+## Full-rect container that centres [param content] and scrolls vertically
+## when it doesn't fit.
+static func scroll_center(content: Control) -> Control:
+	var scroll := ScrollContainer.new()
+	scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	# Finger jitter on a button shouldn't turn the tap into a scroll.
+	scroll.scroll_deadzone = 12
+	scroll.mouse_filter = Control.MOUSE_FILTER_PASS
+	var margin := MarginContainer.new()
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	for side in ["left", "right", "top", "bottom"]:
+		margin.add_theme_constant_override("margin_" + side, 10)
+	scroll.add_child(margin)
+	var center := CenterContainer.new()
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_child(center)
+	center.add_child(content)
+	return scroll
+
+
+static func viewport_size() -> Vector2:
+	return AppState.viewport_size()
+
+
+## Content width for a panel: [param desired], or less so the panel (its
+## padding and border, ~34) plus the screen margins (2 x 10) and
+## [param margin] still fit on screen.
+static func fit_width(desired: float, margin: float = 8.0) -> float:
+	return minf(desired, viewport_size().x - 54.0 - margin)
+
+
+## Row of buttons that wraps onto more lines on narrow screens.
+static func button_row(buttons: Array, separation: int = 8) -> HFlowContainer:
+	var flow := HFlowContainer.new()
+	flow.add_theme_constant_override("h_separation", separation)
+	flow.add_theme_constant_override("v_separation", separation)
+	flow.alignment = FlowContainer.ALIGNMENT_CENTER
+	for b: Control in buttons:
+		flow.add_child(b)
+	return flow
 
 
 static func format_time(seconds: float) -> String:

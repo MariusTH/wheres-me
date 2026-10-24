@@ -174,3 +174,12 @@ func test_decoy_critters_never_match_the_hidden_one() -> void:
 			critters += 1
 			check(o.hue >= TownGenerator.DECOY_MIN_HUE and o.hue <= 1.0 - TownGenerator.DECOY_MIN_HUE, "%s is visibly hue-shifted" % o.id)
 	check(critters >= 40, "museum has plenty of decoy critters (%d)" % critters)
+
+
+func test_code_inside_a_shared_message_decodes() -> void:
+	var c: ChallengeData = _make()[0]
+	var message := "Can you find me in Where's Me? Paste this code at https://parchnipp.itch.io/wheres-me\n\n" + ChallengeCodec.encode(c)
+	var r := ChallengeCodec.decode(message)
+	check_eq(r["error"], "", "code found inside the share-sheet message")
+	if r["challenge"]:
+		_check_same(c, r["challenge"], "message")

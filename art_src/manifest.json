@@ -1126,5 +1126,29 @@
   "model": "flux-2-klein-base-4b.safetensors",
   "raw": "art_src/raw/dino_nest.png",
   "generated_at": "2026-10-24 09:44:27"
+ },
+ "volcano_model": {
+  "prompt": "STYLE: original, colourful hand-drawn hidden-object game illustration, children's picture book ink and watercolour, slightly irregular dark ink outline, flat warm muted colours with a few saturated accents, soft daylight from upper left. Seen straight from the front and slightly above, facing the viewer squarely, symmetric, not rotated, not at an angle, not isometric. A single museum model volcano with orange lava streams on a small wooden table. Isolated single subject centred, on a plain flat solid pure bright green background, no ground shadow, no text, no letters, no labels, no border, no frame, no other objects.",
+  "seed": 7067,
+  "width": 768,
+  "height": 768,
+  "background": "green",
+  "seconds": 98.5,
+  "workflow": "art_src/workflows/flux2_klein_4b_base_only.json",
+  "model": "flux-2-klein-base-4b.safetensors",
+  "raw": "art_src/raw/volcano_model.png",
+  "generated_at": "2026-10-24 09:46:06"
+ },
+ "meteorite": {
+  "prompt": "STYLE: original, colourful hand-drawn hidden-object game illustration, children's picture book ink and watercolour, slightly irregular dark ink outline, flat warm muted colours with a few saturated accents, soft daylight from upper left. Seen from a high-angle, shallow top-down three-quarter view. A single big dark pitted meteorite rock on a low grey stone plinth. Isolated single subject centred, on a plain flat solid pure bright green background, no ground shadow, no text, no letters, no labels, no border, no frame, no other objects.",
+  "seed": 7068,
+  "width": 768,
+  "height": 512,
+  "background": "green",
+  "seconds": 70.8,
+  "workflow": "art_src/workflows/flux2_klein_4b_base_only.json",
+  "model": "flux-2-klein-base-4b.safetensors",
+  "raw": "art_src/raw/meteorite.png",
+  "generated_at": "2026-10-24 09:47:17"
  }
 }

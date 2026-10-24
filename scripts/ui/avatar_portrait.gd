@@ -37,7 +37,8 @@ func _draw() -> void:
 	if look.is_empty():
 		return
 	# Tallest look (top hat on a tall build) is ~80 units above the feet.
-	var scale := (size.y - 16.0) / 84.0
+	# Fit both ways: the tallest look is ~84 units high and ~44 wide.
+	var scale := minf((size.y - 16.0) / 84.0, (size.x - 12.0) / 44.0)
 	PlaceholderArt.draw_character(self, look, false, Vector2(size.x / 2.0, size.y - 8.0), scale)
 
 

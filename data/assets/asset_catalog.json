@@ -1115,7 +1115,13 @@
         "critter",
         "hideable"
       ],
-      "label": "baby T-rex"
+      "label": "baby T-rex",
+      "texture": "res://art/critters/baby_trex.png",
+      "ground_point": [
+        37.5,
+        75.0
+      ],
+      "height_px": 38
     },
     "baby_triceratops": {
       "kind": "critter",
@@ -1124,7 +1130,13 @@
         "critter",
         "hideable"
       ],
-      "label": "baby triceratops"
+      "label": "baby triceratops",
+      "texture": "res://art/critters/baby_triceratops.png",
+      "ground_point": [
+        43.5,
+        55.0
+      ],
+      "height_px": 28
     },
     "baby_stegosaurus": {
       "kind": "critter",
@@ -1133,7 +1145,13 @@
         "critter",
         "hideable"
       ],
-      "label": "baby stegosaurus"
+      "label": "baby stegosaurus",
+      "texture": "res://art/critters/baby_stegosaurus.png",
+      "ground_point": [
+        59.5,
+        59.0
+      ],
+      "height_px": 30
     },
     "dodo": {
       "kind": "critter",
@@ -1142,7 +1160,13 @@
         "critter",
         "hideable"
       ],
-      "label": "dodo"
+      "label": "dodo",
+      "texture": "res://art/critters/dodo.png",
+      "ground_point": [
+        24.0,
+        63.0
+      ],
+      "height_px": 32
     },
     "mammoth_calf": {
       "kind": "critter",
@@ -1151,7 +1175,13 @@
         "critter",
         "hideable"
       ],
-      "label": "mammoth calf"
+      "label": "mammoth calf",
+      "texture": "res://art/critters/mammoth_calf.png",
+      "ground_point": [
+        37.0,
+        67.0
+      ],
+      "height_px": 34
     },
     "sabretooth_cub": {
       "kind": "critter",
@@ -1160,7 +1190,13 @@
         "critter",
         "hideable"
       ],
-      "label": "sabre-tooth cub"
+      "label": "sabre-tooth cub",
+      "texture": "res://art/critters/sabretooth_cub.png",
+      "ground_point": [
+        40.0,
+        51.0
+      ],
+      "height_px": 26
     },
     "trex_skeleton": {
       "kind": "prop",
@@ -1169,7 +1205,24 @@
         "exhibit",
         "landmark"
       ],
-      "occluders": []
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -169,
+            -218,
+            359,
+            219
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/trex_skeleton.png",
+      "ground_point": [
+        338.5,
+        438.0
+      ],
+      "height_px": 220
     },
     "mammoth_skeleton": {
       "kind": "prop",
@@ -1178,7 +1231,24 @@
         "exhibit",
         "landmark"
       ],
-      "occluders": []
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -96,
+            -158,
+            254,
+            159
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/mammoth_skeleton.png",
+      "ground_point": [
+        192.5,
+        318.0
+      ],
+      "height_px": 160
     },
     "whale_skeleton": {
       "kind": "prop",
@@ -1189,7 +1259,24 @@
         "hanging",
         "foreground_occluder"
       ],
-      "occluders": []
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -229,
+            -178,
+            418,
+            179
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/whale_skeleton.png",
+      "ground_point": [
+        460.0,
+        357.0
+      ],
+      "height_px": 180
     },
     "triceratops_skull": {
       "kind": "prop",
@@ -1197,7 +1284,24 @@
       "tags": [
         "exhibit"
       ],
-      "occluders": []
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -22,
+            -70,
+            44,
+            70
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/triceratops_skull.png",
+      "ground_point": [
+        44.5,
+        139.0
+      ],
+      "height_px": 70
     },
     "display_case": {
       "kind": "prop",
@@ -1205,7 +1309,24 @@
       "tags": [
         "exhibit"
       ],
-      "occluders": []
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -36,
+            -64,
+            72,
+            64
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/display_case.png",
+      "ground_point": [
+        71.5,
+        127.0
+      ],
+      "height_px": 64
     },
     "crystal_cluster": {
       "kind": "prop",
@@ -1213,7 +1334,24 @@
       "tags": [
         "exhibit"
       ],
-      "occluders": []
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -19,
+            -49,
+            40,
+            50
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/crystal_cluster.png",
+      "ground_point": [
+        38.0,
+        99.0
+      ],
+      "height_px": 50
     },
     "rope_barrier": {
       "kind": "prop",
@@ -1221,7 +1359,24 @@
       "tags": [
         "barrier"
       ],
-      "occluders": []
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -18,
+            -30,
+            36,
+            30
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/rope_barrier.png",
+      "ground_point": [
+        36.0,
+        59.0
+      ],
+      "height_px": 30
     },
     "museum_bench": {
       "kind": "prop",
@@ -1229,7 +1384,24 @@
       "tags": [
         "seat"
       ],
-      "occluders": []
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -31,
+            -26,
+            62,
+            26
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/museum_bench.png",
+      "ground_point": [
+        61.5,
+        51.0
+      ],
+      "height_px": 26
     },
     "potted_palm": {
       "kind": "prop",
@@ -1237,7 +1409,24 @@
       "tags": [
         "greenery"
       ],
-      "occluders": []
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -22,
+            -74,
+            45,
+            74
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/potted_palm.png",
+      "ground_point": [
+        44.0,
+        147.0
+      ],
+      "height_px": 74
     },
     "pillar": {
       "kind": "prop",
@@ -1245,7 +1434,24 @@
       "tags": [
         "architecture"
       ],
-      "occluders": []
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -21,
+            -179,
+            42,
+            180
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/pillar.png",
+      "ground_point": [
+        43.0,
+        359.0
+      ],
+      "height_px": 180
     },
     "gift_shelf": {
       "kind": "prop",
@@ -1253,7 +1459,24 @@
       "tags": [
         "shop"
       ],
-      "occluders": []
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -38,
+            -84,
+            76,
+            84
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/gift_shelf.png",
+      "ground_point": [
+        76.0,
+        167.0
+      ],
+      "height_px": 84
     },
     "ammonite_pedestal": {
       "kind": "prop",
@@ -1261,7 +1484,24 @@
       "tags": [
         "exhibit"
       ],
-      "occluders": []
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -15,
+            -50,
+            30,
+            50
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/ammonite_pedestal.png",
+      "ground_point": [
+        30.0,
+        99.0
+      ],
+      "height_px": 50
     },
     "dino_nest": {
       "kind": "prop",
@@ -1269,7 +1509,24 @@
       "tags": [
         "exhibit"
       ],
-      "occluders": []
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -14,
+            -22,
+            28,
+            22
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/dino_nest.png",
+      "ground_point": [
+        27.5,
+        43.0
+      ],
+      "height_px": 22
     },
     "volcano_model": {
       "kind": "prop",
@@ -1277,7 +1534,24 @@
       "tags": [
         "exhibit"
       ],
-      "occluders": []
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -27,
+            -56,
+            54,
+            56
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/volcano_model.png",
+      "ground_point": [
+        54.5,
+        111.0
+      ],
+      "height_px": 56
     },
     "meteorite": {
       "kind": "prop",
@@ -1285,7 +1559,24 @@
       "tags": [
         "exhibit"
       ],
-      "occluders": []
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -25,
+            -38,
+            40,
+            38
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/meteorite.png",
+      "ground_point": [
+        49.5,
+        75.0
+      ],
+      "height_px": 38
     }
   }
 }

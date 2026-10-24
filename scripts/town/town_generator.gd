@@ -15,9 +15,10 @@ const GRID_CELL := 64.0
 const EDGE_MARGIN := 20.0
 ## Catalog entry used for every generated crowd member (look comes from the kit).
 const CROWD_ASSET := "person"
-## Decoy critters are hue-shifted by at least this much (turns), so the
+## Decoy critters are hue-shifted by at least this much (turns; 0.12 left some
+## decoys in a similar shade of the original colour), so the
 ## original-coloured hidden critter is always unique.
-const DECOY_MIN_HUE := 0.12
+const DECOY_MIN_HUE := 0.25
 
 
 static func generate(map_def: MapDefinition, map_seed: int) -> TownLayout:
