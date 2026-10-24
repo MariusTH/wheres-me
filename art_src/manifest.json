@@ -1090,5 +1090,41 @@
   "model": "flux-2-klein-base-4b.safetensors",
   "raw": "art_src/raw/pillar.png",
   "generated_at": "2026-10-24 09:39:40"
+ },
+ "gift_shelf": {
+  "prompt": "STYLE: original, colourful hand-drawn hidden-object game illustration, children's picture book ink and watercolour, slightly irregular dark ink outline, flat warm muted colours with a few saturated accents, soft daylight from upper left. Seen straight from the front and slightly above, facing the viewer squarely, symmetric, not rotated, not at an angle, not isometric. A single wooden shop shelf unit with three shelves full of colourful plush toys and books with blank covers. Isolated single subject centred, on a plain flat solid pure bright green background, no ground shadow, no text, no letters, no labels, no border, no frame, no other objects.",
+  "seed": 7064,
+  "width": 768,
+  "height": 1024,
+  "background": "green",
+  "seconds": 138.7,
+  "workflow": "art_src/workflows/flux2_klein_4b_base_only.json",
+  "model": "flux-2-klein-base-4b.safetensors",
+  "raw": "art_src/raw/gift_shelf.png",
+  "generated_at": "2026-10-24 09:41:59"
+ },
+ "ammonite_pedestal": {
+  "prompt": "STYLE: original, colourful hand-drawn hidden-object game illustration, children's picture book ink and watercolour, slightly irregular dark ink outline, flat warm muted colours with a few saturated accents, soft daylight from upper left. Seen straight from the front and slightly above, facing the viewer squarely, symmetric, not rotated, not at an angle, not isometric. A single big spiral ammonite fossil on a slim white pedestal. Isolated single subject centred, on a plain flat solid pure bright green background, no ground shadow, no text, no letters, no labels, no border, no frame, no other objects.",
+  "seed": 7065,
+  "width": 512,
+  "height": 768,
+  "background": "green",
+  "seconds": 74.4,
+  "workflow": "art_src/workflows/flux2_klein_4b_base_only.json",
+  "model": "flux-2-klein-base-4b.safetensors",
+  "raw": "art_src/raw/ammonite_pedestal.png",
+  "generated_at": "2026-10-24 09:43:14"
+ },
+ "dino_nest": {
+  "prompt": "STYLE: original, colourful hand-drawn hidden-object game illustration, children's picture book ink and watercolour, slightly irregular dark ink outline, flat warm muted colours with a few saturated accents, soft daylight from upper left. Seen from a high-angle, shallow top-down three-quarter view. A single nest of straw holding four large pale speckled dinosaur eggs. Isolated single subject centred, on a plain flat solid pure magenta (#FF00FF) background, no ground shadow, no text, no letters, no labels, no border, no frame, no other objects.",
+  "seed": 7066,
+  "width": 768,
+  "height": 512,
+  "background": "magenta",
+  "seconds": 72.9,
+  "workflow": "art_src/workflows/flux2_klein_4b_base_only.json",
+  "model": "flux-2-klein-base-4b.safetensors",
+  "raw": "art_src/raw/dino_nest.png",
+  "generated_at": "2026-10-24 09:44:27"
  }
 }
