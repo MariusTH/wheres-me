@@ -1,0 +1,1090 @@
+{
+ "map_id": "town_demo_01",
+ "map_version": 1,
+ "title": "Town",
+ "default_seed": 481516,
+ "notes": "Authored base layout. NW: shop street + fountain plaza. NE: park with pond. SW: market. SE: houses, cafe frontage, garden. Coordinates are world pixels; rects are [x, y, w, h].",
+ "world_bounds": [
+  0,
+  0,
+  3200,
+  2200
+ ],
+ "ground": [
+  {
+   "type": "soil",
+   "rect": [
+    140,
+    110,
+    220,
+    110
+   ]
+  },
+  {
+   "type": "soil",
+   "rect": [
+    960,
+    120,
+    200,
+    100
+   ]
+  },
+  {
+   "type": "pavement",
+   "rect": [
+    30,
+    330,
+    1400,
+    270
+   ]
+  },
+  {
+   "type": "plaza",
+   "rect": [
+    0,
+    600,
+    1450,
+    350
+   ]
+  },
+  {
+   "type": "market",
+   "rect": [
+    0,
+    1230,
+    1450,
+    970
+   ]
+  },
+  {
+   "type": "pavement",
+   "rect": [
+    1750,
+    1240,
+    1440,
+    320
+   ]
+  },
+  {
+   "type": "plaza",
+   "rect": [
+    1730,
+    1560,
+    1470,
+    170
+   ]
+  },
+  {
+   "type": "sand",
+   "rect": [
+    2760,
+    1880,
+    320,
+    240
+   ]
+  },
+  {
+   "type": "water",
+   "ellipse": [
+    2520,
+    400,
+    260,
+    140
+   ]
+  },
+  {
+   "type": "pavement",
+   "rect": [
+    0,
+    950,
+    3200,
+    70
+   ]
+  },
+  {
+   "type": "pavement",
+   "rect": [
+    0,
+    1160,
+    3200,
+    70
+   ]
+  },
+  {
+   "type": "pavement",
+   "rect": [
+    1450,
+    0,
+    70,
+    2200
+   ]
+  },
+  {
+   "type": "pavement",
+   "rect": [
+    1660,
+    0,
+    70,
+    2200
+   ]
+  },
+  {
+   "type": "road",
+   "rect": [
+    0,
+    1020,
+    3200,
+    140
+   ]
+  },
+  {
+   "type": "road",
+   "rect": [
+    1520,
+    0,
+    140,
+    2200
+   ]
+  },
+  {
+   "type": "road_plain",
+   "rect": [
+    1520,
+    1020,
+    140,
+    140
+   ]
+  },
+  {
+   "type": "crosswalk",
+   "rect": [
+    700,
+    1020,
+    70,
+    140
+   ]
+  },
+  {
+   "type": "crosswalk",
+   "rect": [
+    2400,
+    1020,
+    70,
+    140
+   ]
+  },
+  {
+   "type": "crosswalk",
+   "rect": [
+    1520,
+    520,
+    140,
+    70
+   ]
+  },
+  {
+   "type": "crosswalk",
+   "rect": [
+    1520,
+    1700,
+    140,
+    70
+   ]
+  }
+ ],
+ "blocked": [
+  {
+   "id": "blk_shoprow_nw",
+   "label": "that's inside the shops",
+   "rect": [
+    30,
+    330,
+    1400,
+    270
+   ]
+  },
+  {
+   "id": "blk_houserow_se",
+   "label": "that's inside the houses",
+   "rect": [
+    1750,
+    1240,
+    1440,
+    320
+   ]
+  },
+  {
+   "id": "blk_pond",
+   "label": "that's the pond",
+   "ellipse": [
+    2520,
+    400,
+    250,
+    130
+   ]
+  },
+  {
+   "id": "blk_road_h",
+   "label": "that's the road",
+   "rect": [
+    0,
+    1020,
+    3200,
+    140
+   ]
+  },
+  {
+   "id": "blk_road_v",
+   "label": "that's the road",
+   "rect": [
+    1520,
+    0,
+    140,
+    2200
+   ]
+  },
+  {
+   "id": "blk_sandpit",
+   "label": "that's the sandpit",
+   "rect": [
+    2760,
+    1880,
+    320,
+    240
+   ]
+  }
+ ],
+ "paths": [
+  {
+   "id": "path_park_a",
+   "surface": "sand",
+   "width": 46,
+   "people": 16,
+   "tags": [
+    "pedestrian"
+   ],
+   "points": [
+    [
+     1730,
+     780
+    ],
+    [
+     2000,
+     760
+    ],
+    [
+     2300,
+     700
+    ],
+    [
+     2520,
+     640
+    ],
+    [
+     2750,
+     660
+    ],
+    [
+     3000,
+     720
+    ],
+    [
+     3190,
+     760
+    ]
+   ]
+  },
+  {
+   "id": "path_park_b",
+   "surface": "sand",
+   "width": 40,
+   "people": 8,
+   "tags": [
+    "pedestrian"
+   ],
+   "points": [
+    [
+     2000,
+     20
+    ],
+    [
+     2080,
+     250
+    ],
+    [
+     2120,
+     450
+    ],
+    [
+     2200,
+     600
+    ],
+    [
+     2300,
+     690
+    ]
+   ]
+  },
+  {
+   "id": "path_garden_se",
+   "surface": "sand",
+   "width": 40,
+   "people": 8,
+   "tags": [
+    "pedestrian"
+   ],
+   "points": [
+    [
+     1730,
+     1960
+    ],
+    [
+     2100,
+     1930
+    ],
+    [
+     2450,
+     1980
+    ],
+    [
+     2740,
+     1960
+    ]
+   ]
+  },
+  {
+   "id": "path_sidewalk_n",
+   "width": 44,
+   "people": 30,
+   "tags": [
+    "pedestrian",
+    "sidewalk"
+   ],
+   "points": [
+    [
+     20,
+     985
+    ],
+    [
+     3180,
+     985
+    ]
+   ]
+  },
+  {
+   "id": "path_sidewalk_s",
+   "width": 44,
+   "people": 30,
+   "tags": [
+    "pedestrian",
+    "sidewalk"
+   ],
+   "points": [
+    [
+     20,
+     1195
+    ],
+    [
+     3180,
+     1195
+    ]
+   ]
+  },
+  {
+   "id": "path_sidewalk_w",
+   "width": 44,
+   "people": 14,
+   "tags": [
+    "pedestrian",
+    "sidewalk"
+   ],
+   "points": [
+    [
+     1485,
+     20
+    ],
+    [
+     1485,
+     2180
+    ]
+   ]
+  },
+  {
+   "id": "path_sidewalk_e",
+   "width": 44,
+   "people": 14,
+   "tags": [
+    "pedestrian",
+    "sidewalk"
+   ],
+   "points": [
+    [
+     1695,
+     20
+    ],
+    [
+     1695,
+     2180
+    ]
+   ]
+  }
+ ],
+ "zones": [
+  {
+   "id": "z_gardens_nw",
+   "kind": "garden",
+   "rect": [
+    60,
+    60,
+    1360,
+    250
+   ],
+   "people": 16,
+   "props": [
+    {
+     "pool": [
+      "tree_round",
+      "tree_pine",
+      "tree_blossom"
+     ],
+     "count": 7
+    },
+    {
+     "pool": [
+      "bush",
+      "planter",
+      "flower_bed",
+      "bench"
+     ],
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "z_shopfront_nw",
+   "kind": "shop_frontage",
+   "rect": [
+    40,
+    615,
+    1390,
+    145
+   ],
+   "people": 55,
+   "props": [
+    {
+     "pool": [
+      "sign_board",
+      "bin",
+      "planter",
+      "bike",
+      "cafe_table",
+      "parasol_table"
+     ],
+     "count": 16
+    }
+   ]
+  },
+  {
+   "id": "z_plaza_nw",
+   "kind": "plaza",
+   "rect": [
+    40,
+    760,
+    1390,
+    185
+   ],
+   "people": 45,
+   "props": [
+    {
+     "pool": [
+      "bench",
+      "lamp_post",
+      "food_cart",
+      "kiosk",
+      "tree_round",
+      "bin"
+     ],
+     "count": 9
+    }
+   ]
+  },
+  {
+   "id": "z_sidewalk_n",
+   "kind": "sidewalk",
+   "rect": [
+    0,
+    955,
+    3200,
+    60
+   ],
+   "props": [
+    {
+     "pool": [
+      "lamp_post",
+      "hydrant",
+      "mailbox",
+      "bin"
+     ],
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "z_sidewalk_s",
+   "kind": "sidewalk",
+   "rect": [
+    0,
+    1165,
+    3200,
+    60
+   ],
+   "props": [
+    {
+     "pool": [
+      "lamp_post",
+      "hydrant",
+      "mailbox",
+      "bin"
+     ],
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "z_parking_h",
+   "kind": "roadside",
+   "rect": [
+    40,
+    1118,
+    3120,
+    34
+   ],
+   "allow_on_blocked": true,
+   "props": [
+    {
+     "pool": [
+      "car_red",
+      "car_blue",
+      "car_yellow"
+     ],
+     "count": 8
+    }
+   ]
+  },
+  {
+   "id": "z_park",
+   "kind": "park",
+   "rect": [
+    1760,
+    40,
+    1410,
+    880
+   ],
+   "people": 45,
+   "props": [
+    {
+     "pool": [
+      "tree_round",
+      "tree_pine",
+      "tree_blossom"
+     ],
+     "count": 14
+    },
+    {
+     "pool": [
+      "bench",
+      "bush",
+      "flower_bed",
+      "bin",
+      "lamp_post"
+     ],
+     "count": 16
+    }
+   ]
+  },
+  {
+   "id": "z_market",
+   "kind": "market",
+   "rect": [
+    40,
+    1250,
+    1390,
+    920
+   ],
+   "people": 80,
+   "props": [
+    {
+     "pool": [
+      "crates",
+      "bin",
+      "food_cart",
+      "sign_board",
+      "bike"
+     ],
+     "count": 12
+    }
+   ]
+  },
+  {
+   "id": "z_frontage_se",
+   "kind": "shop_frontage",
+   "rect": [
+    1750,
+    1570,
+    1440,
+    150
+   ],
+   "people": 40,
+   "props": [
+    {
+     "pool": [
+      "cafe_table",
+      "parasol_table",
+      "planter",
+      "bike",
+      "sign_board",
+      "bin"
+     ],
+     "count": 14
+    }
+   ]
+  },
+  {
+   "id": "z_garden_se",
+   "kind": "garden",
+   "rect": [
+    1750,
+    1740,
+    1440,
+    440
+   ],
+   "people": 35,
+   "props": [
+    {
+     "pool": [
+      "tree_round",
+      "tree_blossom",
+      "tree_pine"
+     ],
+     "count": 8
+    },
+    {
+     "pool": [
+      "bush",
+      "flower_bed",
+      "bench",
+      "lamp_post"
+     ],
+     "count": 12
+    }
+   ]
+  }
+ ],
+ "fixed_objects": [
+  {
+   "id": "bld_nw_1",
+   "asset": "building_bakery",
+   "pos": [
+    160,
+    600
+   ]
+  },
+  {
+   "id": "bld_nw_2",
+   "asset": "building_cafe",
+   "pos": [
+    385,
+    600
+   ]
+  },
+  {
+   "id": "bld_nw_3",
+   "asset": "building_florist",
+   "pos": [
+    610,
+    600
+   ]
+  },
+  {
+   "id": "bld_nw_4",
+   "asset": "building_books",
+   "pos": [
+    835,
+    600
+   ]
+  },
+  {
+   "id": "bld_nw_5",
+   "asset": "building_toys",
+   "pos": [
+    1060,
+    600
+   ]
+  },
+  {
+   "id": "bld_nw_6",
+   "asset": "building_grocer",
+   "pos": [
+    1290,
+    600
+   ]
+  },
+  {
+   "id": "bld_se_1",
+   "asset": "building_house_yellow",
+   "pos": [
+    1870,
+    1560
+   ]
+  },
+  {
+   "id": "bld_se_2",
+   "asset": "building_music",
+   "pos": [
+    2100,
+    1560
+   ]
+  },
+  {
+   "id": "bld_se_3",
+   "asset": "building_house_blue",
+   "pos": [
+    2330,
+    1560
+   ]
+  },
+  {
+   "id": "bld_se_4",
+   "asset": "building_cafe",
+   "pos": [
+    2560,
+    1560
+   ]
+  },
+  {
+   "id": "bld_se_5",
+   "asset": "building_house_yellow",
+   "pos": [
+    2790,
+    1560
+   ]
+  },
+  {
+   "id": "bld_se_6",
+   "asset": "building_florist",
+   "pos": [
+    3030,
+    1560
+   ]
+  },
+  {
+   "id": "fx_fountain",
+   "asset": "fountain",
+   "pos": [
+    720,
+    860
+   ]
+  },
+  {
+   "id": "fx_statue",
+   "asset": "statue",
+   "pos": [
+    2400,
+    2060
+   ]
+  },
+  {
+   "id": "fx_stall_01",
+   "asset": "stall_red",
+   "pos": [
+    230,
+    1420
+   ]
+  },
+  {
+   "id": "fx_stall_02",
+   "asset": "stall_blue",
+   "pos": [
+    530,
+    1420
+   ]
+  },
+  {
+   "id": "fx_stall_03",
+   "asset": "stall_green",
+   "pos": [
+    830,
+    1420
+   ]
+  },
+  {
+   "id": "fx_stall_04",
+   "asset": "stall_red",
+   "pos": [
+    1130,
+    1420
+   ]
+  },
+  {
+   "id": "fx_stall_05",
+   "asset": "stall_green",
+   "pos": [
+    230,
+    1700
+   ]
+  },
+  {
+   "id": "fx_stall_06",
+   "asset": "stall_red",
+   "pos": [
+    530,
+    1700
+   ]
+  },
+  {
+   "id": "fx_stall_07",
+   "asset": "stall_blue",
+   "pos": [
+    830,
+    1700
+   ]
+  },
+  {
+   "id": "fx_stall_08",
+   "asset": "stall_green",
+   "pos": [
+    1130,
+    1700
+   ]
+  },
+  {
+   "id": "fx_stall_09",
+   "asset": "stall_blue",
+   "pos": [
+    230,
+    1980
+   ]
+  },
+  {
+   "id": "fx_stall_10",
+   "asset": "stall_green",
+   "pos": [
+    530,
+    1980
+   ]
+  },
+  {
+   "id": "fx_stall_11",
+   "asset": "stall_red",
+   "pos": [
+    830,
+    1980
+   ]
+  },
+  {
+   "id": "fx_stall_12",
+   "asset": "stall_blue",
+   "pos": [
+    1130,
+    1980
+   ]
+  },
+  {
+   "id": "fx_tree_p1",
+   "asset": "tree_round",
+   "pos": [
+    1850,
+    220
+   ]
+  },
+  {
+   "id": "fx_tree_p2",
+   "asset": "tree_blossom",
+   "pos": [
+    1900,
+    520
+   ]
+  },
+  {
+   "id": "fx_tree_p3",
+   "asset": "tree_round",
+   "pos": [
+    2250,
+    150
+   ]
+  },
+  {
+   "id": "fx_tree_p4",
+   "asset": "tree_pine",
+   "pos": [
+    2900,
+    160
+   ]
+  },
+  {
+   "id": "fx_tree_p5",
+   "asset": "tree_blossom",
+   "pos": [
+    3060,
+    420
+   ]
+  },
+  {
+   "id": "fx_tree_p6",
+   "asset": "tree_round",
+   "pos": [
+    2950,
+    880
+   ]
+  },
+  {
+   "id": "fx_cat",
+   "asset": "cat_in_tree",
+   "pos": [
+    2250,
+    151
+   ]
+  },
+  {
+   "id": "fx_duck_1",
+   "asset": "duck",
+   "pos": [
+    2440,
+    380
+   ]
+  },
+  {
+   "id": "fx_duck_2",
+   "asset": "duck",
+   "pos": [
+    2468,
+    392
+   ]
+  },
+  {
+   "id": "fx_duck_3",
+   "asset": "duck",
+   "pos": [
+    2494,
+    400
+   ]
+  },
+  {
+   "id": "fx_duck_4",
+   "asset": "duck",
+   "pos": [
+    2650,
+    450
+   ],
+   "flip_h": true
+  },
+  {
+   "id": "fx_joke_mail",
+   "asset": "extra_mail",
+   "pos": [
+    2300,
+    1880
+   ]
+  },
+  {
+   "id": "fx_joke_dog",
+   "asset": "dog",
+   "pos": [
+    2250,
+    1892
+   ]
+  },
+  {
+   "id": "fx_joke_painter",
+   "asset": "extra_painter",
+   "pos": [
+    2830,
+    560
+   ]
+  },
+  {
+   "id": "fx_joke_easel",
+   "asset": "easel",
+   "pos": [
+    2866,
+    556
+   ],
+   "flip_h": true
+  },
+  {
+   "id": "fx_joke_feeder",
+   "asset": "extra_feeder",
+   "pos": [
+    940,
+    900
+   ]
+  },
+  {
+   "id": "fx_pigeon_1",
+   "asset": "pigeon",
+   "pos": [
+    905,
+    912
+   ]
+  },
+  {
+   "id": "fx_pigeon_2",
+   "asset": "pigeon",
+   "pos": [
+    918,
+    930
+   ],
+   "flip_h": true
+  },
+  {
+   "id": "fx_pigeon_3",
+   "asset": "pigeon",
+   "pos": [
+    965,
+    925
+   ]
+  },
+  {
+   "id": "fx_pigeon_4",
+   "asset": "pigeon",
+   "pos": [
+    975,
+    905
+   ],
+   "flip_h": true
+  },
+  {
+   "id": "fx_pigeon_5",
+   "asset": "pigeon",
+   "pos": [
+    945,
+    935
+   ]
+  },
+  {
+   "id": "fx_joke_balloon",
+   "asset": "extra_balloon",
+   "pos": [
+    1300,
+    1300
+   ]
+  },
+  {
+   "id": "fx_kid_a",
+   "asset": "extra_kid_a",
+   "pos": [
+    2840,
+    1960
+   ]
+  },
+  {
+   "id": "fx_kid_b",
+   "asset": "extra_kid_b",
+   "pos": [
+    2890,
+    1990
+   ],
+   "flip_h": true
+  }
+ ]
+}

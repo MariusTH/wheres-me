@@ -1,0 +1,425 @@
+{
+ "kit_version": 1,
+ "notes": "Part kit for avatars and the generated crowd. field_order fixes both the creator UI order and the order random_look() consumes RNG values (changing it changes every crowd: bump TownGenerator.GENERATOR_VERSION). 'weights' are crowd probabilities per value; fields without weights are uniform.",
+ "palettes": {
+  "skin": [
+   "#fbe0c4",
+   "#f6d7b8",
+   "#f2c29b",
+   "#f1c27d",
+   "#e0ac69",
+   "#c68642",
+   "#8d5524",
+   "#5c3a1e"
+  ],
+  "hair": [
+   "#1b1b1b",
+   "#2a1b14",
+   "#3b2a1a",
+   "#5a3825",
+   "#6b4226",
+   "#8b5a2b",
+   "#a0522d",
+   "#d2691e",
+   "#e6c35c",
+   "#9a9a9a",
+   "#d0d0d0",
+   "#ff7fbf",
+   "#3d6fd1"
+  ],
+  "clothes": [
+   "#d63c3c",
+   "#e85d5d",
+   "#f08a24",
+   "#f2c230",
+   "#c8b27c",
+   "#8a6d4f",
+   "#4f9a4a",
+   "#6b8e23",
+   "#2f6b4f",
+   "#2bb3a6",
+   "#b0c4de",
+   "#3d6fd1",
+   "#3d5a99",
+   "#7b4fa0",
+   "#9b59b6",
+   "#ff9ec4",
+   "#8a8f99",
+   "#6b6f7a",
+   "#3a3f58",
+   "#3b2f4a",
+   "#2b2230",
+   "#f4efe6",
+   "#ffffff",
+   "#8b5a2b"
+  ]
+ },
+ "field_order": [
+  "skin",
+  "build",
+  "hair_style",
+  "hair",
+  "hat",
+  "hat_color",
+  "coat",
+  "shirt",
+  "pattern",
+  "pattern_color",
+  "pants",
+  "accessory",
+  "acc_color",
+  "glasses"
+ ],
+ "fields": {
+  "skin": {
+   "label": "Skin",
+   "palette": "skin",
+   "default": "#f1c27d"
+  },
+  "build": {
+   "label": "Body",
+   "values": [
+    "normal",
+    "tall",
+    "short",
+    "wide"
+   ],
+   "value_labels": [
+    "Regular",
+    "Tall",
+    "Small",
+    "Broad"
+   ],
+   "default": "normal",
+   "weights": [
+    0.6,
+    0.15,
+    0.12,
+    0.13
+   ]
+  },
+  "hair_style": {
+   "label": "Hair",
+   "values": [
+    "short",
+    "long",
+    "bun",
+    "ponytail",
+    "curly",
+    "spiky",
+    "bald"
+   ],
+   "value_labels": [
+    "Short",
+    "Long",
+    "Bun",
+    "Ponytail",
+    "Curly",
+    "Spiky",
+    "Bald"
+   ],
+   "default": "short",
+   "weights": [
+    0.3,
+    0.18,
+    0.1,
+    0.1,
+    0.14,
+    0.08,
+    0.1
+   ]
+  },
+  "hair": {
+   "label": "Hair colour",
+   "palette": "hair",
+   "default": "#3b2a1a",
+   "weights": [
+    0.16,
+    0.14,
+    0.16,
+    0.14,
+    0.1,
+    0.07,
+    0.05,
+    0.04,
+    0.07,
+    0.04,
+    0.02,
+    0.01,
+    0.0
+   ],
+   "hidden_if": {
+    "hair_style": [
+     "bald"
+    ]
+   }
+  },
+  "hat": {
+   "label": "Hat",
+   "values": [
+    "none",
+    "cap",
+    "beanie",
+    "top",
+    "sun",
+    "rain",
+    "chef",
+    "party",
+    "beret"
+   ],
+   "value_labels": [
+    "None",
+    "Cap",
+    "Beanie",
+    "Top hat",
+    "Sun hat",
+    "Rain hat",
+    "Chef",
+    "Party",
+    "Beret"
+   ],
+   "default": "none",
+   "weights": [
+    0.62,
+    0.12,
+    0.1,
+    0.02,
+    0.07,
+    0.02,
+    0.01,
+    0.01,
+    0.03
+   ]
+  },
+  "hat_color": {
+   "label": "Hat colour",
+   "palette": "clothes",
+   "default": "#d63c3c",
+   "hidden_if": {
+    "hat": [
+     "none"
+    ]
+   }
+  },
+  "coat": {
+   "label": "Top",
+   "values": [
+    false,
+    true
+   ],
+   "value_labels": [
+    "Shirt",
+    "Long coat"
+   ],
+   "default": false,
+   "weights": [
+    0.75,
+    0.25
+   ]
+  },
+  "shirt": {
+   "label": "Top colour",
+   "palette": "clothes",
+   "default": "#3d6fd1"
+  },
+  "pattern": {
+   "label": "Pattern",
+   "values": [
+    "plain",
+    "stripes",
+    "dots",
+    "overalls"
+   ],
+   "value_labels": [
+    "Plain",
+    "Stripes",
+    "Dots",
+    "Dungarees"
+   ],
+   "default": "plain",
+   "weights": [
+    0.7,
+    0.17,
+    0.08,
+    0.05
+   ]
+  },
+  "pattern_color": {
+   "label": "Pattern colour",
+   "palette": "clothes",
+   "default": "#ffffff",
+   "hidden_if": {
+    "pattern": [
+     "plain",
+     "overalls"
+    ]
+   }
+  },
+  "pants": {
+   "label": "Trousers",
+   "palette": "clothes",
+   "default": "#3a3f58"
+  },
+  "accessory": {
+   "label": "Extra",
+   "values": [
+    "none",
+    "backpack",
+    "bag",
+    "scarf",
+    "balloon"
+   ],
+   "value_labels": [
+    "None",
+    "Backpack",
+    "Bag",
+    "Scarf",
+    "Balloon"
+   ],
+   "default": "none",
+   "weights": [
+    0.63,
+    0.13,
+    0.13,
+    0.1,
+    0.01
+   ]
+  },
+  "acc_color": {
+   "label": "Extra colour",
+   "palette": "clothes",
+   "default": "#d63c3c",
+   "hidden_if": {
+    "accessory": [
+     "none"
+    ]
+   }
+  },
+  "glasses": {
+   "label": "Glasses",
+   "values": [
+    false,
+    true
+   ],
+   "value_labels": [
+    "No",
+    "Yes"
+   ],
+   "default": false,
+   "weights": [
+    0.8,
+    0.2
+   ]
+  }
+ },
+ "presets": [
+  {
+   "name": "Stripes",
+   "look": {
+    "skin": "#f2c29b",
+    "hair": "#5a3825",
+    "hair_style": "short",
+    "hat": "beanie",
+    "hat_color": "#d63c3c",
+    "shirt": "#f4efe6",
+    "pattern": "stripes",
+    "pattern_color": "#d63c3c",
+    "pants": "#3d5a99",
+    "glasses": true
+   }
+  },
+  {
+   "name": "Sunny",
+   "look": {
+    "skin": "#c68642",
+    "hair": "#2a1b14",
+    "hair_style": "curly",
+    "hat": "rain",
+    "hat_color": "#f2c230",
+    "shirt": "#f2c230",
+    "coat": true,
+    "pants": "#2f6b4f"
+   }
+  },
+  {
+   "name": "Topper",
+   "look": {
+    "skin": "#f6d7b8",
+    "hair": "#8b5a2b",
+    "hair_style": "short",
+    "hat": "top",
+    "hat_color": "#2b2230",
+    "shirt": "#7b4fa0",
+    "coat": true,
+    "pants": "#3b2f4a",
+    "build": "tall"
+   }
+  },
+  {
+   "name": "Scout",
+   "look": {
+    "skin": "#e0ac69",
+    "hair": "#3b2a1a",
+    "hair_style": "short",
+    "hat": "cap",
+    "hat_color": "#f08a24",
+    "shirt": "#4f9a4a",
+    "pants": "#c8b27c",
+    "accessory": "backpack",
+    "acc_color": "#f08a24"
+   }
+  },
+  {
+   "name": "Bubblegum",
+   "look": {
+    "skin": "#f1c27d",
+    "hair": "#ff7fbf",
+    "hair_style": "long",
+    "shirt": "#2bb3a6",
+    "pattern": "dots",
+    "pattern_color": "#ffffff",
+    "pants": "#f4efe6"
+   }
+  },
+  {
+   "name": "Marmalade",
+   "look": {
+    "skin": "#fbe0c4",
+    "hair": "#d2691e",
+    "hair_style": "bun",
+    "shirt": "#8a8f99",
+    "coat": true,
+    "pants": "#2b2230",
+    "accessory": "scarf",
+    "acc_color": "#f08a24",
+    "glasses": true
+   }
+  },
+  {
+   "name": "Dungarees",
+   "look": {
+    "skin": "#8d5524",
+    "hair": "#1b1b1b",
+    "hair_style": "short",
+    "hat": "beanie",
+    "hat_color": "#f4efe6",
+    "shirt": "#e85d5d",
+    "pattern": "overalls",
+    "pants": "#3d6fd1",
+    "build": "wide"
+   }
+  },
+  {
+   "name": "Chef",
+   "look": {
+    "skin": "#f1c27d",
+    "hair": "#6b4226",
+    "hair_style": "short",
+    "hat": "chef",
+    "hat_color": "#ffffff",
+    "shirt": "#ffffff",
+    "pants": "#2b2230"
+   }
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+[1/14] bench done in 64.1s
+[2/14] kiosk done in 85.2s
+[3/14] food_cart done in 117.9s
+[4/14] cafe_table done in 65.0s
+[5/14] parasol_table done in 119.1s
+[6/14] stall_red done in 161.4s
+[7/14] stall_blue done in 161.7s
+[8/14] stall_green done in 161.2s
+[9/14] crates done in 88.7s
+[10/14] sign_board done in 63.8s
+[11/14] mailbox done in 64.1s
+[12/14] car_red done in 79.6s
+[13/14] car_blue done in 79.5s
+[14/14] car_yellow done in 80.4s

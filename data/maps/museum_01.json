@@ -1,0 +1,581 @@
+{
+ "map_id": "museum_01",
+ "map_version": 1,
+ "title": "Nature museum",
+ "hide_subject": "critter",
+ "base_ground": "wall",
+ "default_seed": 481516,
+ "notes": "Nature museum: hide a critter (picked by seed) among hue-shifted look-alikes. Walls are flat ground bands plus blocked areas; doorways are gaps in both.",
+ "world_bounds": [
+  0,
+  0,
+  2400,
+  1600
+ ],
+ "ground": [
+  {
+   "type": "parquet",
+   "rect": [
+    40,
+    60,
+    720,
+    1500
+   ]
+  },
+  {
+   "type": "marble",
+   "rect": [
+    800,
+    60,
+    840,
+    1500
+   ]
+  },
+  {
+   "type": "stone",
+   "rect": [
+    1680,
+    60,
+    680,
+    700
+   ]
+  },
+  {
+   "type": "carpet",
+   "rect": [
+    1680,
+    800,
+    680,
+    760
+   ]
+  },
+  {
+   "type": "marble",
+   "rect": [
+    760,
+    500,
+    40,
+    140
+   ]
+  },
+  {
+   "type": "marble",
+   "rect": [
+    760,
+    1100,
+    40,
+    140
+   ]
+  },
+  {
+   "type": "marble",
+   "rect": [
+    1640,
+    300,
+    40,
+    140
+   ]
+  },
+  {
+   "type": "marble",
+   "rect": [
+    1640,
+    1100,
+    40,
+    140
+   ]
+  },
+  {
+   "type": "stone",
+   "rect": [
+    1960,
+    760,
+    140,
+    40
+   ]
+  },
+  {
+   "type": "wall",
+   "rect": [
+    0,
+    0,
+    2400,
+    60
+   ]
+  },
+  {
+   "type": "wall",
+   "rect": [
+    0,
+    1560,
+    2400,
+    40
+   ]
+  },
+  {
+   "type": "wall",
+   "rect": [
+    0,
+    0,
+    40,
+    1600
+   ]
+  },
+  {
+   "type": "wall",
+   "rect": [
+    2360,
+    0,
+    40,
+    1600
+   ]
+  },
+  {
+   "type": "wall",
+   "rect": [
+    760,
+    60,
+    40,
+    440
+   ]
+  },
+  {
+   "type": "wall",
+   "rect": [
+    760,
+    640,
+    40,
+    460
+   ]
+  },
+  {
+   "type": "wall",
+   "rect": [
+    760,
+    1240,
+    40,
+    320
+   ]
+  },
+  {
+   "type": "wall",
+   "rect": [
+    1640,
+    60,
+    40,
+    240
+   ]
+  },
+  {
+   "type": "wall",
+   "rect": [
+    1640,
+    440,
+    40,
+    660
+   ]
+  },
+  {
+   "type": "wall",
+   "rect": [
+    1640,
+    1240,
+    40,
+    320
+   ]
+  },
+  {
+   "type": "wall",
+   "rect": [
+    1680,
+    760,
+    280,
+    40
+   ]
+  },
+  {
+   "type": "wall",
+   "rect": [
+    2100,
+    760,
+    260,
+    40
+   ]
+  }
+ ],
+ "blocked": [
+  {
+   "id": "wall_00",
+   "label": "wall",
+   "rect": [
+    0,
+    0,
+    2400,
+    60
+   ]
+  },
+  {
+   "id": "wall_01",
+   "label": "wall",
+   "rect": [
+    0,
+    1560,
+    2400,
+    40
+   ]
+  },
+  {
+   "id": "wall_02",
+   "label": "wall",
+   "rect": [
+    0,
+    0,
+    40,
+    1600
+   ]
+  },
+  {
+   "id": "wall_03",
+   "label": "wall",
+   "rect": [
+    2360,
+    0,
+    40,
+    1600
+   ]
+  },
+  {
+   "id": "wall_04",
+   "label": "wall",
+   "rect": [
+    760,
+    60,
+    40,
+    440
+   ]
+  },
+  {
+   "id": "wall_05",
+   "label": "wall",
+   "rect": [
+    760,
+    640,
+    40,
+    460
+   ]
+  },
+  {
+   "id": "wall_06",
+   "label": "wall",
+   "rect": [
+    760,
+    1240,
+    40,
+    320
+   ]
+  },
+  {
+   "id": "wall_07",
+   "label": "wall",
+   "rect": [
+    1640,
+    60,
+    40,
+    240
+   ]
+  },
+  {
+   "id": "wall_08",
+   "label": "wall",
+   "rect": [
+    1640,
+    440,
+    40,
+    660
+   ]
+  },
+  {
+   "id": "wall_09",
+   "label": "wall",
+   "rect": [
+    1640,
+    1240,
+    40,
+    320
+   ]
+  },
+  {
+   "id": "wall_10",
+   "label": "wall",
+   "rect": [
+    1680,
+    760,
+    280,
+    40
+   ]
+  },
+  {
+   "id": "wall_11",
+   "label": "wall",
+   "rect": [
+    2100,
+    760,
+    260,
+    40
+   ]
+  }
+ ],
+ "paths": [],
+ "zones": [
+  {
+   "id": "z_fossils",
+   "kind": "gallery",
+   "rect": [
+    60,
+    80,
+    680,
+    1460
+   ],
+   "people": 60,
+   "props": [
+    {
+     "pool": [
+      "display_case",
+      "ammonite_pedestal",
+      "dino_nest",
+      "rope_barrier"
+     ],
+     "count": 18
+    },
+    {
+     "pool": [
+      "potted_palm",
+      "museum_bench"
+     ],
+     "count": 6
+    },
+    {
+     "pool": [
+      "baby_trex",
+      "baby_triceratops",
+      "baby_stegosaurus",
+      "dodo",
+      "mammoth_calf",
+      "sabretooth_cub"
+     ],
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "z_hall",
+   "kind": "hall",
+   "rect": [
+    820,
+    80,
+    800,
+    1460
+   ],
+   "people": 90,
+   "props": [
+    {
+     "pool": [
+      "museum_bench",
+      "potted_palm",
+      "rope_barrier",
+      "dino_nest"
+     ],
+     "count": 12
+    },
+    {
+     "pool": [
+      "baby_trex",
+      "baby_triceratops",
+      "baby_stegosaurus",
+      "dodo",
+      "mammoth_calf",
+      "sabretooth_cub"
+     ],
+     "count": 10
+    }
+   ]
+  },
+  {
+   "id": "z_minerals",
+   "kind": "gallery",
+   "rect": [
+    1700,
+    80,
+    640,
+    660
+   ],
+   "people": 40,
+   "props": [
+    {
+     "pool": [
+      "crystal_cluster",
+      "meteorite",
+      "display_case"
+     ],
+     "count": 10
+    },
+    {
+     "pool": [
+      "baby_trex",
+      "baby_triceratops",
+      "baby_stegosaurus",
+      "dodo",
+      "mammoth_calf",
+      "sabretooth_cub"
+     ],
+     "count": 8
+    }
+   ]
+  },
+  {
+   "id": "z_shop",
+   "kind": "shop",
+   "rect": [
+    1700,
+    820,
+    640,
+    720
+   ],
+   "people": 45,
+   "props": [
+    {
+     "pool": [
+      "gift_shelf"
+     ],
+     "count": 2
+    },
+    {
+     "pool": [
+      "baby_trex",
+      "baby_triceratops",
+      "baby_stegosaurus",
+      "dodo",
+      "mammoth_calf",
+      "sabretooth_cub"
+     ],
+     "count": 30
+    }
+   ]
+  }
+ ],
+ "fixed_objects": [
+  {
+   "id": "fx_trex",
+   "asset": "trex_skeleton",
+   "pos": [
+    1220,
+    780
+   ]
+  },
+  {
+   "id": "fx_whale",
+   "asset": "whale_skeleton",
+   "pos": [
+    1220,
+    430
+   ]
+  },
+  {
+   "id": "fx_mammoth",
+   "asset": "mammoth_skeleton",
+   "pos": [
+    2030,
+    520
+   ],
+   "flip_h": true
+  },
+  {
+   "id": "fx_pillar_nw",
+   "asset": "pillar",
+   "pos": [
+    880,
+    260
+   ]
+  },
+  {
+   "id": "fx_pillar_ne",
+   "asset": "pillar",
+   "pos": [
+    1560,
+    260
+   ]
+  },
+  {
+   "id": "fx_pillar_sw",
+   "asset": "pillar",
+   "pos": [
+    880,
+    1420
+   ]
+  },
+  {
+   "id": "fx_pillar_se",
+   "asset": "pillar",
+   "pos": [
+    1560,
+    1420
+   ]
+  },
+  {
+   "id": "fx_skull",
+   "asset": "triceratops_skull",
+   "pos": [
+    400,
+    320
+   ]
+  },
+  {
+   "id": "fx_volcano",
+   "asset": "volcano_model",
+   "pos": [
+    1860,
+    260
+   ]
+  },
+  {
+   "id": "fx_meteorite",
+   "asset": "meteorite",
+   "pos": [
+    2250,
+    640
+   ]
+  },
+  {
+   "id": "fx_shelf_1",
+   "asset": "gift_shelf",
+   "pos": [
+    1790,
+    910
+   ]
+  },
+  {
+   "id": "fx_shelf_2",
+   "asset": "gift_shelf",
+   "pos": [
+    1950,
+    910
+   ]
+  },
+  {
+   "id": "fx_shelf_3",
+   "asset": "gift_shelf",
+   "pos": [
+    2110,
+    910
+   ]
+  },
+  {
+   "id": "fx_shelf_4",
+   "asset": "gift_shelf",
+   "pos": [
+    2270,
+    910
+   ]
+  }
+ ]
+}
