@@ -1042,5 +1042,53 @@
   "model": "flux-2-klein-base-4b.safetensors",
   "raw": "art_src/raw/crystal_cluster.png",
   "generated_at": "2026-10-24 09:33:28"
+ },
+ "rope_barrier": {
+  "prompt": "STYLE: original, colourful hand-drawn hidden-object game illustration, children's picture book ink and watercolour, slightly irregular dark ink outline, flat warm muted colours with a few saturated accents, soft daylight from upper left. Seen straight from the front and slightly above, facing the viewer squarely, symmetric, not rotated, not at an angle, not isometric. Two short brass museum posts joined by a red velvet rope. Isolated single subject centred, on a plain flat solid pure bright green background, no ground shadow, no text, no letters, no labels, no border, no frame, no other objects.",
+  "seed": 7060,
+  "width": 1024,
+  "height": 512,
+  "background": "green",
+  "seconds": 91.4,
+  "workflow": "art_src/workflows/flux2_klein_4b_base_only.json",
+  "model": "flux-2-klein-base-4b.safetensors",
+  "raw": "art_src/raw/rope_barrier.png",
+  "generated_at": "2026-10-24 09:35:00"
+ },
+ "museum_bench": {
+  "prompt": "STYLE: original, colourful hand-drawn hidden-object game illustration, children's picture book ink and watercolour, slightly irregular dark ink outline, flat warm muted colours with a few saturated accents, soft daylight from upper left. Seen straight from the front and slightly above, facing the viewer squarely, symmetric, not rotated, not at an angle, not isometric. A single long dark wooden museum bench without a backrest. Isolated single subject centred, on a plain flat solid pure magenta (#FF00FF) background, no ground shadow, no text, no letters, no labels, no border, no frame, no other objects.",
+  "seed": 7061,
+  "width": 1024,
+  "height": 512,
+  "background": "magenta",
+  "seconds": 92.7,
+  "workflow": "art_src/workflows/flux2_klein_4b_base_only.json",
+  "model": "flux-2-klein-base-4b.safetensors",
+  "raw": "art_src/raw/museum_bench.png",
+  "generated_at": "2026-10-24 09:36:33"
+ },
+ "potted_palm": {
+  "prompt": "STYLE: original, colourful hand-drawn hidden-object game illustration, children's picture book ink and watercolour, slightly irregular dark ink outline, flat warm muted colours with a few saturated accents, soft daylight from upper left. Seen from a high-angle, shallow top-down three-quarter view. A single tall leafy palm in a big round white pot. Isolated single subject centred, on a plain flat solid pure magenta (#FF00FF) background, no ground shadow, no text, no letters, no labels, no border, no frame, no other objects.",
+  "seed": 7062,
+  "width": 512,
+  "height": 1024,
+  "background": "magenta",
+  "seconds": 94.2,
+  "workflow": "art_src/workflows/flux2_klein_4b_base_only.json",
+  "model": "flux-2-klein-base-4b.safetensors",
+  "raw": "art_src/raw/potted_palm.png",
+  "generated_at": "2026-10-24 09:38:08"
+ },
+ "pillar": {
+  "prompt": "STYLE: original, colourful hand-drawn hidden-object game illustration, children's picture book ink and watercolour, slightly irregular dark ink outline, flat warm muted colours with a few saturated accents, soft daylight from upper left. Seen straight from the front and slightly above, facing the viewer squarely, symmetric, not rotated, not at an angle, not isometric. A single tall cream marble classical column on a square base. Isolated single subject centred, on a plain flat solid pure bright green background, no ground shadow, no text, no letters, no labels, no border, no frame, no other objects.",
+  "seed": 7063,
+  "width": 512,
+  "height": 1024,
+  "background": "green",
+  "seconds": 92.4,
+  "workflow": "art_src/workflows/flux2_klein_4b_base_only.json",
+  "model": "flux-2-klein-base-4b.safetensors",
+  "raw": "art_src/raw/pillar.png",
+  "generated_at": "2026-10-24 09:39:40"
  }
 }
