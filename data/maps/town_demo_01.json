@@ -1,6 +1,6 @@
 {
  "map_id": "town_demo_01",
- "map_version": 1,
+ "map_version": 2,
  "title": "Town",
  "default_seed": 481516,
  "notes": "Authored base layout. NW: shop street + fountain plaza. NE: park with pond. SW: market. SE: houses, cafe frontage, garden. Coordinates are world pixels; rects are [x, y, w, h].",
@@ -259,7 +259,7 @@
    "id": "path_park_a",
    "surface": "sand",
    "width": 46,
-   "people": 16,
+   "people": 64,
    "tags": [
     "pedestrian"
    ],
@@ -298,7 +298,7 @@
    "id": "path_park_b",
    "surface": "sand",
    "width": 40,
-   "people": 8,
+   "people": 32,
    "tags": [
     "pedestrian"
    ],
@@ -329,7 +329,7 @@
    "id": "path_garden_se",
    "surface": "sand",
    "width": 40,
-   "people": 8,
+   "people": 32,
    "tags": [
     "pedestrian"
    ],
@@ -355,7 +355,7 @@
   {
    "id": "path_sidewalk_n",
    "width": 44,
-   "people": 30,
+   "people": 120,
    "tags": [
     "pedestrian",
     "sidewalk"
@@ -374,7 +374,7 @@
   {
    "id": "path_sidewalk_s",
    "width": 44,
-   "people": 30,
+   "people": 120,
    "tags": [
     "pedestrian",
     "sidewalk"
@@ -393,7 +393,7 @@
   {
    "id": "path_sidewalk_w",
    "width": 44,
-   "people": 14,
+   "people": 56,
    "tags": [
     "pedestrian",
     "sidewalk"
@@ -412,7 +412,7 @@
   {
    "id": "path_sidewalk_e",
    "width": 44,
-   "people": 14,
+   "people": 56,
    "tags": [
     "pedestrian",
     "sidewalk"
@@ -439,7 +439,7 @@
     1360,
     250
    ],
-   "people": 16,
+   "people": 64,
    "props": [
     {
      "pool": [
@@ -447,7 +447,7 @@
       "tree_pine",
       "tree_blossom"
      ],
-     "count": 7
+     "count": 28
     },
     {
      "pool": [
@@ -456,7 +456,7 @@
       "flower_bed",
       "bench"
      ],
-     "count": 10
+     "count": 40
     }
    ]
   },
@@ -469,7 +469,7 @@
     1390,
     145
    ],
-   "people": 55,
+   "people": 90,
    "props": [
     {
      "pool": [
@@ -480,7 +480,7 @@
       "cafe_table",
       "parasol_table"
      ],
-     "count": 16
+     "count": 64
     }
    ]
   },
@@ -493,7 +493,7 @@
     1390,
     185
    ],
-   "people": 45,
+   "people": 110,
    "props": [
     {
      "pool": [
@@ -504,7 +504,7 @@
       "tree_round",
       "bin"
      ],
-     "count": 9
+     "count": 36
     }
    ]
   },
@@ -525,7 +525,7 @@
       "mailbox",
       "bin"
      ],
-     "count": 10
+     "count": 40
     }
    ]
   },
@@ -546,7 +546,7 @@
       "mailbox",
       "bin"
      ],
-     "count": 10
+     "count": 40
     }
    ]
   },
@@ -567,7 +567,7 @@
       "car_blue",
       "car_yellow"
      ],
-     "count": 8
+     "count": 20
     }
    ]
   },
@@ -580,7 +580,7 @@
     1410,
     880
    ],
-   "people": 45,
+   "people": 180,
    "props": [
     {
      "pool": [
@@ -588,7 +588,7 @@
       "tree_pine",
       "tree_blossom"
      ],
-     "count": 14
+     "count": 56
     },
     {
      "pool": [
@@ -598,7 +598,7 @@
       "bin",
       "lamp_post"
      ],
-     "count": 16
+     "count": 64
     }
    ]
   },
@@ -611,7 +611,7 @@
     1390,
     920
    ],
-   "people": 80,
+   "people": 320,
    "props": [
     {
      "pool": [
@@ -621,7 +621,7 @@
       "sign_board",
       "bike"
      ],
-     "count": 12
+     "count": 48
     }
    ]
   },
@@ -634,7 +634,7 @@
     1440,
     150
    ],
-   "people": 40,
+   "people": 100,
    "props": [
     {
      "pool": [
@@ -645,7 +645,7 @@
       "sign_board",
       "bin"
      ],
-     "count": 14
+     "count": 56
     }
    ]
   },
@@ -658,7 +658,7 @@
     1440,
     440
    ],
-   "people": 35,
+   "people": 140,
    "props": [
     {
      "pool": [
@@ -666,7 +666,7 @@
       "tree_blossom",
       "tree_pine"
      ],
-     "count": 8
+     "count": 32
     },
     {
      "pool": [
@@ -675,7 +675,7 @@
       "bench",
       "lamp_post"
      ],
-     "count": 12
+     "count": 48
     }
    ]
   }

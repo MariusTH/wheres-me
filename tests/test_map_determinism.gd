@@ -2,10 +2,10 @@ extends TestSuite
 ## Same map version + generator version + seed must give the same town.
 
 const SEED := 481516
-## SHA-256 of TownLayout.signature() for town_demo_01 v1, generator v2, seed
+## SHA-256 of TownLayout.signature() for town_demo_01 v2, generator v2, seed
 ## 481516. If this changes, existing challenges would point at wrong spots:
 ## bump TownGenerator.GENERATOR_VERSION (or map_version) and update this value.
-const GOLDEN_SHA256 := "9d662329f797e6f65f21e82171cfe4fc9cbb5414b1c9261201ec93a72e8c0862"
+const GOLDEN_SHA256 := "6c4769f127032d9dfeb8cd0df274cf164335a765edc382d6c6af1062cf399614"
 
 
 func test_same_seed_same_layout() -> void:

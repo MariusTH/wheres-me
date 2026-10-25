@@ -1,6 +1,6 @@
 {
  "map_id": "museum_01",
- "map_version": 1,
+ "map_version": 2,
  "title": "Nature museum",
  "hide_subject": "critter",
  "base_ground": "wall",
@@ -336,7 +336,7 @@
     680,
     1460
    ],
-   "people": 60,
+   "people": 240,
    "props": [
     {
      "pool": [
@@ -345,14 +345,14 @@
       "dino_nest",
       "rope_barrier"
      ],
-     "count": 18
+     "count": 72
     },
     {
      "pool": [
       "potted_palm",
       "museum_bench"
      ],
-     "count": 6
+     "count": 24
     },
     {
      "pool": [
@@ -363,7 +363,7 @@
       "mammoth_calf",
       "sabretooth_cub"
      ],
-     "count": 10
+     "count": 40
     }
    ]
   },
@@ -376,7 +376,7 @@
     800,
     1460
    ],
-   "people": 90,
+   "people": 360,
    "props": [
     {
      "pool": [
@@ -385,7 +385,7 @@
       "rope_barrier",
       "dino_nest"
      ],
-     "count": 12
+     "count": 48
     },
     {
      "pool": [
@@ -396,7 +396,7 @@
       "mammoth_calf",
       "sabretooth_cub"
      ],
-     "count": 10
+     "count": 40
     }
    ]
   },
@@ -409,7 +409,7 @@
     640,
     660
    ],
-   "people": 40,
+   "people": 150,
    "props": [
     {
      "pool": [
@@ -417,7 +417,7 @@
       "meteorite",
       "display_case"
      ],
-     "count": 10
+     "count": 40
     },
     {
      "pool": [
@@ -428,7 +428,7 @@
       "mammoth_calf",
       "sabretooth_cub"
      ],
-     "count": 8
+     "count": 32
     }
    ]
   },
@@ -441,13 +441,13 @@
     640,
     720
    ],
-   "people": 45,
+   "people": 170,
    "props": [
     {
      "pool": [
       "gift_shelf"
      ],
-     "count": 2
+     "count": 8
     },
     {
      "pool": [
@@ -458,7 +458,7 @@
       "mammoth_calf",
       "sabretooth_cub"
      ],
-     "count": 30
+     "count": 120
     }
    ]
   }

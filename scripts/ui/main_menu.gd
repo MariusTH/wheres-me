@@ -97,6 +97,8 @@ func _build(seed_text: String, code_text: String, message: String) -> void:
 		var tap := WebTap.new(paste, "paste")
 		tap.replied.connect(_on_web_paste)
 		v.add_child(tap)
+		# A real browser text box, so long-press → Paste works on phones.
+		v.add_child(WebField.new(_code))
 
 	var misc_row := UiKit.hbox(8)
 	var saved := ChallengeCodec.list_saved()

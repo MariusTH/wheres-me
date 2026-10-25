@@ -6,6 +6,7 @@
 // those APIs. So every WebTap button registers its screen rect here (put()),
 // and a capture-phase pointerup/touchend listener runs the button's action
 // when a tap lands inside it. Replies go to the button's callback as JSON.
+// It also hosts WebField's real text boxes (putField/clearField).
 (function () {
   if (window.wmTap) return;
 
@@ -67,11 +68,60 @@
   window.addEventListener("pointerup", onRelease, true);
   window.addEventListener("touchend", onRelease, true);
 
+  // Real text boxes over the canvas (WebField). Godot's own text input is a
+  // hidden 0x0 element, so iOS can't long-press it to paste. 16px text keeps
+  // iOS Safari from zooming in on focus.
+  const fields = new Map(); // id -> {el, x, y, w, h}
+  function placeField(f) {
+    const canvas = document.querySelector("canvas");
+    if (!canvas) return;
+    const r = canvas.getBoundingClientRect();
+    Object.assign(f.el.style, {
+      left: (r.left + f.x * r.width) + "px", top: (r.top + f.y * r.height) + "px",
+      width: (f.w * r.width) + "px", height: (f.h * r.height) + "px",
+    });
+  }
+  const placeAll = () => fields.forEach(placeField);
+  window.addEventListener("resize", placeAll);
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", placeAll);
+
+  function putField(id, x, y, w, h, value, placeholder, cb) {
+    let f = fields.get(id);
+    if (!f) {
+      const el = document.createElement("textarea");
+      el.setAttribute("autocapitalize", "off");
+      el.setAttribute("autocomplete", "off");
+      el.setAttribute("autocorrect", "off");
+      el.spellcheck = false;
+      Object.assign(el.style, {
+        position: "fixed", zIndex: "10", boxSizing: "border-box", margin: "0", padding: "8px 10px",
+        border: "0", outline: "none", background: "transparent", resize: "none",
+        font: "16px/1.3 -apple-system, system-ui, sans-serif", color: "#2b2230",
+        touchAction: "manipulation",
+      });
+      el.addEventListener("input", () => f.cb(el.value));
+      // iOS can leave the page scrolled after the keyboard closes.
+      el.addEventListener("blur", () => window.scrollTo(0, 0));
+      document.body.appendChild(el);
+      f = { el };
+      fields.set(id, f);
+    }
+    Object.assign(f, { x, y, w, h, cb });
+    f.el.placeholder = placeholder;
+    if (f.el.value !== value) f.el.value = value;
+    placeField(f);
+  }
+  function clearField(id) {
+    const f = fields.get(id);
+    if (f) { f.el.remove(); fields.delete(id); }
+  }
+
   window.wmTap = {
     // Rect normalised to the Godot canvas (0..1).
     put(id, x, y, w, h, action, payload, cb) { targets.set(id, { x, y, w, h, action, payload, cb }); },
     clear(id) { targets.delete(id); },
     register(action, fn) { actions[action] = fn; },
+    putField, clearField,
     canShare: () => !!navigator.share,
     debugTargets: () => Array.from(targets, ([id, t]) => ({ id, action: t.action, x: t.x, y: t.y, w: t.w, h: t.h })),
   };
