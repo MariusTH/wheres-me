@@ -1,0 +1,75 @@
+{
+ "map_id": "town_iso",
+ "map_version": 3,
+ "title": "Wonky town",
+ "procedural": "wfc",
+ "projection": "iso",
+ "ground_style": "storybook",
+ "default_seed": 481516,
+ "notes": "Isometric procedural town: the town_wfc rules laid out on a 2:1 isometric grid (see WfcTown). Only cells showing inside view take part; every house gets its own square plot of grid.plot plan px. house_subset = [houses, shops] picked per seed from buildings, so towns differ in look. Bump map_version whenever WfcTown or this file changes in a way that would move anything. roads = per-line widths/offsets and jogs on straight stretches; plots = small buildings, garden gaps and seeded plot jitter/setback in house rows.",
+ "view": [3600, 2400],
+ "grid": {"cols": 30, "rows": 30, "cell": 144, "carriageway": 64, "plot": 112},
+ "roads": {
+  "widths": [40, 52, 64, 64, 76],
+  "offset": 28,
+  "min_walk": 20,
+  "jog_chance": 0.4,
+  "min_car_width": 52
+ },
+ "sockets": {
+  "_doc": "r road crosses the edge, k kerb/pavement side, o open ground, f house front (faces a kerb), bl/bm/br tie a front cell to its backyard cell (left end/middle/right end), hf/hr house row continues sideways (front/backyard row), e end of a house row.",
+  "compatible": [["r", "r"], ["k", "o"], ["k", "f"], ["o", "o"], ["hf", "hf"], ["hr", "hr"], ["bl", "bl"], ["bm", "bm"], ["br", "br"], ["e", "o"], ["e", "k"], ["e", "e"]],
+  "boundary": ["o", "k", "r", "e", "hf", "hr"]
+ },
+ "tiles": [
+  {"id": "road_h", "role": "road", "sockets": ["k", "r", "k", "r"], "weight": 60},
+  {"id": "road_v", "role": "road", "sockets": ["r", "k", "r", "k"], "weight": 25},
+  {"id": "cross", "role": "road", "sockets": ["r", "r", "r", "r"], "weight": 4},
+  {"id": "tee_n", "role": "road", "sockets": ["k", "r", "r", "r"], "weight": 8},
+  {"id": "tee_e", "role": "road", "sockets": ["r", "k", "r", "r"], "weight": 8},
+  {"id": "tee_s", "role": "road", "sockets": ["r", "r", "k", "r"], "weight": 8},
+  {"id": "tee_w", "role": "road", "sockets": ["r", "r", "r", "k"], "weight": 8},
+  {"id": "corner_ne", "role": "road", "sockets": ["r", "r", "k", "k"], "weight": 1},
+  {"id": "corner_es", "role": "road", "sockets": ["k", "r", "r", "k"], "weight": 1},
+  {"id": "corner_sw", "role": "road", "sockets": ["k", "k", "r", "r"], "weight": 1},
+  {"id": "corner_wn", "role": "road", "sockets": ["r", "k", "k", "r"], "weight": 1},
+  {"id": "front_l", "role": "house", "sockets": ["bl", "hf", "f", "e"], "weight": 20},
+  {"id": "front_m", "role": "house", "sockets": ["bm", "hf", "f", "hf"], "weight": 90},
+  {"id": "front_r", "role": "house", "sockets": ["br", "e", "f", "hf"], "weight": 20},
+  {"id": "back_l", "role": "backyard", "sockets": ["o", "hr", "bl", "e"], "weight": 20},
+  {"id": "back_m", "role": "backyard", "sockets": ["o", "hr", "bm", "hr"], "weight": 90},
+  {"id": "back_r", "role": "backyard", "sockets": ["o", "e", "br", "hr"], "weight": 20},
+  {"id": "open", "role": "open", "sockets": ["o", "o", "o", "o"], "weight": 60}
+ ],
+ "quality": {"road_fraction": [0.16, 0.5], "min_house_fronts": 30, "min_open_fraction": 0.2, "attempts": 40},
+ "fountain": "iso_fountain",
+ "house_subset": [10, 4],
+ "buildings": ["iso_house_sage", "iso_house_coral", "iso_house_butter", "iso_house_lavender", "iso_house_teal", "iso_house_peach", "iso_house_mint", "iso_house_rose", "iso_house_stone", "iso_house_blue", "iso_house_cream", "iso_house_ochre", "iso_shop_bakery", "iso_shop_books", "iso_shop_florist", "iso_shop_cafe", "iso_shop_toys", "iso_shop_clocks", "iso_house_plum", "iso_house_brick", "iso_house_windmill", "iso_house_moss", "iso_house_apricot", "iso_house_turret", "iso_house_boat", "iso_house_steeple", "iso_house_terrace", "iso_house_cocoa", "iso_house_greenhouse", "iso_house_tall_red", "iso_shop_hats", "iso_shop_sweets", "iso_shop_fish", "iso_shop_cheese", "iso_shop_music", "iso_shop_bikes"],
+ "districts": {
+  "_doc": "Per-cell crowd and props for each district kind. weight = how often a chunk of open cells becomes this kind.",
+  "park": {"weight": 3, "ground": "", "people": 4, "props": [{"pool": ["tree_round", "tree_pine", "tree_blossom"], "count": 2}, {"pool": ["iso_bench", "bush", "iso_flower_bed", "iso_trash_can", "lamp_post", "iso_picnic", "iso_swing", "iso_giant_snail", "iso_big_bird_blue", "iso_big_bird_pink", "iso_big_bird_ostrich", "iso_big_bird_peacock", "dog", "iso_easel"], "count": 2}]},
+  "garden": {"weight": 2, "ground": "", "people": 3, "props": [{"pool": ["tree_round", "tree_blossom", "tree_pine"], "count": 1}, {"pool": ["bush", "iso_flower_bed", "iso_planter", "iso_bench", "iso_beehives", "iso_wheelbarrow", "iso_well", "iso_shed", "iso_giant_snail", "iso_big_bird_blue", "iso_big_bird_pink", "iso_big_bird_ostrich", "iso_big_bird_peacock", "dog"], "count": 3}]},
+  "plaza": {"weight": 2, "ground": "plaza", "people": 4, "props": [{"pool": ["iso_bench", "lamp_post", "iso_food_cart", "iso_kiosk", "iso_trash_can", "tree_round", "iso_parasol_table", "iso_dovecote", "iso_big_bird_peacock", "pigeon", "iso_easel"], "count": 2}]},
+  "market": {"weight": 2, "ground": "market", "people": 5, "props": [{"pool": ["iso_stall_red", "iso_stall_blue", "iso_stall_green"], "count": 1}, {"pool": ["iso_crates", "iso_trash_can", "iso_food_cart", "iso_sign_board", "iso_bike"], "count": 1}, {"pool": ["iso_wheelbarrow", "iso_crates", "iso_big_bird_ostrich", "iso_trash_can", "iso_wheelie_bins"], "count": 1}]},
+  "yard": {"weight": 2, "ground": "", "people": 3, "props": [{"pool": ["iso_haystack", "iso_scarecrow", "iso_chicken_coop", "iso_well", "iso_outhouse", "iso_shed", "iso_wheelbarrow", "iso_beehives", "iso_washing_line", "iso_big_bird_blue", "iso_big_bird_pink", "iso_big_bird_ostrich", "iso_big_bird_peacock", "iso_skip", "dog"], "count": 3}, {"pool": ["tree_round", "tree_pine", "bush"], "count": 1}]}
+ },
+ "streets": {
+  "frontage": {"people": 3, "props": [{"pool": ["iso_sign_board", "iso_trash_can", "iso_planter", "iso_bike", "iso_cafe_table", "lamp_post", "iso_wheelie_bins"], "count": 1}]},
+  "sidewalk": {"people": 2, "props": [{"pool": ["lamp_post", "iso_trash_can", "hydrant", "mailbox", "iso_bench", "iso_bike", "iso_dovecote", "iso_wheelie_bins"], "count": 1}]},
+  "backyard": {"people": 1, "props": [{"pool": ["tree_round", "tree_pine", "tree_blossom", "bush"], "count": 1}, {"pool": ["iso_outhouse", "iso_shed", "iso_washing_line", "iso_chicken_coop", "iso_doghouse", "iso_wheelbarrow", "iso_beehives", "iso_well", "iso_giant_snail", "iso_big_bird_blue", "iso_big_bird_pink", "iso_big_bird_ostrich", "iso_big_bird_peacock", "iso_wheelie_bins", "iso_skip", "iso_trash_can"], "count": 1}]},
+  "island": {"people": 0, "props": [{"pool": ["lamp_post", "bush", "iso_trash_can", "hydrant", "iso_dovecote", "tree_round", "iso_giant_snail", "iso_big_bird_pink"], "count": 1}]},
+  "car_chance": 0.45,
+  "cars": ["iso_car_red", "iso_car_blue", "iso_car_yellow", "iso_car_purple", "iso_van"],
+  "plot_garden": {"people": 2, "props": [{"pool": ["tree_round", "tree_blossom", "tree_pine"], "count": 1}, {"pool": ["iso_washing_line", "iso_shed", "iso_outhouse", "iso_well", "iso_swing", "iso_picnic", "iso_chicken_coop", "iso_beehives", "iso_flower_bed", "bush", "iso_big_bird_blue", "iso_big_bird_pink", "iso_big_bird_ostrich", "iso_big_bird_peacock"], "count": 2}]},
+  "small_yard": {"people": 1, "props": [{"pool": ["iso_wheelbarrow", "iso_doghouse", "bush", "iso_flower_bed", "iso_washing_line", "iso_planter", "iso_giant_snail", "iso_bike"], "count": 1}]}
+ },
+ "plots": {
+  "small_chance": 0.2,
+  "garden_chance": 0.1,
+  "small_plot": 80,
+  "jitter": 0.9,
+  "setback": [4, 22],
+  "small_subset": 5,
+  "small": ["iso_small_cottage", "iso_small_hut", "iso_small_chapel", "iso_small_watertower", "iso_small_studio", "iso_small_bakehouse", "iso_small_lighthouse", "iso_small_treehouse"]
+ }
+}

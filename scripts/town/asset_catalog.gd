@@ -10,6 +10,10 @@ const PATH := "res://data/assets/asset_catalog.json"
 static var _assets: Dictionary = {}
 static var _textures: Dictionary = {}
 static var _loaded := false
+static var _strips: Dictionary = {}
+
+## Width (game px) of the vertical slices an isometric building is drawn in.
+const STRIP_W := 12.0
 
 
 static func _ensure_loaded() -> void:
@@ -39,20 +43,6 @@ static func entry(key: String) -> Dictionary:
 
 static func kind(key: String) -> String:
 	return String(entry(key).get("kind", ""))
-
-
-static func is_critter(key: String) -> bool:
-	return kind(key) == "critter"
-
-
-## Hideable critters (museum mode), in catalog order.
-static func critters() -> Array[String]:
-	_ensure_loaded()
-	var out: Array[String] = []
-	for key: String in _assets:
-		if String(_assets[key].get("kind", "")) == "critter":
-			out.append(key)
-	return out
 
 
 ## Display name ("baby T-rex"), falling back to the key.
@@ -92,3 +82,30 @@ static func texture(key: String, field: String = "texture") -> Texture2D:
 		push_warning("Asset %s: texture %s missing, using placeholder art" % [key, path])
 	_textures[path] = tex
 	return tex
+
+
+## Isometric buildings ("footprint": [plan x, plan y] in the catalog) sit on a
+## diamond whose bottom corner is the ground point. A single sort point can't
+## order such a sprite against people standing beside its walls, so it is
+## drawn as vertical slices, each Y-sorted at the front edge of the footprint
+## below it. Returns [Vector3(x_from, x_to, sort_dy)] in game px relative to
+## the ground point (unmirrored), or [] for ordinary sprites.
+static func strips(key: String) -> Array:
+	if _strips.has(key):
+		return _strips[key]
+	var out: Array = []
+	var e := entry(key)
+	if e.has("footprint") and texture(key) != null:
+		var fp := MapDefinition.vec2(e["footprint"])
+		var r := sprite_rect(key)
+		var x := r.position.x
+		while x < r.end.x:
+			var b := minf(x + STRIP_W, r.end.x)
+			# Front edges: y = -|x| / 2 between the left (-fp.y) and right (fp.x) corners.
+			var lo := clampf(x, -fp.y, fp.x)
+			var hi := clampf(b, -fp.y, fp.x)
+			var nearest := 0.0 if (lo <= 0.0 and hi >= 0.0) else minf(absf(lo), absf(hi))
+			out.append(Vector3(x, b, -nearest * 0.5))
+			x = b
+	_strips[key] = out
+	return out

@@ -150,7 +150,7 @@ func _rebuild() -> void:
 	_toast.modulate.a = 0.0
 	_bottom.add_child(_toast)
 
-	var what := "Tap a critter to guess" if _challenge.is_critter() else "Tap a person to guess"
+	var what := "Tap a person to guess"
 	var hint := UiKit.label(what + ("  ·  Pinch to zoom" if narrow else "  ·  Drag to pan  ·  Scroll or pinch to zoom"), 13, Color.WHITE, false)
 	hint.add_theme_color_override("font_outline_color", UiKit.INK)
 	hint.add_theme_constant_override("outline_size", 4)
@@ -220,21 +220,16 @@ func show_intro(on_start: Callable) -> void:
 		v.add_child(row)
 		content = v
 	_intro = UiKit.modal(content)
-	(_intro as ColorRect).color = Color(0.1, 0.08, 0.14, 0.94)
+	(_intro as ColorRect).color = Color(0.2, 0.14, 0.1, 0.82)
 	_root.add_child(_intro)
 	start.grab_focus.call_deferred()
 
 
 func _hint_line() -> String:
-	if _challenge.is_critter():
-		return "Only this one has these colours."
 	return "They look like this and are hiding somewhere in town."
 
 
 func _intro_line() -> String:
-	if _challenge.is_critter():
-		var by := " %s hid it" % _challenge.hider_name if _challenge.hider_name != "" else " It's hiding"
-		return "%s somewhere in the museum. Lots of look-alikes, but only this one has these colours. The clock starts when you press Start." % by.strip_edges()
 	return "Remember this look. They're hiding somewhere in the crowd. The clock starts when you press Start."
 
 

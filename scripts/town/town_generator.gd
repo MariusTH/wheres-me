@@ -15,10 +15,6 @@ const GRID_CELL := 64.0
 const EDGE_MARGIN := 20.0
 ## Catalog entry used for every generated crowd member (look comes from the kit).
 const CROWD_ASSET := "person"
-## Decoy critters are hue-shifted by at least this much (turns; 0.12 left some
-## decoys in a similar shade of the original colour), so the
-## original-coloured hidden critter is always unique.
-const DECOY_MIN_HUE := 0.25
 
 
 static func generate(map_def: MapDefinition, map_seed: int) -> TownLayout:
@@ -39,13 +35,6 @@ static func generate(map_def: MapDefinition, map_seed: int) -> TownLayout:
 	for path in map_def.paths:
 		_populate_path(path, map_def, map_seed, grid, layout)
 	return layout
-
-
-## The critter a museum challenge hides. Derived from the seed, so the share
-## code doesn't need to choose it (it is still stored, for verification).
-static func critter_for_seed(map_seed: int) -> String:
-	var all := AssetCatalog.critters()
-	return all[DetHash.sub_seed(map_seed, "hidden_critter") % all.size()]
 
 
 ## Builds a WorldObjectData with catalog-derived depth/occlusion fields.
@@ -92,9 +81,8 @@ static func _dress_zone(zone: PlacementZone, map_def: MapDefinition, map_seed: i
 				continue
 			var obj := make_object("%s_p%02d" % [zone.id, prop_index], key, pos, "generated")
 			obj.flip_h = rng.randf() < 0.5
-			# Only critters draw a hue, so maps without them keep their streams.
-			if AssetCatalog.is_critter(key):
-				obj.hue = rng.randf_range(DECOY_MIN_HUE, 1.0 - DECOY_MIN_HUE)
+			if zone.flip_h >= 0:
+				obj.flip_h = zone.flip_h == 1
 			_add(layout, grid, obj)
 			prop_index += 1
 	var person_index := 0

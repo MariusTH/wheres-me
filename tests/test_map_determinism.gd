@@ -1,11 +1,8 @@
 extends TestSuite
-## Same map version + generator version + seed must give the same town.
+## Same map version + generator version + seed must give the same town
+## (the golden layout hash lives in test_iso_town.gd).
 
 const SEED := 481516
-## SHA-256 of TownLayout.signature() for town_demo_01 v2, generator v2, seed
-## 481516. If this changes, existing challenges would point at wrong spots:
-## bump TownGenerator.GENERATOR_VERSION (or map_version) and update this value.
-const GOLDEN_SHA256 := "6c4769f127032d9dfeb8cd0df274cf164335a765edc382d6c6af1062cf399614"
 
 
 func test_same_seed_same_layout() -> void:
@@ -63,7 +60,3 @@ func test_crowd_looks_valid_and_varied() -> void:
 		distinct[AvatarKit.look_key(o.look)] = true
 	check(distinct.size() > a.count_people() * 0.9, "crowd looks should be nearly all different (%d distinct of %d)" % [distinct.size(), a.count_people()])
 
-
-func test_golden_signature() -> void:
-	var sha := TownGenerator.generate(load_map(), SEED).signature().sha256_text()
-	check_eq(sha, GOLDEN_SHA256, "golden layout hash (see comment on GOLDEN_SHA256)")

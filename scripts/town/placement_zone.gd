@@ -13,6 +13,9 @@ var people: int = 0
 var prop_rules: Array[Dictionary] = []
 ## Lets props (parked cars) sit on blocked areas such as the road.
 var allow_on_blocked: bool = false
+## -1 = props get a seeded random mirror; 0/1 = always unmirrored/mirrored
+## (cars on isometric lanes must face along the road).
+var flip_h: int = -1
 
 
 static func from_dict(d: Dictionary) -> PlacementZone:
@@ -32,6 +35,8 @@ static func from_dict(d: Dictionary) -> PlacementZone:
 	for rule: Dictionary in d.get("props", []):
 		z.prop_rules.append({"pool": Array(rule["pool"]), "count": int(rule["count"])})
 	z.allow_on_blocked = bool(d.get("allow_on_blocked", false))
+	if d.has("flip_h"):
+		z.flip_h = 1 if bool(d["flip_h"]) else 0
 	return z
 
 

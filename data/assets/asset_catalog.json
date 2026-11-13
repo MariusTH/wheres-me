@@ -7,135 +7,6 @@
       "role": "kit",
       "notes": "Generated crowd member; the look comes from WorldObjectData.look"
     },
-    "extra_balloon": {
-      "kind": "character",
-      "role": "extra",
-      "look": {
-        "skin": "#f1c27d",
-        "hair": "#5a3825",
-        "hair_style": "curly",
-        "hat": "party",
-        "hat_color": "#3d6fd1",
-        "shirt": "#f2c230",
-        "pattern": "dots",
-        "pattern_color": "#d63c3c",
-        "pants": "#3d5a99",
-        "accessory": "balloon",
-        "acc_color": "#d63c3c"
-      }
-    },
-    "extra_mail": {
-      "kind": "character",
-      "role": "extra",
-      "look": {
-        "skin": "#8d5524",
-        "hair": "#1b1b1b",
-        "hair_style": "short",
-        "hat": "cap",
-        "hat_color": "#3d6fd1",
-        "shirt": "#3d6fd1",
-        "pants": "#3a3f58",
-        "accessory": "bag",
-        "acc_color": "#8b5a2b"
-      }
-    },
-    "extra_painter": {
-      "kind": "character",
-      "role": "extra",
-      "look": {
-        "skin": "#fbe0c4",
-        "hair": "#2a1b14",
-        "hair_style": "short",
-        "hat": "beret",
-        "hat_color": "#d63c3c",
-        "shirt": "#f4efe6",
-        "coat": true,
-        "pants": "#2b2230"
-      }
-    },
-    "extra_feeder": {
-      "kind": "character",
-      "role": "extra",
-      "look": {
-        "skin": "#f6d7b8",
-        "hair": "#d0d0d0",
-        "hair_style": "bun",
-        "shirt": "#9b59b6",
-        "coat": true,
-        "pants": "#3a3f58",
-        "accessory": "bag",
-        "acc_color": "#c8b27c",
-        "glasses": true
-      }
-    },
-    "extra_kid_a": {
-      "kind": "character",
-      "role": "extra",
-      "look": {
-        "skin": "#c68642",
-        "hair": "#1b1b1b",
-        "hair_style": "spiky",
-        "shirt": "#2bb3a6",
-        "pants": "#f08a24",
-        "build": "short"
-      }
-    },
-    "extra_kid_b": {
-      "kind": "character",
-      "role": "extra",
-      "look": {
-        "skin": "#fbe0c4",
-        "hair": "#e6c35c",
-        "hair_style": "ponytail",
-        "shirt": "#ff9ec4",
-        "pattern": "dots",
-        "pattern_color": "#ffffff",
-        "pants": "#3d5a99",
-        "build": "short"
-      }
-    },
-    "bench": {
-      "kind": "prop",
-      "radius": 26,
-      "tags": [
-        "ground_prop",
-        "near_path",
-        "seat"
-      ],
-      "texture": "res://art/props/bench.png",
-      "ground_point": [
-        52.5,
-        67.0
-      ],
-      "height_px": 34
-    },
-    "bin": {
-      "kind": "prop",
-      "radius": 9,
-      "tags": [
-        "ground_prop"
-      ],
-      "texture": "res://art/props/bin.png",
-      "ground_point": [
-        19.5,
-        51.0
-      ],
-      "height_px": 26
-    },
-    "planter": {
-      "kind": "prop",
-      "radius": 16,
-      "tags": [
-        "ground_prop",
-        "greenery"
-      ],
-      "texture": "res://art/props/planter.png",
-      "ground_point": [
-        23.0,
-        63.0
-      ],
-      "height_px": 32
-    },
     "lamp_post": {
       "kind": "prop",
       "radius": 8,
@@ -145,90 +16,10 @@
       ],
       "texture": "res://art/props/lamp_post.png",
       "ground_point": [
-        25.0,
+        15.0,
         167.0
       ],
       "height_px": 84
-    },
-    "bike": {
-      "kind": "prop",
-      "radius": 18,
-      "tags": [
-        "ground_prop",
-        "vehicle"
-      ],
-      "texture": "res://art/props/bike.png",
-      "ground_point": [
-        57.0,
-        59.0
-      ],
-      "height_px": 30
-    },
-    "sign_board": {
-      "kind": "prop",
-      "radius": 12,
-      "tags": [
-        "ground_prop",
-        "shop"
-      ],
-      "texture": "res://art/props/sign_board.png",
-      "ground_point": [
-        20.0,
-        55.0
-      ],
-      "height_px": 28
-    },
-    "kiosk": {
-      "kind": "prop",
-      "radius": 36,
-      "tags": [
-        "ground_prop",
-        "shop"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -31,
-            -78,
-            62,
-            78
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/kiosk.png",
-      "ground_point": [
-        62.5,
-        155.0
-      ],
-      "height_px": 78
-    },
-    "food_cart": {
-      "kind": "prop",
-      "radius": 30,
-      "tags": [
-        "ground_prop",
-        "shop"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -31,
-            -88,
-            62,
-            88
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/food_cart.png",
-      "ground_point": [
-        62.5,
-        175.0
-      ],
-      "height_px": 88
     },
     "dog": {
       "kind": "prop",
@@ -239,57 +30,10 @@
       ],
       "texture": "res://art/props/dog.png",
       "ground_point": [
-        25.0,
+        16.0,
         43.0
       ],
       "height_px": 22
-    },
-    "cafe_table": {
-      "kind": "prop",
-      "radius": 24,
-      "tags": [
-        "ground_prop",
-        "seat"
-      ],
-      "texture": "res://art/props/cafe_table.png",
-      "ground_point": [
-        52.5,
-        59.0
-      ],
-      "height_px": 30
-    },
-    "parasol_table": {
-      "kind": "prop",
-      "radius": 28,
-      "tags": [
-        "ground_prop",
-        "seat",
-        "foreground_occluder"
-      ],
-      "canopy": true,
-      "occluders": [
-        {
-          "shape": "circle",
-          "center": [
-            0,
-            -59
-          ],
-          "radius": 18,
-          "layer": "foreground"
-        }
-      ],
-      "texture": "res://art/props/parasol_table.png",
-      "ground_point": [
-        61.5,
-        155.0
-      ],
-      "height_px": 78,
-      "canopy_texture": "res://art/props/parasol_table_canopy.png",
-      "canopy_ground_point": [
-        61.5,
-        155.0
-      ],
-      "canopy_height_px": 78
     },
     "hydrant": {
       "kind": "prop",
@@ -300,7 +44,7 @@
       ],
       "texture": "res://art/props/hydrant.png",
       "ground_point": [
-        15.0,
+        13.5,
         43.0
       ],
       "height_px": 22
@@ -314,26 +58,10 @@
       ],
       "texture": "res://art/props/mailbox.png",
       "ground_point": [
-        13.0,
+        13.5,
         67.0
       ],
       "height_px": 34
-    },
-    "flower_bed": {
-      "kind": "prop",
-      "radius": 30,
-      "depth": "ground",
-      "tags": [
-        "ground_decal",
-        "greenery",
-        "not_walkable"
-      ],
-      "texture": "res://art/props/flower_bed.png",
-      "ground_point": [
-        79.0,
-        85.0
-      ],
-      "height_px": 43
     },
     "bush": {
       "kind": "prop",
@@ -344,334 +72,10 @@
       ],
       "texture": "res://art/props/bush.png",
       "ground_point": [
-        35.5,
+        33.5,
         63.0
       ],
       "height_px": 32
-    },
-    "crates": {
-      "kind": "prop",
-      "radius": 16,
-      "tags": [
-        "ground_prop",
-        "market"
-      ],
-      "texture": "res://art/props/crates.png",
-      "ground_point": [
-        32.0,
-        67.0
-      ],
-      "height_px": 34
-    },
-    "car_red": {
-      "kind": "prop",
-      "radius": 40,
-      "draw": "car",
-      "params": {
-        "color": "#d63c3c"
-      },
-      "tags": [
-        "vehicle",
-        "street"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -55,
-            -44,
-            111,
-            44
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/car_red.png",
-      "ground_point": [
-        110.0,
-        87.0
-      ],
-      "height_px": 44
-    },
-    "car_blue": {
-      "kind": "prop",
-      "radius": 40,
-      "draw": "car",
-      "params": {
-        "color": "#3d6fd1"
-      },
-      "tags": [
-        "vehicle",
-        "street"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -54,
-            -43,
-            106,
-            44
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/car_blue.png",
-      "ground_point": [
-        107.5,
-        87.0
-      ],
-      "height_px": 44
-    },
-    "car_yellow": {
-      "kind": "prop",
-      "radius": 40,
-      "draw": "car",
-      "params": {
-        "color": "#f2c230"
-      },
-      "tags": [
-        "vehicle",
-        "street"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -56,
-            -44,
-            114,
-            44
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/car_yellow.png",
-      "ground_point": [
-        112.5,
-        87.0
-      ],
-      "height_px": 44
-    },
-    "fountain": {
-      "kind": "prop",
-      "radius": 95,
-      "tags": [
-        "landmark",
-        "not_walkable"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -10,
-            -70,
-            20,
-            60
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/fountain.png",
-      "ground_point": [
-        168.5,
-        278.0
-      ],
-      "height_px": 140
-    },
-    "statue": {
-      "kind": "prop",
-      "radius": 24,
-      "tags": [
-        "landmark"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -25,
-            -110,
-            50,
-            111
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/statue.png",
-      "ground_point": [
-        50.0,
-        221.0
-      ],
-      "height_px": 112
-    },
-    "stall_red": {
-      "kind": "prop",
-      "radius": 66,
-      "draw": "stall",
-      "params": {
-        "color": "#d63c3c",
-        "goods": [
-          "#f08a24",
-          "#f2c230",
-          "#d63c3c"
-        ]
-      },
-      "tags": [
-        "market",
-        "foreground_occluder"
-      ],
-      "canopy": true,
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -51,
-            -107,
-            102,
-            44
-          ],
-          "layer": "foreground"
-        },
-        {
-          "shape": "rect",
-          "rect": [
-            -48,
-            -22,
-            96,
-            22
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/stall_red.png",
-      "ground_point": [
-        103.0,
-        215.0
-      ],
-      "height_px": 108,
-      "canopy_texture": "res://art/props/stall_red_canopy.png",
-      "canopy_ground_point": [
-        103.0,
-        215.0
-      ],
-      "canopy_height_px": 108
-    },
-    "stall_blue": {
-      "kind": "prop",
-      "radius": 66,
-      "draw": "stall",
-      "params": {
-        "color": "#3d6fd1",
-        "goods": [
-          "#4f9a4a",
-          "#9b59b6",
-          "#f2c230"
-        ]
-      },
-      "tags": [
-        "market",
-        "foreground_occluder"
-      ],
-      "canopy": true,
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -49,
-            -108,
-            98,
-            45
-          ],
-          "layer": "foreground"
-        },
-        {
-          "shape": "rect",
-          "rect": [
-            -45,
-            -22,
-            90,
-            22
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/stall_blue.png",
-      "ground_point": [
-        98.0,
-        215.0
-      ],
-      "height_px": 108,
-      "canopy_texture": "res://art/props/stall_blue_canopy.png",
-      "canopy_ground_point": [
-        98.0,
-        215.0
-      ],
-      "canopy_height_px": 108
-    },
-    "stall_green": {
-      "kind": "prop",
-      "radius": 66,
-      "draw": "stall",
-      "params": {
-        "color": "#4f9a4a",
-        "goods": [
-          "#d63c3c",
-          "#f4efe6",
-          "#f08a24"
-        ]
-      },
-      "tags": [
-        "market",
-        "foreground_occluder"
-      ],
-      "canopy": true,
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -46,
-            -108,
-            94,
-            45
-          ],
-          "layer": "foreground"
-        },
-        {
-          "shape": "rect",
-          "rect": [
-            -43,
-            -22,
-            86,
-            22
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/stall_green.png",
-      "ground_point": [
-        93.0,
-        215.0
-      ],
-      "height_px": 108,
-      "canopy_texture": "res://art/props/stall_green_canopy.png",
-      "canopy_ground_point": [
-        93.0,
-        215.0
-      ],
-      "canopy_height_px": 108
-    },
-    "easel": {
-      "kind": "prop",
-      "radius": 12,
-      "tags": [
-        "visual_joke"
-      ],
-      "texture": "res://art/props/easel.png",
-      "ground_point": [
-        29.5,
-        103.0
-      ],
-      "height_px": 52
     },
     "duck": {
       "kind": "prop",
@@ -683,8 +87,8 @@
       ],
       "texture": "res://art/props/duck.png",
       "ground_point": [
-        25.5,
-        27.0
+        27.0,
+        26.0
       ],
       "height_px": 14
     },
@@ -697,25 +101,10 @@
       ],
       "texture": "res://art/props/pigeon.png",
       "ground_point": [
-        3.5,
+        16.0,
         23.0
       ],
       "height_px": 12
-    },
-    "cat_in_tree": {
-      "kind": "prop",
-      "radius": 0,
-      "depth": "foreground",
-      "tags": [
-        "animal",
-        "visual_joke"
-      ],
-      "texture": "res://art/props/cat_in_tree.png",
-      "ground_point": [
-        20.0,
-        235.0
-      ],
-      "height_px": 18
     },
     "tree_round": {
       "kind": "tree",
@@ -732,7 +121,7 @@
         {
           "shape": "circle",
           "center": [
-            -2,
+            2,
             -102
           ],
           "radius": 39,
@@ -741,13 +130,13 @@
       ],
       "texture": "res://art/props/tree_round.png",
       "ground_point": [
-        137.5,
+        129.5,
         298.0
       ],
       "height_px": 150,
       "canopy_texture": "res://art/props/tree_round_canopy.png",
       "canopy_ground_point": [
-        137.5,
+        129.5,
         298.0
       ],
       "canopy_height_px": 150
@@ -767,8 +156,8 @@
         {
           "shape": "circle",
           "center": [
-            0,
-            -98
+            1,
+            -97
           ],
           "radius": 29,
           "layer": "foreground"
@@ -776,13 +165,13 @@
       ],
       "texture": "res://art/props/tree_pine.png",
       "ground_point": [
-        75.0,
+        71.5,
         299.0
       ],
       "height_px": 150,
       "canopy_texture": "res://art/props/tree_pine_canopy.png",
       "canopy_ground_point": [
-        75.0,
+        71.5,
         299.0
       ],
       "canopy_height_px": 150
@@ -804,7 +193,7 @@
         {
           "shape": "circle",
           "center": [
-            -2,
+            -1,
             -102
           ],
           "radius": 39,
@@ -813,770 +202,1643 @@
       ],
       "texture": "res://art/props/tree_blossom.png",
       "ground_point": [
-        153.0,
+        130.5,
         298.0
       ],
       "height_px": 150,
       "canopy_texture": "res://art/props/tree_blossom_canopy.png",
       "canopy_ground_point": [
-        153.0,
+        130.5,
         298.0
       ],
       "canopy_height_px": 150
     },
-    "building_bakery": {
+    "iso_house_sage": {
       "kind": "building",
       "draw": "building",
-      "params": {
-        "width": 210,
-        "height": 250,
-        "wall": "#ecc89f",
-        "roof": "#a0522d",
-        "awning": "#d63c3c",
-        "awning2": "#f4efe6",
-        "icon": "bread",
-        "front": "shop"
-      },
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -104,
-            -235,
-            208,
-            236
-          ],
-          "layer": "y_sort"
-        }
+      "tags": [
+        "wonky",
+        "iso"
       ],
-      "texture": "res://art/buildings/building_bakery.png",
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_sage.png",
       "ground_point": [
-        209.0,
-        472.0
-      ],
-      "height_px": 237
-    },
-    "building_cafe": {
-      "kind": "building",
-      "draw": "building",
-      "params": {
-        "width": 220,
-        "height": 270,
-        "wall": "#b9d4c4",
-        "roof": "#3f6f5a",
-        "awning": "#2f6b4f",
-        "awning2": "#f4efe6",
-        "icon": "cup",
-        "front": "shop"
-      },
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -109,
-            -246,
-            218,
-            246
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/buildings/building_cafe.png",
-      "ground_point": [
-        219.0,
-        492.0
-      ],
-      "height_px": 247
-    },
-    "building_florist": {
-      "kind": "building",
-      "draw": "building",
-      "params": {
-        "width": 210,
-        "height": 240,
-        "wall": "#f3d1dc",
-        "roof": "#9b4a6a",
-        "awning": "#e85d8a",
-        "awning2": "#ffffff",
-        "icon": "flower",
-        "front": "shop"
-      },
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -104,
-            -240,
-            209,
-            240
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/buildings/building_florist.png",
-      "ground_point": [
-        209.5,
-        480.0
-      ],
-      "height_px": 241
-    },
-    "building_books": {
-      "kind": "building",
-      "draw": "building",
-      "params": {
-        "width": 220,
-        "height": 280,
-        "wall": "#c9b8e0",
-        "roof": "#4a3a6b",
-        "awning": "#4a3a6b",
-        "awning2": "#e8dcf5",
-        "icon": "book",
-        "front": "shop"
-      },
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -110,
-            -252,
-            220,
-            252
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/buildings/building_books.png",
-      "ground_point": [
-        220.0,
+        237.3,
         504.0
       ],
-      "height_px": 253
+      "height_px": 253,
+      "footprint": [
+        112,
+        112
+      ]
     },
-    "building_toys": {
-      "kind": "building",
-      "draw": "building",
-      "params": {
-        "width": 210,
-        "height": 250,
-        "wall": "#fbe39a",
-        "roof": "#c0392b",
-        "awning": "#3d6fd1",
-        "awning2": "#f2c230",
-        "icon": "ball",
-        "front": "shop"
-      },
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -104,
-            -238,
-            209,
-            238
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/buildings/building_toys.png",
-      "ground_point": [
-        210.5,
-        476.0
-      ],
-      "height_px": 239
-    },
-    "building_grocer": {
-      "kind": "building",
-      "draw": "building",
-      "params": {
-        "width": 230,
-        "height": 260,
-        "wall": "#d9e6b0",
-        "roof": "#5d7a2a",
-        "awning": "#4f9a4a",
-        "awning2": "#f4efe6",
-        "icon": "apple",
-        "front": "shop"
-      },
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -114,
-            -286,
-            230,
-            287
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/buildings/building_grocer.png",
-      "ground_point": [
-        231.0,
-        574.0
-      ],
-      "height_px": 288
-    },
-    "building_music": {
-      "kind": "building",
-      "draw": "building",
-      "params": {
-        "width": 220,
-        "height": 260,
-        "wall": "#a9c7e8",
-        "roof": "#2b4a7a",
-        "awning": "#2b2230",
-        "awning2": "#f2c230",
-        "icon": "note",
-        "front": "shop"
-      },
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -110,
-            -204,
-            220,
-            204
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/buildings/building_music.png",
-      "ground_point": [
-        220.5,
-        408.0
-      ],
-      "height_px": 205
-    },
-    "building_house_blue": {
-      "kind": "building",
-      "draw": "building",
-      "params": {
-        "width": 210,
-        "height": 240,
-        "wall": "#8fb3d9",
-        "roof": "#3a4a6b",
-        "icon": "none",
-        "front": "house"
-      },
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -104,
-            -214,
-            208,
-            214
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/buildings/building_house_blue.png",
-      "ground_point": [
-        209.0,
-        428.0
-      ],
-      "height_px": 215
-    },
-    "building_house_yellow": {
-      "kind": "building",
-      "draw": "building",
-      "params": {
-        "width": 220,
-        "height": 250,
-        "wall": "#f2d27a",
-        "roof": "#8b4a2b",
-        "icon": "none",
-        "front": "house"
-      },
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -109,
-            -226,
-            219,
-            227
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/buildings/building_house_yellow.png",
-      "ground_point": [
-        219.5,
-        454.0
-      ],
-      "height_px": 228
-    },
-    "baby_trex": {
-      "kind": "critter",
-      "radius": 10,
+    "iso_bench": {
+      "kind": "prop",
+      "radius": 26,
       "tags": [
-        "critter",
-        "hideable"
+        "ground_prop",
+        "near_path",
+        "seat",
+        "iso"
       ],
-      "label": "baby T-rex",
-      "texture": "res://art/critters/baby_trex.png",
+      "texture": "res://art/props/iso_bench.png",
       "ground_point": [
-        37.5,
-        75.0
-      ],
-      "height_px": 38
-    },
-    "baby_triceratops": {
-      "kind": "critter",
-      "radius": 10,
-      "tags": [
-        "critter",
-        "hideable"
-      ],
-      "label": "baby triceratops",
-      "texture": "res://art/critters/baby_triceratops.png",
-      "ground_point": [
-        43.5,
-        55.0
-      ],
-      "height_px": 28
-    },
-    "baby_stegosaurus": {
-      "kind": "critter",
-      "radius": 10,
-      "tags": [
-        "critter",
-        "hideable"
-      ],
-      "label": "baby stegosaurus",
-      "texture": "res://art/critters/baby_stegosaurus.png",
-      "ground_point": [
-        59.5,
-        59.0
-      ],
-      "height_px": 30
-    },
-    "dodo": {
-      "kind": "critter",
-      "radius": 10,
-      "tags": [
-        "critter",
-        "hideable"
-      ],
-      "label": "dodo",
-      "texture": "res://art/critters/dodo.png",
-      "ground_point": [
-        24.0,
-        63.0
-      ],
-      "height_px": 32
-    },
-    "mammoth_calf": {
-      "kind": "critter",
-      "radius": 10,
-      "tags": [
-        "critter",
-        "hideable"
-      ],
-      "label": "mammoth calf",
-      "texture": "res://art/critters/mammoth_calf.png",
-      "ground_point": [
-        37.0,
+        45.5,
         67.0
       ],
       "height_px": 34
     },
-    "sabretooth_cub": {
-      "kind": "critter",
-      "radius": 10,
-      "tags": [
-        "critter",
-        "hideable"
-      ],
-      "label": "sabre-tooth cub",
-      "texture": "res://art/critters/sabretooth_cub.png",
-      "ground_point": [
-        40.0,
-        51.0
-      ],
-      "height_px": 26
-    },
-    "trex_skeleton": {
-      "kind": "prop",
-      "radius": 110,
-      "tags": [
-        "exhibit",
-        "landmark"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -169,
-            -218,
-            359,
-            219
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/trex_skeleton.png",
-      "ground_point": [
-        338.5,
-        438.0
-      ],
-      "height_px": 220
-    },
-    "mammoth_skeleton": {
-      "kind": "prop",
-      "radius": 85,
-      "tags": [
-        "exhibit",
-        "landmark"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -96,
-            -158,
-            254,
-            159
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/mammoth_skeleton.png",
-      "ground_point": [
-        192.5,
-        318.0
-      ],
-      "height_px": 160
-    },
-    "whale_skeleton": {
-      "kind": "prop",
-      "radius": 0,
-      "depth": "foreground",
-      "tags": [
-        "exhibit",
-        "hanging",
-        "foreground_occluder"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -229,
-            -178,
-            418,
-            179
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/whale_skeleton.png",
-      "ground_point": [
-        460.0,
-        357.0
-      ],
-      "height_px": 180
-    },
-    "triceratops_skull": {
-      "kind": "prop",
-      "radius": 34,
-      "tags": [
-        "exhibit"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -22,
-            -70,
-            44,
-            70
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/triceratops_skull.png",
-      "ground_point": [
-        44.5,
-        139.0
-      ],
-      "height_px": 70
-    },
-    "display_case": {
-      "kind": "prop",
-      "radius": 34,
-      "tags": [
-        "exhibit"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -36,
-            -64,
-            72,
-            64
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/display_case.png",
-      "ground_point": [
-        71.5,
-        127.0
-      ],
-      "height_px": 64
-    },
-    "crystal_cluster": {
-      "kind": "prop",
-      "radius": 24,
-      "tags": [
-        "exhibit"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -19,
-            -49,
-            40,
-            50
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/crystal_cluster.png",
-      "ground_point": [
-        38.0,
-        99.0
-      ],
-      "height_px": 50
-    },
-    "rope_barrier": {
-      "kind": "prop",
-      "radius": 30,
-      "tags": [
-        "barrier"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -18,
-            -30,
-            36,
-            30
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/rope_barrier.png",
-      "ground_point": [
-        36.0,
-        59.0
-      ],
-      "height_px": 30
-    },
-    "museum_bench": {
-      "kind": "prop",
-      "radius": 34,
-      "tags": [
-        "seat"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -31,
-            -26,
-            62,
-            26
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/museum_bench.png",
-      "ground_point": [
-        61.5,
-        51.0
-      ],
-      "height_px": 26
-    },
-    "potted_palm": {
-      "kind": "prop",
-      "radius": 20,
-      "tags": [
-        "greenery"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -22,
-            -74,
-            45,
-            74
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/potted_palm.png",
-      "ground_point": [
-        44.0,
-        147.0
-      ],
-      "height_px": 74
-    },
-    "pillar": {
-      "kind": "prop",
-      "radius": 26,
-      "tags": [
-        "architecture"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -21,
-            -179,
-            42,
-            180
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/pillar.png",
-      "ground_point": [
-        43.0,
-        359.0
-      ],
-      "height_px": 180
-    },
-    "gift_shelf": {
-      "kind": "prop",
-      "radius": 46,
-      "tags": [
-        "shop"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -38,
-            -84,
-            76,
-            84
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/gift_shelf.png",
-      "ground_point": [
-        76.0,
-        167.0
-      ],
-      "height_px": 84
-    },
-    "ammonite_pedestal": {
+    "iso_bike": {
       "kind": "prop",
       "radius": 18,
       "tags": [
-        "exhibit"
+        "ground_prop",
+        "vehicle",
+        "iso"
+      ],
+      "texture": "res://art/props/iso_bike.png",
+      "ground_point": [
+        7.0,
+        57.0
+      ],
+      "height_px": 30
+    },
+    "iso_sign_board": {
+      "kind": "prop",
+      "radius": 12,
+      "tags": [
+        "ground_prop",
+        "shop",
+        "iso"
+      ],
+      "texture": "res://art/props/iso_sign_board.png",
+      "ground_point": [
+        20.5,
+        54.0
+      ],
+      "height_px": 28
+    },
+    "iso_kiosk": {
+      "kind": "prop",
+      "radius": 36,
+      "tags": [
+        "ground_prop",
+        "shop",
+        "iso"
       ],
       "occluders": [
         {
           "shape": "rect",
           "rect": [
-            -15,
-            -50,
-            30,
-            50
+            -40,
+            -76,
+            66,
+            77
           ],
           "layer": "y_sort"
         }
       ],
-      "texture": "res://art/props/ammonite_pedestal.png",
+      "texture": "res://art/props/iso_kiosk.png",
       "ground_point": [
-        30.0,
-        99.0
+        81.0,
+        153.0
       ],
-      "height_px": 50
+      "height_px": 78
     },
-    "dino_nest": {
+    "iso_food_cart": {
       "kind": "prop",
-      "radius": 22,
+      "radius": 30,
       "tags": [
-        "exhibit"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -14,
-            -22,
-            28,
-            22
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/dino_nest.png",
-      "ground_point": [
-        27.5,
-        43.0
-      ],
-      "height_px": 22
-    },
-    "volcano_model": {
-      "kind": "prop",
-      "radius": 34,
-      "tags": [
-        "exhibit"
-      ],
-      "occluders": [
-        {
-          "shape": "rect",
-          "rect": [
-            -27,
-            -56,
-            54,
-            56
-          ],
-          "layer": "y_sort"
-        }
-      ],
-      "texture": "res://art/props/volcano_model.png",
-      "ground_point": [
-        54.5,
-        111.0
-      ],
-      "height_px": 56
-    },
-    "meteorite": {
-      "kind": "prop",
-      "radius": 24,
-      "tags": [
-        "exhibit"
+        "ground_prop",
+        "shop",
+        "iso"
       ],
       "occluders": [
         {
           "shape": "rect",
           "rect": [
             -25,
-            -38,
-            40,
-            38
+            -86,
+            64,
+            86
           ],
           "layer": "y_sort"
         }
       ],
-      "texture": "res://art/props/meteorite.png",
+      "texture": "res://art/props/iso_food_cart.png",
       "ground_point": [
-        49.5,
-        75.0
+        52.0,
+        172.0
       ],
-      "height_px": 38
+      "height_px": 88
+    },
+    "iso_cafe_table": {
+      "kind": "prop",
+      "radius": 24,
+      "tags": [
+        "ground_prop",
+        "seat",
+        "iso"
+      ],
+      "texture": "res://art/props/iso_cafe_table.png",
+      "ground_point": [
+        48.5,
+        59.0
+      ],
+      "height_px": 30
+    },
+    "iso_parasol_table": {
+      "kind": "prop",
+      "radius": 28,
+      "tags": [
+        "ground_prop",
+        "seat",
+        "foreground_occluder",
+        "iso"
+      ],
+      "canopy": true,
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -27,
+            -78,
+            52,
+            39
+          ],
+          "layer": "foreground"
+        },
+        {
+          "shape": "rect",
+          "rect": [
+            -26,
+            -13,
+            50,
+            14
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/iso_parasol_table.png",
+      "ground_point": [
+        54.0,
+        155.0
+      ],
+      "height_px": 78,
+      "canopy_texture": "res://art/props/iso_parasol_table_canopy.png",
+      "canopy_ground_point": [
+        54.0,
+        155.0
+      ],
+      "canopy_height_px": 78
+    },
+    "iso_flower_bed": {
+      "kind": "prop",
+      "radius": 30,
+      "depth": "ground",
+      "tags": [
+        "ground_decal",
+        "greenery",
+        "not_walkable",
+        "iso"
+      ],
+      "texture": "res://art/props/iso_flower_bed.png",
+      "ground_point": [
+        51.5,
+        101.0
+      ],
+      "height_px": 51
+    },
+    "iso_crates": {
+      "kind": "prop",
+      "radius": 16,
+      "tags": [
+        "ground_prop",
+        "market",
+        "iso"
+      ],
+      "texture": "res://art/props/iso_crates.png",
+      "ground_point": [
+        29.5,
+        66.0
+      ],
+      "height_px": 34
+    },
+    "iso_planter": {
+      "kind": "prop",
+      "radius": 16,
+      "tags": [
+        "ground_prop",
+        "greenery",
+        "iso"
+      ],
+      "texture": "res://art/props/iso_planter.png",
+      "ground_point": [
+        39.0,
+        63.0
+      ],
+      "height_px": 32
+    },
+    "iso_car_red": {
+      "kind": "prop",
+      "radius": 30,
+      "draw": "car",
+      "params": {
+        "color": "#d63c3c"
+      },
+      "tags": [
+        "vehicle",
+        "street",
+        "iso"
+      ],
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -18,
+            -44,
+            68,
+            44
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/iso_car_red.png",
+      "ground_point": [
+        35.5,
+        87.0
+      ],
+      "height_px": 44
+    },
+    "iso_car_blue": {
+      "kind": "prop",
+      "radius": 30,
+      "draw": "car",
+      "params": {
+        "color": "#3d6fd1"
+      },
+      "tags": [
+        "vehicle",
+        "street",
+        "iso"
+      ],
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -23,
+            -44,
+            65,
+            44
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/iso_car_blue.png",
+      "ground_point": [
+        46.0,
+        87.0
+      ],
+      "height_px": 44
+    },
+    "iso_car_yellow": {
+      "kind": "prop",
+      "radius": 30,
+      "draw": "car",
+      "params": {
+        "color": "#f2c230"
+      },
+      "tags": [
+        "vehicle",
+        "street",
+        "iso"
+      ],
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -20,
+            -44,
+            58,
+            44
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/iso_car_yellow.png",
+      "ground_point": [
+        40.5,
+        87.0
+      ],
+      "height_px": 44
+    },
+    "iso_fountain": {
+      "kind": "prop",
+      "radius": 95,
+      "tags": [
+        "landmark",
+        "not_walkable",
+        "iso"
+      ],
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -55,
+            -108,
+            168,
+            108
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/iso_fountain.png",
+      "ground_point": [
+        111.0,
+        216.0
+      ],
+      "height_px": 109
+    },
+    "iso_stall_red": {
+      "kind": "prop",
+      "radius": 46,
+      "draw": "stall",
+      "params": {
+        "color": "#d63c3c",
+        "goods": [
+          "#f08a24",
+          "#f2c230",
+          "#d63c3c"
+        ]
+      },
+      "tags": [
+        "market",
+        "foreground_occluder",
+        "iso"
+      ],
+      "canopy": true,
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -52,
+            -107,
+            84,
+            44
+          ],
+          "layer": "foreground"
+        },
+        {
+          "shape": "rect",
+          "rect": [
+            -47,
+            -22,
+            74,
+            22
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/iso_stall_red.png",
+      "ground_point": [
+        103.0,
+        215.0
+      ],
+      "height_px": 108,
+      "canopy_texture": "res://art/props/iso_stall_red_canopy.png",
+      "canopy_ground_point": [
+        103.0,
+        215.0
+      ],
+      "canopy_height_px": 108
+    },
+    "iso_stall_blue": {
+      "kind": "prop",
+      "radius": 46,
+      "draw": "stall",
+      "params": {
+        "color": "#3d6fd1",
+        "goods": [
+          "#4f9a4a",
+          "#9b59b6",
+          "#f2c230"
+        ]
+      },
+      "tags": [
+        "market",
+        "foreground_occluder",
+        "iso"
+      ],
+      "canopy": true,
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -34,
+            -107,
+            81,
+            45
+          ],
+          "layer": "foreground"
+        },
+        {
+          "shape": "rect",
+          "rect": [
+            -30,
+            -21,
+            74,
+            22
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/iso_stall_blue.png",
+      "ground_point": [
+        69.0,
+        214.0
+      ],
+      "height_px": 108,
+      "canopy_texture": "res://art/props/iso_stall_blue_canopy.png",
+      "canopy_ground_point": [
+        69.0,
+        214.0
+      ],
+      "canopy_height_px": 108
+    },
+    "iso_stall_green": {
+      "kind": "prop",
+      "radius": 46,
+      "draw": "stall",
+      "params": {
+        "color": "#4f9a4a",
+        "goods": [
+          "#d63c3c",
+          "#f4efe6",
+          "#f08a24"
+        ]
+      },
+      "tags": [
+        "market",
+        "foreground_occluder",
+        "iso"
+      ],
+      "canopy": true,
+      "occluders": [
+        {
+          "shape": "rect",
+          "rect": [
+            -42,
+            -107,
+            87,
+            44
+          ],
+          "layer": "foreground"
+        },
+        {
+          "shape": "rect",
+          "rect": [
+            -38,
+            -22,
+            84,
+            22
+          ],
+          "layer": "y_sort"
+        }
+      ],
+      "texture": "res://art/props/iso_stall_green.png",
+      "ground_point": [
+        84.0,
+        215.0
+      ],
+      "height_px": 108,
+      "canopy_texture": "res://art/props/iso_stall_green_canopy.png",
+      "canopy_ground_point": [
+        84.0,
+        215.0
+      ],
+      "canopy_height_px": 108
+    },
+    "iso_easel": {
+      "kind": "prop",
+      "radius": 12,
+      "tags": [
+        "visual_joke",
+        "iso"
+      ],
+      "texture": "res://art/props/iso_easel.png",
+      "ground_point": [
+        23.0,
+        103.0
+      ],
+      "height_px": 52
+    },
+    "iso_house_coral": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_coral.png",
+      "ground_point": [
+        228.0,
+        460.0
+      ],
+      "height_px": 231,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_butter": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_butter.png",
+      "ground_point": [
+        223.8,
+        388.0
+      ],
+      "height_px": 195,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_lavender": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_lavender.png",
+      "ground_point": [
+        227.5,
+        481.0
+      ],
+      "height_px": 242,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_teal": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_teal.png",
+      "ground_point": [
+        231.6,
+        458.0
+      ],
+      "height_px": 230,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_peach": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_peach.png",
+      "ground_point": [
+        233.5,
+        400.0
+      ],
+      "height_px": 201,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_mint": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_mint.png",
+      "ground_point": [
+        227.0,
+        456.0
+      ],
+      "height_px": 229,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_rose": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_rose.png",
+      "ground_point": [
+        227.0,
+        400.0
+      ],
+      "height_px": 201,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_stone": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_stone.png",
+      "ground_point": [
+        230.0,
+        494.0
+      ],
+      "height_px": 248,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_blue": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_blue.png",
+      "ground_point": [
+        220.8,
+        508.0
+      ],
+      "height_px": 255,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_cream": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_cream.png",
+      "ground_point": [
+        224.8,
+        428.0
+      ],
+      "height_px": 215,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_ochre": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_ochre.png",
+      "ground_point": [
+        223.1,
+        436.0
+      ],
+      "height_px": 219,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_shop_bakery": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_shop_bakery.png",
+      "ground_point": [
+        233.5,
+        494.0
+      ],
+      "height_px": 248,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_shop_books": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_shop_books.png",
+      "ground_point": [
+        229.0,
+        436.0
+      ],
+      "height_px": 219,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_shop_florist": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_shop_florist.png",
+      "ground_point": [
+        229.5,
+        428.0
+      ],
+      "height_px": 215,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_shop_cafe": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_shop_cafe.png",
+      "ground_point": [
+        230.7,
+        431.0
+      ],
+      "height_px": 217,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_shop_toys": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_shop_toys.png",
+      "ground_point": [
+        225.1,
+        428.0
+      ],
+      "height_px": 215,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_shop_clocks": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_shop_clocks.png",
+      "ground_point": [
+        226.2,
+        476.0
+      ],
+      "height_px": 239,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_plum": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_plum.png",
+      "ground_point": [
+        223.3,
+        522.0
+      ],
+      "height_px": 262,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_brick": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_brick.png",
+      "ground_point": [
+        229.5,
+        414.0
+      ],
+      "height_px": 208,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_windmill": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_windmill.png",
+      "ground_point": [
+        229.8,
+        432.0
+      ],
+      "height_px": 217,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_moss": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_moss.png",
+      "ground_point": [
+        229.8,
+        420.0
+      ],
+      "height_px": 211,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_apricot": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_apricot.png",
+      "ground_point": [
+        226.6,
+        498.0
+      ],
+      "height_px": 250,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_turret": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_turret.png",
+      "ground_point": [
+        226.5,
+        434.0
+      ],
+      "height_px": 218,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_boat": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_boat.png",
+      "ground_point": [
+        228.4,
+        378.0
+      ],
+      "height_px": 190,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_steeple": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_steeple.png",
+      "ground_point": [
+        228.0,
+        484.0
+      ],
+      "height_px": 243,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_terrace": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_terrace.png",
+      "ground_point": [
+        224.5,
+        352.0
+      ],
+      "height_px": 177,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_cocoa": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_cocoa.png",
+      "ground_point": [
+        232.2,
+        426.0
+      ],
+      "height_px": 214,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_greenhouse": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_greenhouse.png",
+      "ground_point": [
+        229.0,
+        402.0
+      ],
+      "height_px": 202,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_house_tall_red": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_house_tall_red.png",
+      "ground_point": [
+        229.1,
+        522.0
+      ],
+      "height_px": 262,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_shop_hats": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_shop_hats.png",
+      "ground_point": [
+        224.4,
+        504.0
+      ],
+      "height_px": 253,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_shop_sweets": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_shop_sweets.png",
+      "ground_point": [
+        229.0,
+        440.0
+      ],
+      "height_px": 221,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_shop_fish": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_shop_fish.png",
+      "ground_point": [
+        227.6,
+        470.0
+      ],
+      "height_px": 236,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_shop_cheese": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_shop_cheese.png",
+      "ground_point": [
+        223.9,
+        420.0
+      ],
+      "height_px": 211,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_shop_music": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_shop_music.png",
+      "ground_point": [
+        236.2,
+        450.0
+      ],
+      "height_px": 226,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_shop_bikes": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "wonky",
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_shop_bikes.png",
+      "ground_point": [
+        225.0,
+        488.0
+      ],
+      "height_px": 245,
+      "footprint": [
+        112,
+        112
+      ]
+    },
+    "iso_big_bird_blue": {
+      "kind": "prop",
+      "radius": 16,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_big_bird_blue.png",
+      "ground_point": [
+        72.0,
+        191.0
+      ],
+      "height_px": 96
+    },
+    "iso_big_bird_pink": {
+      "kind": "prop",
+      "radius": 16,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_big_bird_pink.png",
+      "ground_point": [
+        49.0,
+        198.0
+      ],
+      "height_px": 100
+    },
+    "iso_big_bird_ostrich": {
+      "kind": "prop",
+      "radius": 18,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_big_bird_ostrich.png",
+      "ground_point": [
+        48.5,
+        179.0
+      ],
+      "height_px": 90
+    },
+    "iso_big_bird_peacock": {
+      "kind": "prop",
+      "radius": 24,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_big_bird_peacock.png",
+      "ground_point": [
+        85.5,
+        151.0
+      ],
+      "height_px": 76
+    },
+    "iso_giant_snail": {
+      "kind": "prop",
+      "radius": 18,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_giant_snail.png",
+      "ground_point": [
+        72.5,
+        79.0
+      ],
+      "height_px": 40
+    },
+    "iso_outhouse": {
+      "kind": "prop",
+      "radius": 20,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_outhouse.png",
+      "ground_point": [
+        77.0,
+        143.0
+      ],
+      "height_px": 72
+    },
+    "iso_shed": {
+      "kind": "prop",
+      "radius": 28,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_shed.png",
+      "ground_point": [
+        60.0,
+        131.0
+      ],
+      "height_px": 66
+    },
+    "iso_dovecote": {
+      "kind": "prop",
+      "radius": 10,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_dovecote.png",
+      "ground_point": [
+        39.5,
+        198.0
+      ],
+      "height_px": 100
+    },
+    "iso_well": {
+      "kind": "prop",
+      "radius": 22,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_well.png",
+      "ground_point": [
+        54.0,
+        129.0
+      ],
+      "height_px": 66
+    },
+    "iso_washing_line": {
+      "kind": "prop",
+      "radius": 24,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_washing_line.png",
+      "ground_point": [
+        115.0,
+        114.0
+      ],
+      "height_px": 58
+    },
+    "iso_beehives": {
+      "kind": "prop",
+      "radius": 20,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_beehives.png",
+      "ground_point": [
+        31.0,
+        86.0
+      ],
+      "height_px": 44
+    },
+    "iso_chicken_coop": {
+      "kind": "prop",
+      "radius": 26,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_chicken_coop.png",
+      "ground_point": [
+        53.0,
+        111.0
+      ],
+      "height_px": 56
+    },
+    "iso_wheelbarrow": {
+      "kind": "prop",
+      "radius": 14,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_wheelbarrow.png",
+      "ground_point": [
+        19.5,
+        59.0
+      ],
+      "height_px": 30
+    },
+    "iso_haystack": {
+      "kind": "prop",
+      "radius": 22,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_haystack.png",
+      "ground_point": [
+        55.5,
+        99.0
+      ],
+      "height_px": 50
+    },
+    "iso_scarecrow": {
+      "kind": "prop",
+      "radius": 10,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_scarecrow.png",
+      "ground_point": [
+        61.5,
+        162.0
+      ],
+      "height_px": 82
+    },
+    "iso_picnic": {
+      "kind": "prop",
+      "radius": 22,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_picnic.png",
+      "ground_point": [
+        69.0,
+        100.0
+      ],
+      "height_px": 51
+    },
+    "iso_swing": {
+      "kind": "prop",
+      "radius": 26,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_swing.png",
+      "ground_point": [
+        70.0,
+        155.0
+      ],
+      "height_px": 78
+    },
+    "iso_doghouse": {
+      "kind": "prop",
+      "radius": 18,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_doghouse.png",
+      "ground_point": [
+        34.5,
+        79.0
+      ],
+      "height_px": 40
+    },
+    "iso_van": {
+      "kind": "prop",
+      "radius": 30,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_van.png",
+      "ground_point": [
+        36.0,
+        105.0
+      ],
+      "height_px": 54
+    },
+    "iso_car_purple": {
+      "kind": "prop",
+      "radius": 30,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_car_purple.png",
+      "ground_point": [
+        43.0,
+        82.0
+      ],
+      "height_px": 42
+    },
+    "iso_small_cottage": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_small_cottage.png",
+      "ground_point": [
+        162.5,
+        312.0
+      ],
+      "height_px": 157,
+      "footprint": [
+        80,
+        80
+      ]
+    },
+    "iso_small_hut": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_small_hut.png",
+      "ground_point": [
+        161.2,
+        316.0
+      ],
+      "height_px": 159,
+      "footprint": [
+        80,
+        80
+      ]
+    },
+    "iso_small_chapel": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_small_chapel.png",
+      "ground_point": [
+        170.6,
+        292.0
+      ],
+      "height_px": 147,
+      "footprint": [
+        80,
+        80
+      ]
+    },
+    "iso_small_watertower": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_small_watertower.png",
+      "ground_point": [
+        167.2,
+        308.0
+      ],
+      "height_px": 155,
+      "footprint": [
+        80,
+        80
+      ]
+    },
+    "iso_small_studio": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_small_studio.png",
+      "ground_point": [
+        165.5,
+        315.0
+      ],
+      "height_px": 159,
+      "footprint": [
+        80,
+        80
+      ]
+    },
+    "iso_small_bakehouse": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_small_bakehouse.png",
+      "ground_point": [
+        169.6,
+        304.0
+      ],
+      "height_px": 153,
+      "footprint": [
+        80,
+        80
+      ]
+    },
+    "iso_small_lighthouse": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_small_lighthouse.png",
+      "ground_point": [
+        161.4,
+        298.0
+      ],
+      "height_px": 150,
+      "footprint": [
+        80,
+        80
+      ]
+    },
+    "iso_small_treehouse": {
+      "kind": "building",
+      "draw": "building",
+      "tags": [
+        "iso"
+      ],
+      "radius": 0,
+      "texture": "res://art/buildings/iso_small_treehouse.png",
+      "ground_point": [
+        162.5,
+        328.0
+      ],
+      "height_px": 165,
+      "footprint": [
+        80,
+        80
+      ]
+    },
+    "iso_wheelie_bins": {
+      "kind": "prop",
+      "radius": 24,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_wheelie_bins.png",
+      "ground_point": [
+        29.5,
+        115.0
+      ],
+      "height_px": 58
+    },
+    "iso_skip": {
+      "kind": "prop",
+      "radius": 32,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_skip.png",
+      "ground_point": [
+        38.0,
+        111.0
+      ],
+      "height_px": 56
+    },
+    "iso_trash_can": {
+      "kind": "prop",
+      "radius": 12,
+      "tags": [
+        "iso"
+      ],
+      "texture": "res://art/props/iso_trash_can.png",
+      "ground_point": [
+        26.5,
+        79.0
+      ],
+      "height_px": 40
     }
   }
 }

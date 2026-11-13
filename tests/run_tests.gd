@@ -9,6 +9,7 @@ const SUITES := [
 	"res://tests/test_visibility.gd",
 	"res://tests/test_scene_runtime.gd",
 	"res://tests/test_photo_to_look.gd",
+	"res://tests/test_iso_town.gd",
 ]
 
 var _passed := 0

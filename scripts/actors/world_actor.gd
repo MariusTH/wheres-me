@@ -1,7 +1,7 @@
 class_name WorldActor
 extends Node2D
 ## Base for placed things search mode can point at: people (CharacterActor)
-## and props (PropActor, of which museum critters are tappable). The node
+## and props (PropActor). The node
 ## origin is the ground point.
 
 enum Marker { NONE, PREVIEW_OK, PREVIEW_BAD, FOUND, WRONG }

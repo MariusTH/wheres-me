@@ -1,6 +1,6 @@
 # Where's Me (Godot POC)
 
-A hidden-object game in the style of *Where's Waldo*, with a social twist. You build your own avatar, hide it anywhere in a crowded, hand-drawn town (at least 70% of it must stay visible), send the puzzle to a friend as a code, and they search the map to find you. In the **nature museum** you hide a critter instead (the seed picks which: baby T-rex, dodo, mammoth calf, …) among look-alikes in other colours.
+A hidden-object game in the style of *Where's Waldo*, with a social twist. You build your own avatar, hide it anywhere in a crowded, hand-drawn town (at least 70% of it must stay visible), send the puzzle to a friend as a code, and they search the map to find you.
 
 This is a local-first proof of concept: it has no backend, no accounts and no networking. Challenges travel as share codes (`WM1-…`; older `HF1-` codes still work). It ships as a web build on itch.io: https://parchnipp.itch.io/wheres-me.
 
@@ -35,15 +35,23 @@ $GODOT --path . --editor   # open the editor
 On the first launch, run `$GODOT --headless --path . --import` once (or open the editor) so the PNGs get imported.
 
 ## How to play the hide → search loop
-1. **Main menu → "Create avatar" (or "Hide yourself").** In the avatar creator, build your look from parts: skin, body, hair, hat, top, pattern, trousers, an extra, and glasses. You can start from a preset or hit **Randomize**, then type the name the seeker will see. **Hide me!** saves your avatar (`user://my_avatar.json`) and opens the town. Next time, "Hide yourself" goes straight to the town.
+1. **Main menu → "Create" next to your avatar (or "Hide in this town").** In the avatar creator, build your look from parts: skin, body, hair, hat, top, pattern, trousers, an extra, and glasses. You can start from a preset or hit **Randomize**, then type the name the seeker will see. **Hide me!** saves your avatar (`user://my_avatar.json`) and opens the town. The menu then shows your avatar, and **Hide in this town** goes straight to the town. **Town no.** picks the town (every number is a different town); **New town** rolls a random one.
 2. **Tap anywhere on the map** to put yourself there; the tap marks your middle. **Drag yourself** to fine-tune. Dragging anywhere else pans the map.
-3. The panel shows **Visible: NN%** live. You may hide anywhere, even in the pond or among the market stalls, as long as **at least 70% of you is visible** in the rendered scene. Tree crowns, awnings, people standing in front of you and buildings all count as cover.
+3. The panel shows **Visible: NN%** live. You may hide anywhere, even in the road, among the market stalls or beside the bins, as long as **at least 70% of you is visible** in the rendered scene. Tree crowns, awnings, people standing in front of you and buildings all count as cover.
 4. **Confirm hiding spot.** The share dialog shows an `WM1-…` code. **Copy code** puts it on the clipboard, and a JSON copy is saved under `user://challenges/`.
-5. Either press **Search now (pass the device)**, or have a friend paste the code on the main menu (**Paste** → **Search for them!**). **Load latest saved** opens the newest saved file.
+5. Either press **Search now (pass the device)**, or have a friend paste the code on the main menu (**Paste** → **Find them!**). **Open last saved** opens the newest saved file.
 6. **Search.** A big card shows who you're looking for (the map stays hidden behind it). Press **Start** to start the clock, which runs at the top centre and turns orange and then red, pulsing each second, after 1 and 2 minutes. The card at the top left keeps showing the hider's look and name. Tap people; wrong guesses flash red and count. **Give up** reveals the hider.
-**Museum mode.** **Hide the … in the museum** on the menu skips the avatar: the seed picks a critter, and you place it anywhere in the nature museum (fossil gallery, great hall under the T-rex and the hanging whale, minerals room, gift shop) with the same 70% rule. The seeker taps critters, not visitors. Every other critter is a hue-shifted look-alike, so the one with the original colours is the right one. A new seed means a new critter and a new museum dressing.
 
 7. **Result.** You get time, taps and wrong guesses, plus **Retry**, **Swap roles: you hide**, or **Menu**.
+
+## The town (procedural, isometric)
+**Hide in town** plays `town_iso`: a wonky storybook town seen at 2:1 isometric and generated from the seed, so every seed is a new town and share codes stay the same size. `data/maps/town_iso.json` is a template, not a layout: `MapDefinition.load_map(id, seed)` sees `"procedural": "wfc"` and calls `WfcTown.build`, which:
+1. pins a main east–west and north–south road, then runs Wave Function Collapse (`WfcSolver`, simple-tiled, bitmask domains) on the cells of a 30×30 grid that show on screen. Tiles and socket rules live in the JSON: roads (straight, tees, corners, crossing), house rows (front cell facing a kerb + backyard cell behind) and open ground;
+2. rejects solves that fail the template's `quality` rules (connected roads, enough houses and open space) and retries with the next attempt seed, so a seed always rebuilds the same town;
+3. gives every road line a seeded width and offset, with jogs on straight stretches (`roads`); fills house rows plot by plot with a seeded subset of the buildings (`house_subset`), small buildings and garden gaps, each plot shifted sideways and back a little (`plots`); and splits open ground into parks (the biggest gets a pond), gardens, yards, markets and plazas (the most central gets the fountain);
+4. projects everything to the screen: zones and blocked areas become polygons clipped to the view, the ground stays flat and `GroundLayer` draws it through the projection. `TownGenerator` then dresses the zones with props and the crowd.
+
+Buildings are drawn in thin vertical slices sorted by the wall in front of them, so people beside a house sort correctly, and the 70% rule uses the same slices. Changing `WfcTown`, `WfcSolver` or the template in a way that moves anything needs a `map_version` bump and a new golden hash in `tests/test_iso_town.gd`. Look at towns with `$GODOT --path . -- --mode=debug --seed=7` and the **Seed ±1** buttons.
 
 ## Controls
 | Action | Mouse / keyboard | Touch |
@@ -59,7 +67,7 @@ On the first launch, run `$GODOT --headless --path . --import` once (or open the
 $GODOT --headless --path . --import            # once, or after adding files
 $GODOT --headless --path . -s res://tests/run_tests.gd
 ```
-The run prints PASS/FAIL per test and exits with code 0 only when everything passes. Coverage includes determinism (including a golden hash), challenge round trips (code, JSON and file), malformed input, the 70% visibility rule, tap selection after pan and zoom, depth setup, crowd twins of the hider and scene restarts. See `docs/POC_NOTES.md`.
+The run prints PASS/FAIL per test and exits with code 0 only when everything passes. Coverage includes determinism (including a golden hash of the town), the town generator's guarantees (connected roads, houses facing a kerb, sliced building depth), challenge round trips (code, JSON and file), malformed input, the 70% visibility rule, tap selection after pan and zoom, depth setup, crowd twins of the hider and scene restarts. See `docs/POC_NOTES.md`.
 
 ## Developer flags
 Pass these after `--`, for example `$GODOT --path . -- --mode=search --preset=2 --at=1000,700`.
@@ -67,7 +75,8 @@ Pass these after `--`, for example `$GODOT --path . -- --mode=search --preset=2 
 | Flag | Effect |
 |---|---|
 | `--mode=create\|hide\|search\|debug` | Skip the menu |
-| `--map=town_demo_01\|museum_01` | Map for hide, debug and `--at` |
+| `--map=town_iso` | Map for hide, debug and `--at` (the default) |
+| `--hud=0` | Hide the HUD (clean screenshots, e.g. the menu backdrop) |
 | `--seed=N` | Town seed for hide or debug |
 | `--preset=N` | Use avatar preset N (0–7) as your avatar |
 | `--challenge=PATH_OR_CODE` | Challenge to search |
@@ -81,11 +90,11 @@ Pass these after `--`, for example `$GODOT --path . -- --mode=search --preset=2 
 
 ## Project layout
 ```
-scenes/       main_menu, town/town_demo, ui/avatar_creator, ui/*_hud, actors/character, props/prop_base
+scenes/       main_menu, town/town, ui/avatar_creator, ui/*_hud, actors/character, props/prop_base
 scripts/      app_state (autoload) · town/ (map data, generator, visibility checker, controller, ground)
               actors/ props/ (rendering) · gameplay/ (hide/search, challenge data + codec)
               camera/ debug/ ui/ util/
-data/maps/    town_demo_01.json   authored layout, zones, paths, blocked areas, fixed objects
+data/maps/    town_iso.json       procedural town template (WfcTown)
 data/assets/  avatar_kit.json     part kit for avatars and the crowd (fields, palettes, weights, presets)
               asset_catalog.json  scenery assets: kind, radius, occluders, params, texture
 art/          cleaned game sprites (generated)   art_src/  raw renders, prompts, workflow

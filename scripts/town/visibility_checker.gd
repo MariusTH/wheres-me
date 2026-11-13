@@ -1,7 +1,6 @@
 class_name VisibilityChecker
 extends RefCounted
-## The hide rule: the hider (an avatar, or a critter in the museum) may stand
-## anywhere on the map as long as at least MIN_VISIBLE of it is visible in the
+## The hide rule: the hider may stand anywhere on the map as long as at least MIN_VISIBLE of it is visible in the
 ## rendered scene.
 ##
 ## Visibility is measured by replaying the real drawing code into MaskCanvas:
@@ -14,7 +13,7 @@ const MIN_VISIBLE := 0.70
 const SAMPLE_STEP := 2.0
 ## Only objects this close (feet to feet) can overlap the avatar on screen.
 const NEIGHBOUR_DX := 180.0
-const NEIGHBOUR_DY := 340.0
+const NEIGHBOUR_DY := 520.0
 ## Avatar bounds relative to its feet, generous enough for hats and balloons.
 const AVATAR_REGION := Rect2(-40, -120, 80, 126)
 
@@ -32,19 +31,15 @@ func check(look: Dictionary, feet: Vector2) -> Dictionary:
 	return check_subject(subject_for_look(look), feet)
 
 
-## Same rule for any subject (see subject_for_look / subject_for_critter).
+## Same rule for a subject from subject_for_look().
 func check_subject(subject: WorldObjectData, feet: Vector2) -> Dictionary:
-	var you := "it" if is_critter(subject) else "you"
 	var body := Rect2(feet + Vector2(-14, -64), Vector2(28, 64))
-	if is_critter(subject):
-		body = AssetCatalog.sprite_rect(subject.asset_key)
-		body.position += feet
 	if not _map.world_bounds.encloses(body):
 		return {"fraction": 0.0, "ok": false, "reason": "That's outside the %s." % _map.title.to_lower()}
 	var fraction := visible_fraction_of(subject, feet)
 	if fraction + 0.0005 < MIN_VISIBLE:
 		return {"fraction": fraction, "ok": false,
-			"reason": "Only %d%% of %s is visible. At least %d%% must show." % [floori(fraction * 100.0), you, roundi(MIN_VISIBLE * 100.0)]}
+			"reason": "Only %d%% of you is visible. At least %d%% must show." % [floori(fraction * 100.0), roundi(MIN_VISIBLE * 100.0)]}
 	return {"fraction": fraction, "ok": true, "reason": ""}
 
 
@@ -55,24 +50,12 @@ static func subject_for_look(look: Dictionary) -> WorldObjectData:
 	return obj
 
 
-static func subject_for_critter(key: String) -> WorldObjectData:
-	var obj := WorldObjectData.new()
-	obj.asset_key = key
-	return obj
-
-
-static func is_critter(subject: WorldObjectData) -> bool:
-	return AssetCatalog.is_critter(subject.asset_key)
-
-
 func visible_fraction(look: Dictionary, feet: Vector2) -> float:
 	return visible_fraction_of(subject_for_look(look), feet)
 
 
 func visible_fraction_of(subject: WorldObjectData, feet: Vector2) -> float:
 	var region := AVATAR_REGION
-	if is_critter(subject):
-		region = AssetCatalog.sprite_rect(subject.asset_key).grow(2.0)
 	var grid := PackedVector2Array()
 	var y := region.position.y
 	while y < region.end.y:
@@ -99,14 +82,7 @@ func visible_fraction_of(subject: WorldObjectData, feet: Vector2) -> float:
 
 
 static func _draw_subject(canvas: MaskCanvas, subject: WorldObjectData) -> void:
-	if not is_critter(subject):
-		PlaceholderArt.draw_character(canvas, subject.look, false)
-		return
-	var tex := AssetCatalog.texture(subject.asset_key)
-	if tex:
-		PlaceholderArt.draw_grounded_texture(canvas, tex, AssetCatalog.entry(subject.asset_key), subject.flip_h)
-	else:
-		PlaceholderArt.draw_prop(canvas, subject.asset_key, AssetCatalog.entry(subject.asset_key), subject.flip_h)
+	PlaceholderArt.draw_character(canvas, subject.look, false)
 
 
 ## Draws the parts of [param obj] that render above a character whose feet
@@ -120,6 +96,15 @@ static func draw_cover(canvas: MaskCanvas, obj: WorldObjectData, feet_y: float) 
 	if obj.is_interactive:
 		if in_front:
 			PlaceholderArt.draw_character(canvas, obj.look, obj.flip_h)
+		return
+	var strips := AssetCatalog.strips(obj.asset_key)
+	if not strips.is_empty() and obj.depth_mode == "y_sort":
+		# Isometric building: each slice sorts at its own front edge.
+		var tex := AssetCatalog.texture(obj.asset_key)
+		for st: Vector3 in strips:
+			if obj.world_position.y + st.z > feet_y:
+				canvas.begin_object(obj.world_position + Vector2(0, st.z))
+				PlaceholderArt.draw_texture_strip(canvas, tex, e, obj.flip_h, st)
 		return
 	if in_front:
 		var tex := AssetCatalog.texture(obj.asset_key)

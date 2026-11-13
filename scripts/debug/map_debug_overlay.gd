@@ -47,6 +47,8 @@ func _draw() -> void:
 		if b.has("rect"):
 			draw_rect(b["rect"], BLOCKED_COLOR)
 			draw_rect(b["rect"], Color(0.9, 0.1, 0.1, 0.7), false, 2.0)
+		elif b.has("polygon"):
+			draw_colored_polygon(b["polygon"], BLOCKED_COLOR)
 		else:
 			draw_colored_polygon(PlaceholderArt.ellipse_points(b["center"], b["radii"].x, b["radii"].y, 32), BLOCKED_COLOR)
 	for p in _map.paths:

@@ -13,6 +13,15 @@ const GLASS := Color("bfe3f0")
 const WOOD := Color("9b6b43")
 const STONE := Color("c9c2b8")
 const METAL := Color("4a4f5c")
+## Storybook people: fine warm-brown ink (matches the watercolour town art).
+const INK := Color("4a3226")
+const INK_W := 1.15
+## Paper the watercolour fills are softened towards.
+const PAPER := Color("f6eedf")
+
+## Outline used by the helpers below (people switch it to INK while drawing).
+static var ink := OUTLINE
+static var ink_w := OUTLINE_W
 
 
 static func col(v: Variant, fallback: Color = Color.MAGENTA) -> Color:
@@ -24,13 +33,13 @@ static func col(v: Variant, fallback: Color = Color.MAGENTA) -> Color:
 static func box(ci: Variant, r: Rect2, fill: Color, outline: bool = true) -> void:
 	ci.draw_rect(r, fill)
 	if outline:
-		ci.draw_rect(r, OUTLINE, false, OUTLINE_W)
+		ci.draw_rect(r, ink, false, ink_w)
 
 
 static func disc(ci: Variant, c: Vector2, radius: float, fill: Color, outline: bool = true) -> void:
 	ci.draw_circle(c, radius, fill)
 	if outline:
-		ci.draw_arc(c, radius, 0.0, TAU, 20, OUTLINE, OUTLINE_W)
+		ci.draw_arc(c, radius, 0.0, TAU, 20, ink, ink_w)
 
 
 static func ellipse_points(c: Vector2, rx: float, ry: float, segments: int = 24) -> PackedVector2Array:
@@ -46,7 +55,7 @@ static func poly(ci: Variant, pts: PackedVector2Array, fill: Color, outline: boo
 	if outline:
 		var closed := pts.duplicate()
 		closed.append(pts[0])
-		ci.draw_polyline(closed, OUTLINE, OUTLINE_W)
+		ci.draw_polyline(closed, ink, ink_w)
 
 
 static func blob(ci: Variant, c: Vector2, rx: float, ry: float, fill: Color, outline: bool = true) -> void:
@@ -76,6 +85,19 @@ static func draw_grounded_texture(ci: Variant, tex: Texture2D, e: Dictionary, fl
 	ci.draw_set_transform(Vector2.ZERO)
 
 
+## One vertical slice [x_from, x_to] (game px from the ground point,
+## unmirrored) of a grounded texture, drawn [param dy] px higher than usual
+## because the slice's own origin sits [param dy] below the ground point.
+static func draw_texture_strip(ci: Variant, tex: Texture2D, e: Dictionary, flip: bool, strip: Vector3) -> void:
+	var size := tex.get_size()
+	var gp := MapDefinition.vec2(e.get("ground_point", [size.x * 0.5, size.y]))
+	var s := float(e.get("height_px", size.y)) / size.y
+	var src := Rect2(gp.x + strip.x / s, 0.0, (strip.y - strip.x) / s, size.y)
+	ci.draw_set_transform(Vector2(0, -strip.z), 0.0, Vector2(-s if flip else s, s))
+	ci.draw_texture_rect_region(tex, Rect2(src.position - gp, src.size), src)
+	ci.draw_set_transform(Vector2.ZERO)
+
+
 # --- Characters -------------------------------------------------------------
 
 static func build_scale(look: Dictionary) -> Vector2:
@@ -91,79 +113,123 @@ static func build_scale(look: Dictionary) -> Vector2:
 
 static func draw_character(ci: Variant, look: Dictionary, flip: bool, origin: Vector2 = Vector2.ZERO, scale: float = 1.0) -> void:
 	var s := build_scale(look) * scale
-	ci.draw_set_transform(origin, 0.0, Vector2(-s.x if flip else s.x, s.y))
-	var skin := col(look.get("skin"), Color("f1c27d"))
-	var shirt := col(look.get("shirt"), Color("4a7bd1"))
-	var pants := col(look.get("pants"), Color("3a3f58"))
+	# Each look leans a little its own way (storybook wonkiness), deterministic.
+	var lean := float(hash(JSON.stringify(look)) % 9 - 4) * 0.011
+	ci.draw_set_transform(origin, lean, Vector2(-s.x if flip else s.x, s.y))
+	ink = INK
+	ink_w = INK_W
+	var skin := soft(col(look.get("skin"), Color("f1c27d")), 0.08)
+	var shirt := soft(col(look.get("shirt"), Color("4a7bd1")))
+	var pants := soft(col(look.get("pants"), Color("3a3f58")))
 	var acc := String(look.get("accessory", "none"))
-	var acc_col := col(look.get("acc_color"), Color("d63c3c"))
+	var acc_col := soft(col(look.get("acc_color"), Color("d63c3c")))
+	var coat: bool = look.get("coat", false)
 
-	shadow(ci, Vector2(0, -1), 13, 4)
+	shadow(ci, Vector2(1, -1), 12, 3.5)
 	if acc == "backpack":
-		box(ci, Rect2(-16, -42, 10, 20), acc_col)
-	# Legs and shoes.
-	box(ci, Rect2(-8, -21, 7, 20), pants)
-	box(ci, Rect2(1, -21, 7, 20), pants)
-	box(ci, Rect2(-9, -4, 8, 4), OUTLINE, false)
-	box(ci, Rect2(1, -4, 8, 4), OUTLINE, false)
-	# Torso (a coat runs down over the thighs).
-	var torso := Rect2(-11, -42, 22, 30) if look.get("coat", false) else Rect2(-10, -42, 20, 23)
-	box(ci, torso, shirt)
-	_draw_pattern(ci, torso, look, pants)
-	# Arms and hands.
-	box(ci, Rect2(-14.5, -41, 5, 18), shirt)
-	box(ci, Rect2(9.5, -41, 5, 18), shirt)
-	disc(ci, Vector2(-12, -22), 2.8, skin)
-	disc(ci, Vector2(12, -22), 2.8, skin)
+		poly(ci, PackedVector2Array([Vector2(-15, -41), Vector2(-7, -42), Vector2(-6, -23), Vector2(-14, -22), Vector2(-16, -30)]), acc_col)
+	# Legs: thin tapered ink strokes, little pointed shoes turned outwards.
+	_limb(ci, PackedVector2Array([Vector2(-4, -22), Vector2(-4.5, -12), Vector2(-4, -3)]), 5.6, 3.6, pants)
+	_limb(ci, PackedVector2Array([Vector2(4, -22), Vector2(4.5, -12), Vector2(4, -3)]), 5.6, 3.6, pants)
+	var shoe := Color("5a3d2e")
+	poly(ci, PackedVector2Array([Vector2(-2, -4), Vector2(-2, 0), Vector2(-9, 0), Vector2(-10, -2), Vector2(-6, -4.5)]), shoe)
+	poly(ci, PackedVector2Array([Vector2(2, -4), Vector2(6, -4.5), Vector2(10, -2), Vector2(9, 0), Vector2(2, 0)]), shoe)
+	# A-line torso (a coat flares down over the thighs).
+	var hem_y := -11.0 if coat else -20.0
+	var hem_w := 12.5 if coat else 10.5
+	var torso := PackedVector2Array([Vector2(-6, -44), Vector2(6, -44), Vector2(9, -41), Vector2(hem_w, hem_y),
+		Vector2(hem_w * 0.4, hem_y + 1.2), Vector2(-hem_w * 0.4, hem_y + 0.6), Vector2(-hem_w, hem_y), Vector2(-9, -41)])
+	ci.draw_colored_polygon(torso, shirt)
+	_draw_pattern(ci, torso, look, pants, hem_y, hem_w)
+	_wash(ci, PackedVector2Array([Vector2(2, -44), Vector2(6, -44), Vector2(9, -41), Vector2(hem_w, hem_y), Vector2(hem_w * 0.4, hem_y + 1.2), Vector2(3, hem_y + 1)]))
+	var closed := torso.duplicate()
+	closed.append(torso[0])
+	ci.draw_polyline(closed, ink, ink_w)
+	# Arms: bent at the elbow, hands as small round dabs.
+	_limb(ci, PackedVector2Array([Vector2(-8, -41), Vector2(-11.5, -32), Vector2(-12, -24)]), 5.4, 3.4, shirt)
+	_limb(ci, PackedVector2Array([Vector2(8, -41), Vector2(11.5, -32), Vector2(12, -24)]), 5.4, 3.4, shirt)
+	disc(ci, Vector2(-12, -22), 2.4, skin)
+	disc(ci, Vector2(12, -22), 2.4, skin)
 	match acc:
 		"scarf":
-			box(ci, Rect2(-10, -44, 20, 5), acc_col)
-			box(ci, Rect2(2, -41, 5, 13), acc_col)
+			poly(ci, PackedVector2Array([Vector2(-8, -46), Vector2(8, -46), Vector2(9, -42), Vector2(-8, -41)]), acc_col)
+			poly(ci, PackedVector2Array([Vector2(2, -42), Vector2(6, -42), Vector2(7, -29), Vector2(3, -30)]), acc_col)
 		"bag":
-			ci.draw_line(Vector2(-8, -42), Vector2(9, -24), OUTLINE, 1.5)
-			box(ci, Rect2(6, -27, 9, 9), acc_col)
+			ci.draw_line(Vector2(-7, -43), Vector2(9, -25), ink, 1.2)
+			poly(ci, PackedVector2Array([Vector2(6, -27), Vector2(15, -27), Vector2(14, -18), Vector2(7, -18)]), acc_col)
 		"balloon":
-			ci.draw_line(Vector2(12, -22), Vector2(16, -80), OUTLINE, 1.0)
+			ci.draw_line(Vector2(12, -22), Vector2(16, -80), ink, 0.9)
 			blob(ci, Vector2(16, -90), 9, 11, acc_col)
-			ci.draw_circle(Vector2(13, -94), 2.5, Color(1, 1, 1, 0.6))
-	# Head.
-	disc(ci, Vector2(0, -50), 8.5, skin)
+			ci.draw_circle(Vector2(13, -94), 2.5, Color(1, 1, 1, 0.45))
+	# Head: a slightly egg-shaped face with rosy cheeks.
+	ci.draw_line(Vector2(0, -44), Vector2(0, -41), skin, 3.0)
+	blob(ci, Vector2(0, -50.5), 8.0, 8.8, skin)
 	_draw_hair(ci, look)
-	ci.draw_circle(Vector2(3.2, -51), 1.1, OUTLINE)
-	ci.draw_circle(Vector2(-2.2, -51), 1.1, OUTLINE)
+	ci.draw_circle(Vector2(-4.6, -48), 1.7, Color(0.9, 0.42, 0.38, 0.35))
+	ci.draw_circle(Vector2(5.2, -48), 1.7, Color(0.9, 0.42, 0.38, 0.35))
+	ci.draw_circle(Vector2(3.0, -51), 0.95, ink)
+	ci.draw_circle(Vector2(-2.2, -51), 0.95, ink)
+	ci.draw_line(Vector2(0.6, -49.5), Vector2(1.4, -47.6), Color(ink, 0.6), 0.8)
 	if look.get("glasses", false):
-		ci.draw_arc(Vector2(-2.2, -51), 2.8, 0.0, TAU, 12, OUTLINE, 1.2)
-		ci.draw_arc(Vector2(3.6, -51), 2.8, 0.0, TAU, 12, OUTLINE, 1.2)
+		ci.draw_arc(Vector2(-2.2, -51), 2.7, 0.0, TAU, 12, ink, 1.0)
+		ci.draw_arc(Vector2(3.4, -51), 2.7, 0.0, TAU, 12, ink, 1.0)
 	_draw_hat(ci, look)
 	ci.draw_set_transform(Vector2.ZERO)
+	ink = OUTLINE
+	ink_w = OUTLINE_W
 
 
-static func _draw_pattern(ci: Variant, torso: Rect2, look: Dictionary, pants: Color) -> void:
-	var pc := col(look.get("pattern_color"), Color.WHITE)
+## Watercolour version of a bright kit colour: same hue (search clues like
+## "red hat" still read), a touch paler and softer.
+static func soft(c: Color, amount: float = 0.14) -> Color:
+	return c.lerp(PAPER, amount)
+
+
+## A limb as an ink stroke with a narrower colour stroke inside (an outlined
+## tapered tube without extra geometry).
+static func _limb(ci: Variant, pts: PackedVector2Array, outer: float, inner: float, fill: Color) -> void:
+	ci.draw_polyline(pts, ink, outer)
+	ci.draw_polyline(pts, fill, inner)
+	ci.draw_circle(pts[0], inner * 0.5, fill)
+
+
+## Shadow wash on the side away from the light (upper left). Translucent, so
+## the visibility mask ignores it.
+static func _wash(ci: Variant, pts: PackedVector2Array) -> void:
+	ci.draw_colored_polygon(pts, Color(0.25, 0.14, 0.2, 0.16))
+
+
+## Half-width of the A-line torso at height [param y].
+static func _torso_half(y: float, hem_y: float, hem_w: float) -> float:
+	return lerpf(8.5, hem_w, clampf((y + 42.0) / (hem_y + 42.0), 0.0, 1.0))
+
+
+static func _draw_pattern(ci: Variant, _torso: PackedVector2Array, look: Dictionary, pants: Color, hem_y: float, hem_w: float) -> void:
+	var pc := soft(col(look.get("pattern_color"), Color.WHITE))
 	match String(look.get("pattern", "plain")):
 		"stripes":
-			var y := torso.position.y + 3.0
-			while y < torso.end.y - 1.0:
-				ci.draw_line(Vector2(torso.position.x + 1, y), Vector2(torso.end.x - 1, y), pc, 2.6)
+			var y := -40.0
+			while y < hem_y - 1.5:
+				var hw := _torso_half(y, hem_y, hem_w) - 0.8
+				ci.draw_line(Vector2(-hw, y), Vector2(hw, y + 0.6), pc, 2.6)
 				y += 6.0
-			ci.draw_rect(torso, OUTLINE, false, OUTLINE_W)
 		"dots":
-			for p in [Vector2(-5, -37), Vector2(4, -34), Vector2(-3, -27), Vector2(5, -25)]:
-				ci.draw_circle(p, 1.8, pc)
+			for p in [Vector2(-4, -37), Vector2(4, -34), Vector2(-3, -27), Vector2(5, -25)]:
+				ci.draw_circle(p, 1.7, pc)
 		"overalls":
-			box(ci, Rect2(-7, -34, 14, 15), pants)
-			ci.draw_line(Vector2(-6, -42), Vector2(-6, -34), pants, 2.5)
-			ci.draw_line(Vector2(6, -42), Vector2(6, -34), pants, 2.5)
+			poly(ci, PackedVector2Array([Vector2(-6, -35), Vector2(6, -35), Vector2(_torso_half(-20, hem_y, hem_w) - 1, -20.5), Vector2(-_torso_half(-20, hem_y, hem_w) + 1, -20.5)]), pants)
+			ci.draw_line(Vector2(-5.5, -43), Vector2(-5.5, -35), pants, 2.2)
+			ci.draw_line(Vector2(5.5, -43), Vector2(5.5, -35), pants, 2.2)
 
 
 static func _draw_hair(ci: Variant, look: Dictionary) -> void:
-	var hair := col(look.get("hair"), Color("3b2a1a"))
+	var hair := soft(col(look.get("hair"), Color("3b2a1a")), 0.06)
 	match String(look.get("hair_style", "short")):
 		"short":
 			dome(ci, Vector2(0, -51), 9.0, hair)
 		"long":
-			box(ci, Rect2(-10, -52, 5, 16), hair)
-			box(ci, Rect2(5, -52, 5, 16), hair)
+			poly(ci, PackedVector2Array([Vector2(-9.5, -53), Vector2(-5, -53), Vector2(-5.5, -38), Vector2(-10.5, -36.5)]), hair)
+			poly(ci, PackedVector2Array([Vector2(5, -53), Vector2(9.5, -53), Vector2(10.5, -36.5), Vector2(5.5, -38)]), hair)
 			dome(ci, Vector2(0, -51), 9.5, hair)
 		"bun":
 			dome(ci, Vector2(0, -51), 9.0, hair)
@@ -179,7 +245,7 @@ static func _draw_hair(ci: Variant, look: Dictionary) -> void:
 
 
 static func _draw_hat(ci: Variant, look: Dictionary) -> void:
-	var hc := col(look.get("hat_color"), Color("d63c3c"))
+	var hc := soft(col(look.get("hat_color"), Color("d63c3c")))
 	match String(look.get("hat", "none")):
 		"cap":
 			dome(ci, Vector2(0, -52), 9.5, hc)

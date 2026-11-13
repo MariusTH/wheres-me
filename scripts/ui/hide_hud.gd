@@ -47,8 +47,6 @@ func _rebuild() -> void:
 	if _root:
 		_root.queue_free()
 	var compact := AppState.is_narrow() or AppState.is_short()
-	var critter := VisibilityChecker.is_critter(_subject)
-	var what := "it" if critter else "you"
 
 	var portrait := AvatarPortrait.new()
 	portrait.show_subject(_subject)
@@ -56,10 +54,10 @@ func _rebuild() -> void:
 	portrait.custom_minimum_size = Vector2(56, 66) if compact else Vector2(76, 90)
 	var who_text := UiKit.vbox(4)
 	who_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var heading := "Hide the %s!" % AssetCatalog.label(_subject.asset_key) if critter else (_hider_name if _hider_name != "" else "You")
+	var heading := _hider_name if _hider_name != "" else "You"
 	who_text.add_child(UiKit.label(heading, 20 if compact else 22, UiKit.INK, false))
 	_visible_label = UiKit.label("Visible: –", 22 if compact else 26, UiKit.INK, false)
-	_status = UiKit.label("Tap the map to hide %s." % what if compact else "", 15 if compact else 16)
+	_status = UiKit.label("Tap the map to hide." if compact else "", 15 if compact else 16)
 	_status.custom_minimum_size = Vector2(0, 40 if compact else 44)
 	_confirm = UiKit.button("Confirm spot" if compact else "Confirm hiding spot", func() -> void: confirm_pressed.emit(), UiKit.GOOD)
 	_confirm.disabled = true
@@ -67,7 +65,7 @@ func _rebuild() -> void:
 	var back := UiKit.button("Back", func() -> void: back_pressed.emit(), UiKit.MUTED)
 
 	var v := UiKit.vbox(6 if compact else 8)
-	v.add_child(UiKit.stripes(8))
+	v.add_child(UiKit.divider(8))
 	var who := UiKit.hbox(10)
 	who.add_child(portrait)
 	who.add_child(who_text)
@@ -77,8 +75,7 @@ func _rebuild() -> void:
 		v.add_child(_status)
 		var row := UiKit.hbox(8)
 		row.add_child(back)
-		if not critter:
-			row.add_child(UiKit.button("Avatar", func() -> void: edit_pressed.emit(), UiKit.MUTED))
+		row.add_child(UiKit.button("Avatar", func() -> void: edit_pressed.emit(), UiKit.MUTED))
 		row.add_child(_confirm)
 		v.add_child(row)
 		var sheet := UiKit.panel(v)
@@ -93,13 +90,10 @@ func _rebuild() -> void:
 		_root = anchor
 	else:
 		v.custom_minimum_size = Vector2(290, 0)
-		if critter:
-			who_text.add_child(UiKit.label("New seed = new critter", 14, UiKit.MUTED, false))
-		else:
-			var edit := UiKit.button("Edit avatar", func() -> void: edit_pressed.emit(), UiKit.MUTED)
-			edit.custom_minimum_size = Vector2(0, 44)
-			who_text.add_child(edit)
-		v.add_child(UiKit.label("Tap the map to hide %s there. Drag to fine-tune. At least %d%% of %s must stay visible." % [what, roundi(VisibilityChecker.MIN_VISIBLE * 100.0), what], 16, UiKit.MUTED))
+		var edit := UiKit.button("Edit avatar", func() -> void: edit_pressed.emit(), UiKit.MUTED)
+		edit.custom_minimum_size = Vector2(0, 44)
+		who_text.add_child(edit)
+		v.add_child(UiKit.label("Tap the map to hide there. Drag to fine-tune. At least %d%% of you must stay visible." % roundi(VisibilityChecker.MIN_VISIBLE * 100.0), 16, UiKit.MUTED))
 		v.add_child(_visible_label)
 		v.add_child(_status)
 		v.add_child(_confirm)

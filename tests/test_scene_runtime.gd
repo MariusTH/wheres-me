@@ -2,7 +2,7 @@ extends TestSuite
 ## Instantiates the real town scene: tap mapping, depth setup, restart hygiene,
 ## free placement in hide mode.
 
-const TOWN_SCENE := "res://scenes/town/town_demo.tscn"
+const TOWN_SCENE := "res://scenes/town/town.tscn"
 const SEED := 481516
 
 
@@ -131,14 +131,19 @@ func test_hide_mode_free_placement() -> void:
 	var town: TownController = scene.town
 	check(town.target == null, "no avatar before the first tap")
 	check(hc.confirm() == null, "can't confirm before placing")
-	# Behind the shop facades: hidden, so confirm stays disabled.
-	var r := hc.place_at(Vector2(610, 590))
+	# Behind a house: hidden, so confirm stays disabled.
+	var r := hc.place_at(buried_spot(town.map_def))
 	check(not r["ok"] and town.target.marker == WorldActor.Marker.PREVIEW_BAD, "buried spot shows as invalid")
 	check(hc.confirm() == null, "confirm refused while invalid")
-	# Anywhere visible is fine, including the pond (no walkable-area rule).
-	var pond := Vector2(2560, 420)
-	r = hc.place_at(pond)
-	check(r["ok"], "standing in the pond is allowed when visible (%.2f)" % r["fraction"])
+	# Anywhere visible is fine, even in the road (no walkable-area rule).
+	for b in town.map_def.blocked:
+		if String(b["label"]).contains("road") and b.has("polygon"):
+			var road := (b["polygon"] as PackedVector2Array)
+			var mid := (road[0] + road[2]) * 0.5
+			r = hc.place_at(mid.round())
+			if town.map_def.world_bounds.grow(-100).has_point(mid) and r["fraction"] >= 0.95:
+				check(r["ok"], "standing in the road is allowed when visible (%.2f)" % r["fraction"])
+				break
 	var good := find_visible_spot(town.map_def, town.layout, _look(), Vector2(900, 650))
 	r = hc.place_at(good + Vector2(0.4, -0.3))
 	check(r["ok"] and town.target.position == good, "placement snaps to whole pixels and passes")
@@ -147,44 +152,4 @@ func test_hide_mode_free_placement() -> void:
 	if c:
 		check_eq(SearchController.verify(c, town.map_def, town.layout), "", "the new challenge verifies for the seeker")
 		DirAccess.remove_absolute("%s/%s.json" % [ChallengeCodec.SAVE_DIR, c.challenge_id])
-	scene.free()
-
-
-func test_museum_search_taps_critters() -> void:
-	var m := MapDefinition.load_map(AppState.MUSEUM_MAP_ID)
-	var layout := TownGenerator.generate(m, SEED)
-	var key := TownGenerator.critter_for_seed(SEED)
-	var checker := VisibilityChecker.new(m, layout.objects)
-	var spot := Vector2.INF
-	for y in range(300, 1500, 40):
-		for x in range(900, 1600, 40):
-			if m.blocked_label_at(Vector2(x, y)) == "" and checker.check_subject(VisibilityChecker.subject_for_critter(key), Vector2(x, y))["fraction"] >= 0.95:
-				spot = Vector2(x, y)
-				break
-		if spot.is_finite():
-			break
-	var c := ChallengeData.create_critter(layout, key, "Tester", spot)
-	var app_state: Node = tree.root.get_node("AppState")
-	app_state.map_id = AppState.MUSEUM_MAP_ID
-	var scene: Node = await _spawn(app_state.Mode.SEARCH, c)
-	var town: TownController = scene.town
-	var sc: SearchController = scene.controller
-	check(town.target is PropActor and town.target.asset_key == key, "hidden critter placed as %s" % key)
-	check((town.target as PropActor).material == null, "hidden critter keeps its original colours")
-	var decoy: PropActor = null
-	for p in town.props():
-		if p != town.target and p.is_critter() and p.position.distance_to(spot) > 200:
-			decoy = p
-			break
-	check(decoy != null and decoy.material != null, "decoys are hue-shifted")
-	sc.begin()
-	for person in town.characters():
-		var at := person.position + Vector2(0, -30)
-		if town.critter_at(at, 8.0) == null:
-			check(sc.handle_tap(at) == null and not sc.found, "visitors aren't guesses in the museum")
-			break
-	var centre := decoy.hit_rect(0).get_center()
-	check(sc.handle_tap(centre) == decoy and not sc.found, "tapping a decoy is a wrong guess")
-	check(sc.handle_tap(town.target.hit_rect(0).get_center()) == town.target and sc.found, "tapping the hidden critter wins")
-	app_state.map_id = AppState.TOWN_MAP_ID
 	scene.free()

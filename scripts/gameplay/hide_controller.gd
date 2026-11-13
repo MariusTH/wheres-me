@@ -1,8 +1,7 @@
 class_name HideController
 extends Node
-## Hide mode: tap anywhere to place your avatar (or, in the museum, the
-## critter the seed picked), drag it to fine-tune, and confirm once at least
-## VisibilityChecker.MIN_VISIBLE of it shows on screen.
+## Hide mode: tap anywhere to place your avatar, drag it to fine-tune, and
+## confirm once at least VisibilityChecker.MIN_VISIBLE of it shows on screen.
 ## Canopies stay opaque here so the hider sees exactly what the seeker will.
 
 const HUD_SCENE := preload("res://scenes/ui/hide_hud.tscn")
@@ -26,15 +25,14 @@ var _grab_offset := Vector2.ZERO
 var _confirmed := false
 
 
-## [param subject]: VisibilityChecker.subject_for_look() or subject_for_critter().
+## [param subject]: VisibilityChecker.subject_for_look().
 func start(town: TownController, camera: MapCamera, hud_layer: CanvasLayer, subject: WorldObjectData, hider_name: String) -> void:
 	_town = town
 	_camera = camera
 	_subject = subject
 	_name = hider_name
-	if not VisibilityChecker.is_critter(subject):
-		subject.look = AvatarKit.normalize(subject.look)
-		town.ensure_unique(subject.look)
+	subject.look = AvatarKit.normalize(subject.look)
+	town.ensure_unique(subject.look)
 	_checker = VisibilityChecker.new(town.map_def, town.layout.objects)
 	_hud = HUD_SCENE.instantiate() as HideHud
 	hud_layer.add_child(_hud)
@@ -64,11 +62,7 @@ func confirm() -> ChallengeData:
 	if _confirmed or last_check.is_empty() or not last_check["ok"]:
 		return null
 	_confirmed = true
-	var c: ChallengeData
-	if VisibilityChecker.is_critter(_subject):
-		c = ChallengeData.create_critter(_town.layout, _subject.asset_key, _name, _feet)
-	else:
-		c = ChallengeData.create(_town.layout, _subject.look, _name, _feet)
+	var c := ChallengeData.create(_town.layout, _subject.look, _name, _feet)
 	AppState.challenge = c
 	var path := ChallengeCodec.save_to_file(c)
 	_town.target.marker = WorldActor.Marker.NONE

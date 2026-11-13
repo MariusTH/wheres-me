@@ -17,10 +17,7 @@ var _rows: Dictionary = {}
 func _ready() -> void:
 	theme = UiKit.theme()
 	set_anchors_preset(Control.PRESET_FULL_RECT)
-	var bg := ColorRect.new()
-	bg.color = UiKit.ACCENT
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(bg)
+	add_child(UiKit.backdrop())
 	if AppState.has_avatar():
 		_look = AvatarKit.normalize(AppState.my_avatar["look"])
 	else:

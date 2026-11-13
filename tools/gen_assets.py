@@ -1,18 +1,19 @@
 """Generate raw sprite renders with the local ComfyUI (FLUX.2 Klein 4B base).
 
 Usage (from the project root, with ComfyUI running on 127.0.0.1:8188):
-    python3 -I tools/gen_assets.py                 # everything still missing
-    python3 -I tools/gen_assets.py npc_03 bench    # specific assets (re-renders)
-    python3 -I tools/gen_assets.py --list          # print prompts only
+    python3 -I tools/gen_assets.py                       # everything still missing
+    python3 -I tools/gen_assets.py iso_well iso_shed     # specific assets (re-renders)
+    python3 -I tools/gen_assets.py --list                # print prompts only
 
-People are not generated (they come from the part kit); pass --characters
-to render whole-body reference images anyway.
+People are not generated: they are drawn in code from the part kit.
 
 Writes art_src/raw/<key>.png and records prompt / seed / size / workflow per
-asset in art_src/manifest.json. Character prompts are derived from the
-"look" in data/assets/asset_catalog.json so placeholder and final art match.
-Uses art_src/workflows/flux2_klein_4b_base_only.json (template
-image_flux2_klein_text_to_image with the uninstalled distilled branch removed).
+asset in art_src/manifest.json. Uses art_src/workflows/flux2_klein_4b_base_only.json
+(template image_flux2_klein_text_to_image with the uninstalled distilled branch removed).
+
+Asset tables: the isometric town (ISO_BUILDINGS, ISO_SMALL_BUILDINGS, ISO_PROPS,
+ISO_EXTRA_PROPS), props shared with it that read the same from any angle
+(SHARED_PROPS), ground textures (GROUND) and HUD art (UI). tools/import_assets.py reads the same tables.
 """
 import json
 import shutil
@@ -22,212 +23,222 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-CATALOG = ROOT / "data/assets/asset_catalog.json"
 BASE_WORKFLOW = ROOT / "art_src/workflows/flux2_klein_4b_base_only.json"
 RAW_DIR = ROOT / "art_src/raw"
 MANIFEST = ROOT / "art_src/manifest.json"
 WORK_DIR = ROOT / "art_src/workflows/generated"
 COMFY_OUTPUT = Path.home() / "Documents/comfy/ComfyUI/output"
 
-STYLE = ("STYLE: original, colourful hand-drawn hidden-object game illustration, children's picture book "
-         "ink and watercolour, slightly irregular dark ink outline, flat warm muted colours with a few saturated "
-         "accents, soft daylight from upper left. ")
 CAMERA = "Seen from a high-angle, shallow top-down three-quarter view. "
-# Objects with a clear front came out rotated diagonally with CAMERA, which
-# clashes with the front-facing shops and people; render these square-on.
+# Objects with a clear front (and the HUD art) render square-on.
 FRONT_CAMERA = ("Seen straight from the front and slightly above, facing the viewer squarely, "
                 "symmetric, not rotated, not at an angle, not isometric. ")
-FRONT_FACING = {"bench", "kiosk", "food_cart", "cafe_table", "parasol_table", "stall_red", "stall_blue",
-                "stall_green", "crates", "sign_board", "mailbox"}
-SIDE_CAMERA = "Seen exactly from the side, flat side profile, not at an angle, not isometric. "
-SIDE_VIEW = {"car_red", "car_blue", "car_yellow", "baby_trex", "baby_triceratops", "baby_stegosaurus", "dodo",
-             "mammoth_calf", "sabretooth_cub", "trex_skeleton", "mammoth_skeleton", "whale_skeleton"}
-FRONT_FACING |= {"triceratops_skull", "display_case", "rope_barrier", "museum_bench", "pillar", "gift_shelf",
-                 "ammonite_pedestal", "volcano_model"}
+FRONT_FACING = {"mailbox"}
 BACKGROUNDS = {
     "green": "Isolated single subject centred, on a plain flat solid pure bright green background, ",
     "magenta": "Isolated single subject centred, on a plain flat solid pure magenta (#FF00FF) background, ",
 }
 SUFFIX = "no ground shadow, no text, no letters, no labels, no border, no frame, no other objects."
 
-COLOR_NAMES = {
-    "#d63c3c": "red", "#f4efe6": "cream white", "#ffffff": "white", "#3d5a99": "navy blue", "#3d6fd1": "blue",
-    "#f2c230": "yellow", "#2f6b4f": "dark green", "#2b2230": "black", "#7b4fa0": "purple", "#3b2f4a": "dark purple",
-    "#f08a24": "orange", "#4f9a4a": "green", "#c8b27c": "khaki", "#2bb3a6": "teal", "#8a8f99": "grey",
-    "#e85d5d": "coral red", "#3a3f58": "dark grey-blue", "#9b59b6": "violet", "#6b6f7a": "grey", "#8a6d4f": "brown",
-    "#6b8e23": "olive green", "#b0c4de": "light blue", "#ff9ec4": "pink", "#8b5a2b": "brown leather",
-}
-HAIR_NAMES = {
-    "#3b2a1a": "dark brown", "#5a3825": "brown", "#2a1b14": "very dark brown", "#1b1b1b": "black",
-    "#8b5a2b": "chestnut", "#ff7fbf": "bubblegum pink", "#d2691e": "ginger", "#e6c35c": "blonde",
-    "#a0522d": "auburn", "#9a9a9a": "grey", "#6b4226": "brown", "#d0d0d0": "white",
-}
-SKIN_NAMES = {
-    "#f2c29b": "fair", "#f6d7b8": "fair", "#fbe0c4": "pale", "#f1c27d": "light",
-    "#e0ac69": "light brown", "#c68642": "brown", "#8d5524": "dark brown",
-}
-HAIR_STYLES = {"short": "short {c} hair", "long": "long straight {c} hair", "bun": "{c} hair in a bun",
-               "ponytail": "{c} hair in a ponytail", "curly": "curly {c} hair", "spiky": "spiky {c} hair",
-               "bald": "a bald head"}
-HATS = {"cap": "a {c} baseball cap", "beanie": "a {c} bobble beanie hat with a white pompom",
-        "top": "a tall black top hat", "sun": "a {c} wide-brimmed sun hat", "rain": "a {c} rain hat (sou'wester)",
-        "chef": "a tall white chef's hat", "party": "a {c} cone party hat", "beret": "a {c} beret"}
-
-# Non-character assets: key -> (subject, background, width, height).
-PROPS = {
-    "bench": ("a single wooden park bench with dark green metal legs", "magenta", 768, 512),
-    "bin": ("a single small dark green public litter bin with a lid", "magenta", 512, 768),
-    "planter": ("a single terracotta planter box with a small round bush and pink flowers", "magenta", 768, 768),
-    "lamp_post": ("a single tall dark grey Victorian street lamp post with a warm yellow lamp", "green", 512, 1024),
-    "bike": ("a single red bicycle standing on its kickstand, side view", "green", 768, 512),
-    "sign_board": ("a single dark A-frame chalkboard pavement sign with a simple white coffee cup drawing and no writing", "green", 512, 768),
-    "kiosk": ("a single small cream newspaper kiosk booth with a green and white striped roof and a window", "magenta", 768, 768),
-    "food_cart": ("a single cream ice-cream cart with two wheels and a red and yellow striped parasol on top", "green", 768, 1024),
-    "dog": ("a single small brown dog standing, side view", "green", 768, 512),
-    "cafe_table": ("a single small round cream cafe table with two red bistro chairs", "green", 768, 512),
-    "parasol_table": ("a single round cafe table with two blue chairs under a big open blue and white striped parasol", "green", 768, 1024),
-    "hydrant": ("a single small red fire hydrant", "green", 512, 768),
-    "mailbox": ("a single red post box on a short dark post", "green", 512, 768),
-    "flower_bed": ("a single oval flower bed of brown soil with pink, yellow, white and purple flowers, seen almost from above", "green", 1024, 512),
-    "bush": ("a single round leafy green bush", "magenta", 768, 768),
-    "crates": ("a small stack of three wooden crates full of oranges", "green", 768, 768),
-    "car_red": ("a single small rounded red city car facing right", "green", 1024, 512),
-    "car_blue": ("a single small rounded blue city car facing right", "green", 1024, 512),
-    "car_yellow": ("a single small rounded yellow city car facing right", "magenta", 1024, 512),
-    "fountain": ("a single round stone town-square fountain with a central pedestal and a small water spout, blue water in the basin", "magenta", 1024, 768),
-    "statue": ("a single grey stone statue of a man in a top hat and long coat standing on a square stone plinth", "green", 512, 1024),
-    "stall_red": ("a single wooden market stall with a red and white striped awning on two posts and a counter full of oranges, lemons and tomatoes, front view", "green", 1024, 1024),
-    "stall_blue": ("a single wooden market stall with a blue and white striped awning on two posts and a counter full of cabbages, plums and lemons, front view", "green", 1024, 1024),
-    "stall_green": ("a single wooden market stall with a green and white striped awning on two posts and a counter full of tomatoes, eggs and oranges, front view", "magenta", 1024, 1024),
-    "easel": ("a single wooden painter's easel holding a small landscape painting", "green", 512, 768),
-    "duck": ("a single small white duck swimming, side view", "green", 768, 512),
-    "pigeon": ("a single small grey pigeon standing, side view", "green", 768, 512),
-    "cat_in_tree": ("a single small black cat crouching, side view, yellow eyes", "magenta", 768, 512),
-    "tree_round": ("a single round leafy deciduous tree with a short brown trunk and a big bushy green crown", "magenta", 768, 1024),
-    "tree_pine": ("a single tall conical dark green pine tree with a short brown trunk", "magenta", 768, 1024),
-    "tree_blossom": ("a single round cherry blossom tree with a short brown trunk and a big pink blossom crown", "green", 768, 1024),
-    # Nature museum: hideable critters (cute, small, readable silhouettes).
-    "baby_trex": ("a single cute small green baby T-rex dinosaur standing on two legs, big head, tiny arms", "magenta", 768, 768),
-    "baby_triceratops": ("a single cute small orange baby triceratops dinosaur standing on four legs, three little horns and a frill", "green", 768, 512),
-    "baby_stegosaurus": ("a single cute small purple baby stegosaurus dinosaur standing on four legs with yellow back plates", "green", 768, 512),
-    "dodo": ("a single cute plump grey-blue dodo bird standing, big hooked yellow beak, small tail tuft", "green", 512, 768),
-    "mammoth_calf": ("a single cute small woolly mammoth calf standing, shaggy brown fur, little curved tusks", "green", 768, 768),
-    "sabretooth_cub": ("a single cute small sandy sabre-tooth tiger cub standing, two long white fangs, dark stripes", "green", 768, 512),
-    # Nature museum: scenery.
-    "trex_skeleton": ("a single huge cream fossil T-rex skeleton mounted on a low dark wooden plinth, walking pose", "green", 1024, 1024),
-    "mammoth_skeleton": ("a single large cream fossil woolly mammoth skeleton with long curved tusks on a low dark wooden plinth", "green", 1024, 768),
-    "whale_skeleton": ("a single long cream blue-whale skeleton hanging horizontally from thin wires", "green", 1024, 512),
-    "triceratops_skull": ("a single big fossil triceratops skull with three horns on a square dark wooden pedestal", "green", 768, 768),
-    "display_case": ("a single glass museum display case on a dark wooden base with fossils, shells and a small skull inside", "magenta", 768, 768),
-    "crystal_cluster": ("a single large purple amethyst crystal geode on a small dark plinth", "green", 512, 768),
-    "rope_barrier": ("two short brass museum posts joined by a red velvet rope", "green", 1024, 512),
-    "museum_bench": ("a single long dark wooden museum bench without a backrest", "magenta", 1024, 512),
-    "potted_palm": ("a single tall leafy palm in a big round white pot", "magenta", 512, 1024),
-    "pillar": ("a single tall cream marble classical column on a square base", "green", 512, 1024),
-    "gift_shelf": ("a single wooden shop shelf unit with three shelves full of colourful plush toys and books with blank covers", "green", 768, 1024),
-    "ammonite_pedestal": ("a single big spiral ammonite fossil on a slim white pedestal", "green", 512, 768),
-    "dino_nest": ("a single nest of straw holding four large pale speckled dinosaur eggs", "magenta", 768, 512),
-    "volcano_model": ("a single museum model volcano with orange lava streams on a small wooden table", "green", 768, 768),
-    "meteorite": ("a single big dark pitted meteorite rock on a low grey stone plinth", "green", 768, 512),
-}
-# HUD art for the "Where's Me" picture-book theme (not in the asset catalog;
-# imported to art/ui by tools/import_assets.py). key -> (subject, background, w, h).
+# HUD art in the town's wonky storybook style (not in the asset catalog; imported to art/ui by
+# tools/import_assets.py). key -> (subject, background, w, h).
 UI = {
-    "ui_magnifier": ("a single big round magnifying glass with a thick red and white striped handle and a brass rim, lens empty and clear, tilted slightly", "green", 768, 768),
+    "ui_magnifier": ("a single big round magnifying glass with a turned honey-coloured wooden handle and a slightly crooked "
+                     "brass rim with a tiny curl of wrought iron, lens empty and clear, tilted slightly", "magenta", 768, 768),
     "ui_stopwatch": ("a single round old-fashioned silver stopwatch with a red button on top and a plain white face with no numbers and no hands", "green", 768, 768),
-    "ui_banner": ("a single wide blank ribbon banner with folded ends, red and white diagonal stripes on the folds and a plain cream centre with nothing written on it", "green", 1024, 512),
-    "ui_hat": ("a single red and white horizontally striped woolly bobble hat with a red pompom", "green", 768, 768),
-    "ui_map_paper": ("a single sheet of old cream paper with slightly torn deckled edges and faint ink doodles of tiny people around the border, centre left blank", "magenta", 1024, 768),
-}
-BUILDINGS = {
-    "building_bakery": "a two-storey bakery shop with peach walls, brown roof, red and white striped awning, big shop windows with bread, and a blank sign showing only a bread loaf picture",
-    "building_cafe": "a three-storey cafe with mint green walls, dark green roof, green and white striped awning, shop windows and a blank sign showing only a coffee cup picture",
-    "building_florist": "a two-storey flower shop with pale pink walls, plum roof, pink and white striped awning, flower buckets by the windows and a blank sign showing only a flower picture",
-    "building_books": "a three-storey bookshop with lavender walls, dark purple roof, purple striped awning, windows full of books and a blank sign showing only a book picture",
-    "building_toys": "a two-storey toy shop with pale yellow walls, red roof, blue and yellow striped awning, windows with toys and a blank sign showing only a ball picture",
-    "building_grocer": "a two-storey greengrocer with pale green walls, olive roof, green and white striped awning, fruit crates at the window and a blank sign showing only an apple picture",
-    "building_music": "a two-storey music shop with light blue walls, navy roof, black and yellow striped awning and a blank sign showing only a music note picture",
-    "building_house_blue": "a two-storey blue townhouse with a dark slate roof, white window frames, flower boxes and a dark front door",
-    "building_house_yellow": "a two-storey yellow townhouse with a brown tiled roof, window flower boxes and a brown front door",
 }
 
+# --- Wonky isometric town ---------------------------------------------------
+WONKY_STYLE = ("STYLE: original whimsical storybook illustration, delicate scratchy dark brown ink linework with fine "
+               "hatching, soft faded watercolour washes in muted pastel colours. Exaggerated crooked wonky architecture: "
+               "the whole building leans and bends, walls bow and taper, no straight lines anywhere, windows tilted at "
+               "slightly different angles, sagging roofline, chimneys bent sideways, asymmetric. Cluttered with charming "
+               "details: curly wrought-iron brackets and swirls, little lanterns, potted plants on the sills and steps. "
+               "Eccentric and playful, soft daylight from upper left. ")
+WONKY_PROP_STYLE = ("STYLE: original whimsical storybook illustration, delicate scratchy dark brown ink linework with fine "
+                    "hatching, soft faded watercolour washes in muted pastel colours with a few gentle accents. Charmingly "
+                    "wonky and hand-made: slightly crooked and lopsided, no perfectly straight lines, little curly "
+                    "wrought-iron flourishes where it fits. Clean readable silhouette, soft daylight from upper left. ")
 
-def color_name(hex_color: str, names: dict) -> str:
-    return names.get(hex_color.lower(), "plain")
+# Town props that read the same from any angle, used as they are in the isometric town.
+# key -> (subject, background, w, h); SHARED_PROP_EXTRA adds colour direction where pale washes made one vanish.
+SHARED_PROPS = {
+    'tree_round': ('a single round leafy deciduous tree with a short brown trunk and a big bushy green crown', 'magenta', 768, 1024),
+    'tree_pine': ('a single tall conical dark green pine tree with a short brown trunk', 'magenta', 768, 1024),
+    'tree_blossom': ('a single round cherry blossom tree with a short brown trunk and a big pink blossom crown', 'green', 768, 1024),
+    'bush': ('a single round leafy green bush', 'magenta', 768, 768),
+    'lamp_post': ('a single tall dark grey Victorian street lamp post with a warm yellow lamp', 'green', 512, 1024),
+    'hydrant': ('a single small red fire hydrant', 'green', 512, 768),
+    'mailbox': ('a single red post box on a short dark post', 'green', 512, 768),
+    'duck': ('a single small white duck swimming, side view', 'green', 768, 512),
+    'dog': ('a single small brown dog standing, side view', 'green', 768, 512),
+    'pigeon': ('a single small grey pigeon standing, side view', 'green', 768, 512),
+}
+SHARED_PROP_EXTRA = {
+    'tree_round': 'The crown is painted in clearly green layered leaf washes, sap green and olive, not pale.',
+    'tree_pine': 'Painted in clearly deep blue-green washes, not pale.',
+    'tree_blossom': 'The blossom is clearly rose pink, not pale.',
+    'bush': 'Painted in clearly green layered leaf washes, not pale.',
+}
 
+# Buildings stand on their own square paved plot at 2:1 isometric. The slab is
+# measured on import and scaled to the in-game plot (see import_assets).
+ISO_CAMERA = ("Isometric view: classic 2:1 isometric game art projection seen from above at 30 degrees. The building stands "
+              "on a small square paved stone plot shaped like a flat diamond, the plot only slightly larger than the house. "
+              "Its front wall with the front door faces the lower left, its side wall faces the lower right, both walls "
+              "visible, the roof seen from above. The whole building and its plot fit in the image, centred, no street, "
+              "no grass, nothing outside the plot, ")
+ISO_PROP_CAMERA = "Isometric view: classic 2:1 isometric game art projection seen from above at 30 degrees. "
+# House-row buildings (WfcTown picks a seeded subset per town; "_shop_" keys are shops).
+# key -> (subject, background). New keys go at the end so existing seeds (13000 + index) stay put.
+ISO_BUILDINGS = {
+    'iso_house_sage': ('a tall narrow crooked sage green townhouse leaning to the left, steep grey slate roof with a curly iron finial, an arched pink front door up three stone steps, a round window and two arched windows, a bent brick chimney', 'magenta'),
+    'iso_house_coral': ('a tall crooked dusty coral red townhouse with a pointed gable, a big round clock face in the gable, a tall arched window with a little curly iron balcony, a round-topped mustard yellow front door, a twisted chimney pot', 'green'),
+    'iso_house_butter': ('a short wide wonky butter yellow cottage with a sagging thatched-look brown roof, two crooked chimneys, round porthole windows, a green stable door, flower pots on the sills', 'magenta'),
+    'iso_house_lavender': ('a very tall skinny lavender townhouse that bends to the right like a candle flame, three tiny tilted windows stacked up the front, a little turret with a pointy purple roof, a teal door', 'green'),
+    'iso_house_teal': ('a crooked dusty teal townhouse with a bulging bay window on the first floor, a lopsided mansard roof with two dormer windows, a red door with a round brass knocker, a crooked iron lamp beside the door', 'magenta'),
+    'iso_house_peach': ('a wonky peach townhouse with a wide sagging curved roof like a hat, a round attic window, shutters hanging at angles, a blue door under a striped little canopy, ivy climbing one corner', 'green'),
+    'iso_house_mint': ('a narrow mint green house with an onion-shaped roof, a spiral iron staircase curling up the side to a top-floor door, a crooked weather vane, small round windows', 'magenta'),
+    'iso_house_rose': ('a squat dusty rose pink cottage with a huge crooked chimney bigger than the house, a round wooden door, two wonky windows with flower boxes, a tiny bird house on the wall', 'green'),
+    'iso_house_stone': ('a tall crooked grey stone tower house leaning forward, uneven stone blocks, a pointed slate witch-hat roof, a red arched door, tiny lit windows, a crooked iron balcony at the top', 'magenta'),
+    'iso_house_blue': ('a tall powder blue townhouse made of three stacked floors that each lean a different way, white wonky window frames, a yellow door, a chimney with a curly smoke swirl', 'green'),
+    'iso_house_cream': ('a wide crooked cream timber-framed house with dark wooden beams, overhanging upper floor, a sagging red tile roof, diamond pane windows, a green door with a horseshoe above it', 'magenta'),
+    'iso_house_ochre': ('a narrow ochre yellow townhouse with a stepped crooked gable, a tall arched window with a round top, a tiny juliet balcony with plants, a purple door, a skinny bent chimney', 'magenta'),
+    'iso_shop_bakery': ('a crooked peach bakery shop house, a striped red and cream curved awning over a bulging shop window full of bread and cakes, a hanging iron sign showing only a bread loaf picture, a wonky roof with two chimneys', 'green'),
+    'iso_shop_books': ('a tall leaning lavender bookshop, a shop window stacked with books, a hanging sign showing only a book picture, a little reading bench by the door, a crooked turret roof', 'green'),
+    'iso_shop_florist': ('a crooked pale pink flower shop overflowing with flower buckets and hanging baskets, a green striped awning, a hanging sign showing only a flower picture, a sagging roof', 'green'),
+    'iso_shop_cafe': ('a wonky mint green cafe with a curved striped awning, a round shop window with cups and cakes, a hanging sign showing only a coffee cup picture, a crooked chimney with a steam swirl', 'magenta'),
+    'iso_shop_toys': ('a crooked butter yellow toy shop with a round shop window full of teddy bears and spinning tops, a red and blue striped awning, a hanging sign showing only a toy ball picture, a lopsided roof', 'magenta'),
+    'iso_shop_clocks': ('a tall crooked teal clock shop with many little clocks in the window and a big clock in the gable, a hanging sign showing only a clock picture, a bent iron finial on the roof', 'magenta'),
+    'iso_house_plum': ('a tall crooked plum purple townhouse with a pointed gable that droops like a wizard hat, a round stained-glass window, a mint green door with a curly iron lamp, crooked window boxes of red geraniums', 'green'),
+    'iso_house_brick': ('a narrow lopsided red brick townhouse with white wonky window frames, a little iron balcony full of pots, a steep black slate roof with two leaning chimneys, a navy blue door with a fanlight', 'green'),
+    'iso_house_windmill': ('a squat round cream cottage with a tiny crooked windmill on its roof, little sails turning, a blue round door, round windows with red shutters, a brown cone roof', 'green'),
+    'iso_house_moss': ('a crooked olive green cottage with a thick mossy roof that sags in the middle, a round green door, bulging bottle-glass windows, a rain barrel and a watering can by the wall', 'magenta'),
+    'iso_house_apricot': ('a tall wobbly apricot orange townhouse with each floor slightly bigger than the one below, a teal door, striped awnings over the windows, a crooked TV aerial and a cat sitting on the roof ridge', 'green'),
+    'iso_house_turret': ('a crooked pale yellow house with a fat round corner turret and a pointy red cone roof, a red door, arched windows with lace curtains, a curly weathervane on the turret', 'magenta'),
+    'iso_house_boat': ('a wonky pale aqua house shaped a little like an upturned boat with a curved wooden roof, porthole windows, a rope railing, a tiny anchor by the yellow door', 'magenta'),
+    'iso_house_steeple': ('a narrow white-washed townhouse with a tall thin crooked steeple roof and a tiny bell, a red arched door, blue window shutters, a crooked flower trellis up one wall', 'green'),
+    'iso_house_terrace': ('two crooked joined little townhouses leaning on each other, one dusty pink and one pale blue, different coloured doors, a shared wobbly chimney stack, washing line between the windows', 'green'),
+    'iso_house_cocoa': ('a crooked chocolate brown wooden house with cream gingerbread trim on the eaves, a pink door, heart-shaped window cut-outs in the shutters, a candy-striped chimney', 'green'),
+    'iso_house_greenhouse': ('a small crooked whitewashed cottage with a lean-to glass greenhouse full of plants against one wall, a sage door, terracotta pots everywhere, a sloping grey roof', 'magenta'),
+    'iso_house_tall_red': ('a very tall thin crooked brick red tower house with five tiny floors, a spiral of little windows, a flag on the pointed top, a small green door at the bottom', 'green'),
+    'iso_shop_hats': ('a crooked dusty pink hat shop with a giant top hat shaped roof, a big round display window full of hats, a hat pictogram on a hanging iron sign, a striped awning', 'green'),
+    'iso_shop_sweets': ('a wonky mint and white candy-striped sweet shop with a lollipop pictogram on the hanging sign, big jars of sweets in the bay window, a scalloped pink awning', 'magenta'),
+    'iso_shop_fish': ('a crooked sea blue fishmonger shop with a fish pictogram on the hanging iron sign, a striped blue and white awning, a slanted ice table of fish under the window, nets on the wall', 'green'),
+    'iso_shop_cheese': ('a wonky butter yellow cheese shop with a round roof like a cheese wheel, a cheese wedge pictogram on the hanging sign, round cheeses stacked in the window, a red door', 'magenta'),
+    'iso_shop_music': ('a crooked teal music shop with a violin pictogram on the hanging iron sign, a trumpet and a drum in the bay window, curly iron music notes on the railings, a cream awning', 'magenta'),
+    'iso_shop_bikes': ('a crooked brick orange bicycle shop with a bicycle pictogram on the hanging sign, a wide arched window, two old bicycles leaning outside, a green striped awning', 'green'),
+}
+# Small buildings (huts, outbuildings) on a smaller plot (ISO_SMALL_PLOT in import_assets), mixed into
+# house rows so rows vary in size. key -> (subject, background).
+ISO_SMALL_BUILDINGS = {
+    'iso_small_cottage': ('a tiny crooked one-room cottage with dusty pink walls, a lumpy thatched roof, one round window, a red door and a bent chimney', 'green'),
+    'iso_small_hut': ('a tiny crooked wooden hut painted pale blue with a rusty tin roof, a stovepipe chimney and a wonky porch', 'green'),
+    'iso_small_chapel': ('a tiny crooked white chapel with a little leaning bell tower, an arched door and a round window', 'green'),
+    'iso_small_watertower': ('a small wonky wooden water tower on four crooked stilts above a little brick shed with a door', 'green'),
+    'iso_small_studio': ("a small crooked artist's studio with a big slanted glass skylight roof, paint pots and a ladder by the door", 'magenta'),
+    'iso_small_bakehouse': ('a tiny round stone bakehouse with a domed roof and a big crooked chimney puffing a curl of smoke', 'green'),
+    'iso_small_lighthouse': ('a short stubby crooked lighthouse striped red and white, with a little cottage attached at its foot', 'green'),
+    'iso_small_treehouse': ('a small crooked wooden house built around a thick tree trunk, the leafy tree crown growing up out of its roof', 'magenta'),
+}
+# Isometric props. key -> (subject, background, in-game size spec, radius, kind). A spec with "split"
+# cuts a canopy (awning, parasol) onto the foreground occluder layer. Things that face somewhere face
+# the lower left (cars drive down-left; WfcTown mirrors them on lanes running down-right).
+ISO_PROPS = {
+    'iso_bench': ('A single wooden park bench with dark green metal legs. The bench runs diagonally, facing the lower left', 'magenta', {'height': 34}, 26, 'prop'),
+    'iso_bike': ('A single red bicycle standing on its kickstand. The bike is parked diagonally, its front wheel towards the lower left', 'green', {'height': 30}, 18, 'prop'),
+    'iso_sign_board': ('A single dark A-frame chalkboard pavement sign with a simple white coffee cup drawing and no writing. The sign faces the lower left', 'green', {'height': 28}, 12, 'prop'),
+    'iso_kiosk': ('A single small cream newspaper kiosk booth with a green and white striped roof and a window. Its front window faces the lower left', 'magenta', {'height': 78}, 36, 'prop'),
+    'iso_food_cart': ('A single cream ice-cream cart with two wheels and a red and yellow striped parasol on top. The cart stands diagonally, its serving side facing the lower left', 'green', {'height': 88}, 30, 'prop'),
+    'iso_cafe_table': ('A single small round cream cafe table with two red bistro chairs', 'green', {'height': 30}, 24, 'prop'),
+    'iso_parasol_table': ('A single round cafe table with two blue chairs under a big open blue and white striped parasol', 'green', {'height': 78, 'split': 0.5}, 28, 'prop'),
+    'iso_flower_bed': ('A single oval flower bed of brown soil with pink, yellow, white and purple flowers. The bed is a flat diamond-shaped patch seen from above', 'green', {'width': 64}, 30, 'prop'),
+    'iso_crates': ('A small stack of three wooden crates full of oranges', 'green', {'height': 34}, 16, 'prop'),
+    'iso_planter': ('A single terracotta planter box with a small round bush and pink flowers. The planter box runs diagonally', 'magenta', {'height': 32}, 16, 'prop'),
+    'iso_car_red': ('A single small rounded red city car. The car drives diagonally towards the lower left, its front and left side visible. Painted clearly tomato red, not pink', 'green', {'height': 44}, 30, 'prop'),
+    'iso_car_blue': ('A single small rounded blue city car. The car drives diagonally towards the lower left, its front and left side visible', 'green', {'height': 44}, 30, 'prop'),
+    'iso_car_yellow': ('A single small rounded yellow city car. The car drives diagonally towards the lower left, its front and left side visible', 'magenta', {'height': 44}, 30, 'prop'),
+    'iso_fountain': ('A single round stone town-square fountain with a central pedestal and a small water spout, blue water in the basin. The basin is seen from above as an isometric ellipse', 'magenta', {'width': 170}, 95, 'prop'),
+    'iso_stall_red': ("A single wooden market stall with a red and white striped awning on two posts and a counter full of oranges, lemons and tomatoes. The stall's counter faces the lower left", 'green', {'height': 108, 'split': 0.42}, 46, 'prop'),
+    'iso_stall_blue': ("A single wooden market stall with a blue and white striped awning on two posts and a counter full of cabbages, plums and lemons. The stall's counter faces the lower left", 'green', {'height': 108, 'split': 0.42}, 46, 'prop'),
+    'iso_stall_green': ("A single wooden market stall with a green and white striped awning on two posts and a counter full of tomatoes, eggs and oranges. The stall's counter faces the lower left", 'magenta', {'height': 108, 'split': 0.42}, 46, 'prop'),
+    'iso_easel': ("A single wooden painter's easel holding a small landscape painting. The easel faces the lower left", 'green', {'height': 52}, 12, 'prop'),
+}
+# More props to fill gardens, yards and streets (seeds 15000 + index).
+ISO_EXTRA_PROPS = {
+    'iso_big_bird_blue': ('A huge goofy long-legged blue bird taller than a man, a fluffy round body, tiny wings, a long bendy neck, a big orange beak and a silly curly crest', 'green', {'height': 96}, 16, 'prop'),
+    'iso_big_bird_pink': ('An enormous lanky pink bird like a wonky flamingo with knobbly knees, a fluffy feather ruff and a curly crest, looking surprised', 'green', {'height': 100}, 16, 'prop'),
+    'iso_big_bird_ostrich': ('A giant fluffy round speckled brown and cream bird like a plump ostrich with very long striped legs and a tiny head with big eyes', 'green', {'height': 90}, 18, 'prop'),
+    'iso_big_bird_peacock': ('A giant round teal and gold bird as tall as a child with a huge fanned spotty tail', 'magenta', {'height': 76}, 24, 'prop'),
+    'iso_giant_snail': ('A giant friendly snail as big as a dog with a tall swirly pastel striped shell and wobbly eye stalks', 'magenta', {'height': 40}, 18, 'prop'),
+    'iso_outhouse': ('A crooked little wooden outhouse with a crescent moon cut into the door and a rusty tin roof', 'green', {'height': 72}, 20, 'prop'),
+    'iso_shed': ('A lopsided small garden shed with peeling pastel blue paint, a tiny window, a watering can and a rake leaning on it', 'green', {'height': 66}, 28, 'prop'),
+    'iso_dovecote': ('A crooked tall wooden dovecote on a pole: a little house with round holes and white doves sitting on it', 'green', {'height': 100}, 10, 'prop'),
+    'iso_well': ('An old round stone wishing well with a little wonky shingle roof, a crank handle and a wooden bucket', 'green', {'height': 66}, 22, 'prop'),
+    'iso_washing_line': ('A washing line strung between two crooked wooden posts with colourful laundry hanging on it: shirts, socks and a striped dress. The line runs diagonally', 'green', {'height': 58}, 24, 'prop'),
+    'iso_beehives': ('Three crooked stacked wooden beehives painted in pastel colours with a few bees', 'green', {'height': 44}, 20, 'prop'),
+    'iso_chicken_coop': ('A small wonky wooden chicken coop on stilts with a ramp and three plump hens pecking around it', 'green', {'height': 56}, 26, 'prop'),
+    'iso_wheelbarrow': ('An old wooden wheelbarrow full of orange pumpkins', 'green', {'height': 30}, 14, 'prop'),
+    'iso_haystack': ('A round lumpy golden haystack with a pitchfork stuck in it', 'magenta', {'height': 50}, 22, 'prop'),
+    'iso_scarecrow': ('A funny scarecrow on a pole with a patched coat, a floppy straw hat and a crow sitting on its arm', 'magenta', {'height': 82}, 10, 'prop'),
+    'iso_picnic': ('A red and white checked picnic blanket lying flat on the ground with a wicker basket, a teapot and sandwiches', 'green', {'width': 70}, 22, 'prop'),
+    'iso_swing': ('A crooked wooden A-frame swing set with two swings on ropes', 'magenta', {'height': 78}, 26, 'prop'),
+    'iso_doghouse': ("A crooked little red doghouse with a sleepy spotted dog's head poking out of the door", 'green', {'height': 40}, 18, 'prop'),
+    'iso_van': ('A small rounded wonky delivery van painted mint green with a cream roof. The van drives diagonally towards the lower left, its front and left side visible', 'magenta', {'height': 54}, 30, 'prop'),
+    'iso_car_purple': ('A little round bubbly old car painted lavender purple with white wheels. The car drives diagonally towards the lower left, its front and left side visible', 'green', {'height': 42}, 30, 'prop'),
+    'iso_wheelie_bins': ('A row of three crooked tall wheelie bins in faded green, blue and brown, one lid propped open with a banana peel hanging out. The row runs diagonally', 'magenta', {'height': 58}, 24, 'prop'),
+    'iso_skip': ('A big battered dented green metal rubbish skip with a half-open lid, a broken umbrella and a lampshade sticking out of the top', 'magenta', {'height': 56}, 32, 'prop'),
+    'iso_trash_can': ('A round crooked dented metal dustbin with its lid sitting askew and a fish skeleton poking out', 'green', {'height': 40}, 12, 'prop'),
+}
 
-def character_prompt(look: dict) -> str:
-    build = look.get("build", "normal")
-    who = {"short": "a small child", "tall": "a tall adult", "wide": "a stocky adult"}.get(build, "an adult")
-    skin = SKIN_NAMES.get(look.get("skin", "").lower(), "")
-    parts = [f"A single full-body person standing, {who}" + (f" with {skin} skin" if skin else "")]
-    hair = HAIR_STYLES[look.get("hair_style", "short")].format(c=color_name(look.get("hair", ""), HAIR_NAMES))
-    parts.append(f"with {hair}")
-    if look.get("hat", "none") != "none":
-        parts.append("wearing " + HATS[look["hat"]].format(c=color_name(look.get("hat_color", ""), COLOR_NAMES)))
-    shirt = color_name(look.get("shirt", ""), COLOR_NAMES)
-    pattern = look.get("pattern", "plain")
-    if look.get("coat"):
-        top = f"a {shirt} long coat"
-    elif pattern == "stripes":
-        top = f"a {shirt} jumper with bold horizontal {color_name(look.get('pattern_color', ''), COLOR_NAMES)} stripes"
-    elif pattern == "dots":
-        top = f"a {shirt} shirt with {color_name(look.get('pattern_color', ''), COLOR_NAMES)} polka dots"
-    elif pattern == "overalls":
-        top = f"{color_name(look.get('pants', ''), COLOR_NAMES)} dungarees over a {shirt} shirt"
-    else:
-        top = f"a {shirt} shirt"
-    parts.append(top)
-    if pattern != "overalls":
-        parts.append(f"{color_name(look.get('pants', ''), COLOR_NAMES)} trousers")
-    acc = look.get("accessory", "none")
-    acc_c = color_name(look.get("acc_color", ""), COLOR_NAMES)
-    if acc == "backpack":
-        parts.append(f"a {acc_c} backpack")
-    elif acc == "bag":
-        parts.append(f"a {acc_c} shoulder bag")
-    elif acc == "scarf":
-        parts.append(f"a long {acc_c} scarf")
-    elif acc == "balloon":
-        parts.append(f"holding a {acc_c} balloon on a string")
-    if look.get("glasses"):
-        parts.append("round glasses")
-    return (", ".join(parts) + ". Facing the viewer, feet visible, friendly compact proportions, "
-            "clean readable silhouette, the figure fills most of the image height. ")
+# Seamless ground textures (tiled by GroundLayer). Rendered square, then made
+# tileable by tools/make_tileable.py and toned down by GROUND_GRADE in tools/import_assets.py.
+GROUND_STYLE = ("STYLE: hand-painted storybook illustration texture, confident scratchy dark brown ink outlines around every "
+                "shape, rich layered watercolour washes with visible pigment granulation and darker pooled edges, warm "
+                "saturated colours. Seen exactly from directly above, flat, evenly lit, the pattern fills the whole image "
+                "edge to edge, seamless repeating texture, ")
+# Values are deliberately spread (road darkest, pavement lightest) so the
+# street reads at a glance behind the inked houses.
+GROUND = {
+    "ground_road": "an old cobbled street: rounded cobblestones in warm slate grey, dusty plum and brown-grey, each stone "
+                   "outlined in dark ink with deep dark gaps between, medium-dark overall",
+    "ground_pavement": "a light pavement of large irregular flagstones in warm pale stone and sandy cream, each slab outlined "
+                       "in brown ink, a few small green moss tufts in the cracks",
+    "ground_grass": "a lush meadow lawn in fresh sap green and yellow-green watercolour, loose ink grass strokes, small "
+                    "clumps of darker green and a few tiny white daisies, medium green overall",
+    "ground_plaza": "herringbone brick paving in warm terracotta, rose and sandy orange bricks, each brick outlined in "
+                    "brown ink with pale mortar",
+    "ground_market": "large square clay tiles laid slightly crooked, alternating ochre, mustard and burnt sienna, each tile "
+                     "outlined in brown ink",
+}
+
 
 
 def build_jobs() -> dict:
-    catalog = json.loads(CATALOG.read_text())["assets"]
+    manifest = json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {}
     jobs = {}
-    index = 0
-    for key, entry in catalog.items():
-        index += 1
-        seed = 7000 + index
-        if entry.get("kind") == "character":
-            # People are built from the part kit (data/assets/avatar_kit.json) and
-            # drawn in code; whole-body renders are no longer used. Pass
-            # --characters to render reference sheets anyway.
-            if "--characters" not in sys.argv:
-                continue
-            subject = character_prompt(entry["look"])
-            # Green clothes on a green screen key poorly: use magenta for those.
-            greenish = any(entry["look"].get(f, "") in ("#4f9a4a", "#2f6b4f", "#6b8e23") for f in ("shirt", "pants", "acc_color", "hat_color"))
-            bg, w, h = ("magenta" if greenish else "green"), 768, 1024
-            prompt = STYLE + subject + BACKGROUNDS[bg] + SUFFIX
-        elif key in BUILDINGS:
-            bg, w, h = "magenta", 1024, 1024
-            prompt = (STYLE + "Flat front-facing elevation of " + BUILDINGS[key] + ", the whole building visible from the "
-                      "pavement up to the roof, " + BACKGROUNDS[bg] + SUFFIX)
-        elif key in PROPS:
-            subject, bg, w, h = PROPS[key]
-            camera = FRONT_CAMERA if key in FRONT_FACING else SIDE_CAMERA if key in SIDE_VIEW else CAMERA
-            prompt = STYLE + camera + subject.capitalize() + ". " + BACKGROUNDS[bg] + SUFFIX
-        else:
-            continue
+
+    def add(key: str, prompt: str, seed: int, w: int, h: int, bg: str) -> None:
         jobs[key] = {"prompt": prompt, "seed": seed, "width": w, "height": h, "background": bg}
+
+    # Shared props keep the seed they were first rendered with.
+    for i, (key, (subject, bg, w, h)) in enumerate(SHARED_PROPS.items()):
+        camera = FRONT_CAMERA if key in FRONT_FACING else CAMERA
+        extra = SHARED_PROP_EXTRA[key] + " " if key in SHARED_PROP_EXTRA else ""
+        add(key, WONKY_PROP_STYLE + camera + subject.capitalize() + ". " + extra + BACKGROUNDS[bg] + SUFFIX,
+            manifest.get(key, {}).get("seed", 7100 + i), w, h, bg)
+    for i, (key, (subject, bg)) in enumerate(ISO_BUILDINGS.items()):
+        add(key, WONKY_STYLE + ISO_CAMERA + subject + ". " + BACKGROUNDS[bg] + SUFFIX, 13000 + i, 1024, 1024, bg)
+    for i, (key, (subject, bg)) in enumerate(ISO_SMALL_BUILDINGS.items()):
+        add(key, WONKY_STYLE + ISO_CAMERA + subject + ". " + BACKGROUNDS[bg] + SUFFIX, 16000 + i, 1024, 1024, bg)
+    for base, table in ((14000, ISO_PROPS), (15000, ISO_EXTRA_PROPS)):
+        for i, (key, (subject, bg, _spec, _radius, _kind)) in enumerate(table.items()):
+            add(key, WONKY_PROP_STYLE + ISO_PROP_CAMERA + subject + ". " + BACKGROUNDS[bg] + SUFFIX, base + i, 768, 768, bg)
+    for i, (key, subject) in enumerate(GROUND.items()):
+        add(key, GROUND_STYLE + subject + ". No objects, no people, no shadows, no text, no border, no frame.",
+            12000 + i, 1024, 1024, "none")
     for i, (key, (subject, bg, w, h)) in enumerate(UI.items()):
-        prompt = STYLE + FRONT_CAMERA + subject.capitalize() + ". " + BACKGROUNDS[bg] + SUFFIX
-        jobs[key] = {"prompt": prompt, "seed": 9000 + i, "width": w, "height": h, "background": bg}
+        add(key, WONKY_PROP_STYLE + FRONT_CAMERA + subject.capitalize() + ". " + BACKGROUNDS[bg] + SUFFIX, 9100 + i, w, h, bg)
     return jobs
 
 
@@ -241,7 +252,7 @@ def run_job(key: str, job: dict) -> Path:
                     f"75.noise_seed={job['seed']}", f"75.value={job['width']}", f"75.value_1={job['height']}",
                     "9.filename_prefix=" + json.dumps(prefix)], check=True, capture_output=True)
     started = time.time()
-    res = subprocess.run(["comfy", "run", "--workflow", str(wf), "--wait"], capture_output=True, text=True)
+    res = subprocess.run(["comfy", "run", "--workflow", str(wf), "--wait", "--timeout", "1800"], capture_output=True, text=True)
     if res.returncode != 0:
         raise RuntimeError(f"comfy run failed for {key}: {res.stdout[-800:]} {res.stderr[-800:]}")
     candidates = sorted(COMFY_OUTPUT.glob(f"{prefix}_*.png"), key=lambda p: p.stat().st_mtime)

@@ -57,15 +57,15 @@ func test_people_in_front_and_behind() -> void:
 
 
 func test_partial_cover_by_bench_is_allowed() -> void:
-	var v := _checker([["bench", "bench", Vector2(900, 512)]])
+	var v := _checker([["bench", "iso_bench", Vector2(900, 512)]])
 	var f := v.visible_fraction(_look(), Vector2(900, 500))
 	check(f > VisibilityChecker.MIN_VISIBLE and f < 1.0, "bench in front hides only the legs: %.2f" % f)
 	check(v.check(_look(), Vector2(900, 500))["ok"], "allowed")
 
 
 func test_building_and_decals() -> void:
-	var v := _checker([["shop", "building_bakery", Vector2(300, 700)], ["flowers", "flower_bed", Vector2(1200, 520)]])
-	check(v.visible_fraction(_look(), Vector2(300, 640)) < 0.05, "behind a shop facade: hidden")
+	var v := _checker([["shop", "iso_shop_bakery", Vector2(300, 700)], ["flowers", "iso_flower_bed", Vector2(1200, 520)]])
+	check(v.visible_fraction(_look(), Vector2(300, 640)) < 0.05, "behind a house: hidden")
 	check(is_equal_approx(v.visible_fraction(_look(), Vector2(1200, 500)), 1.0), "flat flower bed in front never covers")
 	check(v.check(_look(), Vector2(300, 760))["ok"], "in front of the shop: visible")
 

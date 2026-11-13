@@ -9,7 +9,7 @@ No third-party art packs are used. Every visual in the game is either drawn in c
 | ComfyUI workflow `art_src/workflows/*.json` | ComfyUI template `image_flux2_klein_text_to_image`, modified | Comfy Org template | Template distributed with ComfyUI | No | 2026-10-21 |
 | UI font | Godot's built-in default font | Godot Engine | Bundled with the engine (MIT engine, OFL font) | No | n/a |
 | Display font `art/fonts/LuckiestGuy-Regular.ttf` (titles, buttons) | https://github.com/google/fonts/tree/main/apache/luckiestguy | Astigmatic (Brian J. Bonislawsky) | Apache-2.0 | No (keep the licence notice if redistributed as a file) | 2026-10-24 |
-| HUD art `art/ui/` (magnifier, stopwatch, banner, hat, paper) | Local ComfyUI, same model as the sprites; prompts in `tools/gen_assets.py` (`UI`) and `art_src/manifest.json` | Generated for this project | As the generated sprites above. Original motifs only (stripes, magnifier); no Where's Wally characters or artwork. | No | 2026-10-24 |
+| HUD art `art/ui/` (magnifier, stopwatch; `menu_town.jpg` is a screenshot of the game) | Local ComfyUI, same model as the sprites; prompts in `tools/gen_assets.py` (`UI`) and `art_src/manifest.json` | Generated for this project | As the generated sprites above. Original motifs only; no Where's Wally characters or artwork. | No | 2026-10-24 |
 | Selfie models (web build, downloaded at runtime, not bundled): MediaPipe Tasks Vision 0.10.14 (jsDelivr), `selfie_multiclass_256x256`, `face_landmarker` (storage.googleapis.com) | https://ai.google.dev/edge/mediapipe | Google | Apache-2.0 (library and models; check each model card before shipping) | No | 2026-10-24 |
 
 ## Not used

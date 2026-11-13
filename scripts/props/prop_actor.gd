@@ -1,18 +1,17 @@
 class_name PropActor
 extends WorldActor
-## Static scenery: props, trees, buildings, stalls, and museum critters
-## (which can be tapped and may be hue-shifted decoys). Origin = ground point.
+## Static scenery: props, trees, buildings, stalls. Origin = ground point.
 ## Parts that should cover people regardless of depth (tree canopies,
 ## umbrellas, stall awnings) live in a CanopyLayer child with a raised z_index.
 
 const CANOPY_Z := 20
 const FADED_ALPHA := 0.4
-const HUE_SHADER := preload("res://shaders/hue_shift.gdshader")
 
 var canopy: CanopyLayer = null
 
 var _entry: Dictionary = {}
 var _texture: Texture2D = null
+var _sliced := false
 
 
 func setup(obj: WorldObjectData) -> void:
@@ -23,12 +22,21 @@ func setup(obj: WorldObjectData) -> void:
 	flip_h = obj.flip_h
 	_entry = AssetCatalog.entry(asset_key)
 	_texture = AssetCatalog.texture(asset_key)
-	set_hue(obj.hue)
 	match obj.depth_mode:
 		"ground":
 			z_index = -1
 		"foreground":
 			z_index = CANOPY_Z + 1
+	var strips := AssetCatalog.strips(asset_key)
+	if not strips.is_empty() and z_index == 0:
+		# Isometric building: slices join the world's Y-sort individually.
+		y_sort_enabled = true
+		for st: Vector3 in strips:
+			var slice := BuildingSlice.new()
+			slice.setup(_texture, _entry, flip_h, st)
+			add_child(slice)
+		_texture = null
+		_sliced = true
 	if _entry.get("canopy", false):
 		canopy = CanopyLayer.new()
 		canopy.name = "Canopy"
@@ -36,20 +44,6 @@ func setup(obj: WorldObjectData) -> void:
 		canopy.setup(asset_key, _entry, flip_h)
 		add_child(canopy)
 	queue_redraw()
-
-
-func set_hue(hue: float) -> void:
-	if hue == 0.0:
-		material = null
-		return
-	var m := ShaderMaterial.new()
-	m.shader = HUE_SHADER
-	m.set_shader_parameter("hue", hue)
-	material = m
-
-
-func is_critter() -> bool:
-	return AssetCatalog.is_critter(asset_key)
 
 
 func hit_rect(pad: float) -> Rect2:
@@ -66,14 +60,35 @@ func set_canopy_faded(faded: bool) -> void:
 		modulate.a = FADED_ALPHA if faded else 1.0
 
 
-## Drawn above everything (e.g. the whale skeleton hanging in the museum).
+## Drawn above everything ("foreground" depth mode).
 func is_foreground() -> bool:
 	return z_index > CANOPY_Z
 
 
 func _draw() -> void:
 	_draw_marker()
+	if _sliced:
+		return
 	if _texture:
 		PlaceholderArt.draw_grounded_texture(self, _texture, _entry, flip_h)
 	else:
 		PlaceholderArt.draw_prop(self, asset_key, _entry, flip_h)
+
+
+## One vertical slice of an isometric building (see AssetCatalog.strips).
+class BuildingSlice:
+	extends Node2D
+	var _tex: Texture2D
+	var _e: Dictionary
+	var _flip := false
+	var _strip := Vector3.ZERO
+
+	func setup(tex: Texture2D, e: Dictionary, flip: bool, strip: Vector3) -> void:
+		_tex = tex
+		_e = e
+		_flip = flip
+		_strip = strip
+		position = Vector2(0, strip.z)
+
+	func _draw() -> void:
+		PlaceholderArt.draw_texture_strip(self, _tex, _e, _flip, _strip)

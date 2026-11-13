@@ -80,7 +80,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "STYLE: original, colourful hand-drawn hidden-object game illustration, children's picture book ink and watercolour, slightly irregular dark ink outline, flat warm muted colours with a few saturated accents, soft daylight from upper left. Seen straight from the front and slightly above, facing the viewer squarely, symmetric, not rotated, not at an angle, not isometric. A single big round magnifying glass with a thick red and white striped handle and a brass rim, lens empty and clear, tilted slightly. Isolated single subject centred, on a plain flat solid pure bright green background, no ground shadow, no text, no letters, no labels, no border, no frame, no other objects."
+        "STYLE: original whimsical storybook illustration, delicate scratchy dark brown ink linework with fine hatching, soft faded watercolour washes in muted pastel colours with a few gentle accents. Charmingly wonky and hand-made: slightly crooked and lopsided, no perfectly straight lines, little curly wrought-iron flourishes where it fits. Clean readable silhouette, soft daylight from upper left. Seen straight from the front and slightly above, facing the viewer squarely, symmetric, not rotated, not at an angle, not isometric. A single big round magnifying glass with a turned honey-coloured wooden handle and a slightly crooked brass rim with a tiny curl of wrought iron, lens empty and clear, tilted slightly. Isolated single subject centred, on a plain flat solid pure magenta (#FF00FF) background, no ground shadow, no text, no letters, no labels, no border, no frame, no other objects."
       ]
     },
     {
@@ -201,7 +201,7 @@
         "qwen_3_4b.safetensors",
         "flux2-vae.safetensors",
         "",
-        9000
+        9100
       ]
     }
   ],

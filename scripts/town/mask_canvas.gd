@@ -116,6 +116,20 @@ func draw_texture(tex: Texture2D, pos: Vector2, modulate: Color = Color.WHITE) -
 		return img.get_pixelv(px).a >= MIN_ALPHA)
 
 
+func draw_texture_rect_region(tex: Texture2D, rect: Rect2, src_rect: Rect2, modulate: Color = Color.WHITE, _transpose: bool = false, _clip_uv: bool = true) -> void:
+	if modulate.a < MIN_ALPHA:
+		return
+	var img := _image_of(tex)
+	if img == null:
+		return
+	var k := src_rect.size / rect.size
+	_mark(rect, func(l: Vector2) -> bool:
+		var px := Vector2i(src_rect.position + (l - rect.position) * k)
+		if px.x < 0 or px.y < 0 or px.x >= img.get_width() or px.y >= img.get_height():
+			return false
+		return img.get_pixelv(px).a >= MIN_ALPHA)
+
+
 # --- internals ---------------------------------------------------------------
 
 ## Marks sample points inside [param local_box] (in current draw space) for

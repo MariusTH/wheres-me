@@ -109,7 +109,7 @@ func test_search_verifies_challenge_against_map() -> void:
 	bad_gen.generator_version = 99
 	check(SearchController.verify(bad_gen, m, layout).contains("generator"), "generator mismatch detected")
 	var buried: ChallengeData = copy.call()
-	buried.target_world_position = Vector2(610, 590)  # just behind the shop facades
+	buried.target_world_position = buried_spot(m)  # behind a house
 	check(SearchController.verify(buried, m, layout).contains("visible"), "hidden-behind-building spot rejected: '%s'" % SearchController.verify(buried, m, layout))
 	var outside: ChallengeData = copy.call()
 	outside.target_world_position = Vector2(-50, 300)
@@ -126,54 +126,10 @@ func test_legacy_and_v2_codes_still_load() -> void:
 	check_eq(r["error"], "", "schema v2 (avatar only) still loads")
 
 
-func _museum() -> Array:
-	var m := MapDefinition.load_map(AppState.MUSEUM_MAP_ID)
-	var layout := TownGenerator.generate(m, SEED)
-	var key := TownGenerator.critter_for_seed(SEED)
-	var checker := VisibilityChecker.new(m, layout.objects)
-	var subject := VisibilityChecker.subject_for_critter(key)
-	var spot := Vector2.INF
-	for y in range(200, 1500, 40):
-		for x in range(100, 2300, 40):
-			var p := Vector2(x, y)
-			if m.blocked_label_at(p) == "" and checker.check_subject(subject, p)["fraction"] >= 0.95:
-				spot = p
-				break
-		if spot.is_finite():
-			break
-	return [ChallengeData.create_critter(layout, key, "Alex", spot), m, layout]
-
-
-func test_critter_challenge_round_trip_and_verify() -> void:
-	var arr := _museum()
-	var c: ChallengeData = arr[0]
-	check(c.target_world_position.is_finite(), "found a visible museum spot")
-	var r := ChallengeCodec.decode(ChallengeCodec.encode(c))
-	check_eq(r["error"], "", "critter code decodes")
-	var b: ChallengeData = r["challenge"]
-	check_eq(b.hider_critter, c.hider_critter, "critter preserved")
-	check(b.hider_look.is_empty(), "no avatar look for a critter")
-	check_eq(b.seeker_title(), "Find the %s!" % AssetCatalog.label(c.hider_critter), "seeker title names the critter")
-	check_eq(SearchController.verify(b, arr[1], arr[2]), "", "critter challenge verifies")
-	var wrong := ChallengeCodec.decode(ChallengeCodec.encode(c))["challenge"] as ChallengeData
-	for k in AssetCatalog.critters():
-		if k != c.hider_critter:
-			wrong.hider_critter = k
-			break
-	check(SearchController.verify(wrong, arr[1], arr[2]).contains("critter"), "critter that doesn't match the seed is rejected")
-	var d := c.to_dict()
-	d["hider"]["critter"] = "bench"
-	check(ChallengeCodec.from_dict(d)["error"] != "", "a non-critter asset can't be the hidden critter")
-
-
-func test_decoy_critters_never_match_the_hidden_one() -> void:
-	var layout: TownLayout = _museum()[2]
-	var critters := 0
-	for o in layout.objects:
-		if AssetCatalog.is_critter(o.asset_key):
-			critters += 1
-			check(o.hue >= TownGenerator.DECOY_MIN_HUE and o.hue <= 1.0 - TownGenerator.DECOY_MIN_HUE, "%s is visibly hue-shifted" % o.id)
-	check(critters >= 40, "museum has plenty of decoy critters (%d)" % critters)
+func test_museum_codes_are_rejected() -> void:
+	var d := (_make()[0] as ChallengeData).to_dict()
+	d["hider"] = {"name": "Alex", "critter": "baby_trex"}
+	check(String(ChallengeCodec.from_dict(d)["error"]).contains("Museum"), "a museum (critter) code is refused with a clear message")
 
 
 func test_code_inside_a_shared_message_decodes() -> void:

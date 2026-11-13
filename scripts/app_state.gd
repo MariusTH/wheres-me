@@ -4,7 +4,7 @@ extends Node
 ##
 ## Developer flags (pass after `--` on the Godot command line):
 ##   --mode=create|hide|search|debug   jump straight into a mode
-##   --map=ID                   map for hide/debug/--at (town_demo_01, museum_01)
+##   --map=ID                   map for hide/debug/--at (default town_iso)
 ##   --seed=N                   map seed for hide/debug
 ##   --preset=N                 use avatar preset N (0-7) as "my avatar"
 ##   --challenge=PATH_OR_CODE   challenge for --mode=search
@@ -13,6 +13,7 @@ extends Node
 ##   --place=X,Y [--confirm]    hide mode: put the avatar's feet at X,Y
 ##   --center=X,Y --zoom=Z      initial camera view
 ##   --debug=1|2                debug overlay level
+##   --hud=0                    hide the HUD (clean screenshots)
 ##   --start                    search: skip the intro and start the clock
 ##   --tap=X,Y                  simulate a tap (world coords) after loading (implies --start)
 ##   --shot=PATH [--shot-delay=S]  save a screenshot and quit
@@ -34,11 +35,10 @@ const NARROW_WIDTH := 700.0
 ## Below this viewport height layouts get compact (phone in landscape).
 const SHORT_HEIGHT := 600.0
 
-const TOWN_MAP_ID := "town_demo_01"
-const MUSEUM_MAP_ID := "museum_01"
+const TOWN_MAP_ID := "town_iso"
 const DEFAULT_SEED := 481516
 const MENU_SCENE := "res://scenes/main_menu.tscn"
-const TOWN_SCENE := "res://scenes/town/town_demo.tscn"
+const TOWN_SCENE := "res://scenes/town/town.tscn"
 const CREATOR_SCENE := "res://scenes/ui/avatar_creator.tscn"
 const MY_AVATAR_PATH := "user://my_avatar.json"
 
@@ -139,12 +139,11 @@ func save_my_avatar(avatar_name: String, look: Dictionary) -> void:
 	f.store_string(JSON.stringify(my_avatar, "  "))
 
 
-## Hide mode on [param p_map_id] (default: the current map). Maps where you
-## hide yourself go to the creator first if there's no avatar yet; the
-## museum hides a critter and needs none.
+## Hide mode on [param p_map_id] (default: the current map). Goes to the
+## creator first if there's no avatar yet.
 func start_hide(p_seed: int, p_map_id: String = map_id) -> void:
 	map_id = p_map_id
-	if not has_avatar() and map_hides_avatar(map_id):
+	if not has_avatar():
 		start_creator(p_seed)
 		return
 	mode = Mode.HIDE
@@ -159,11 +158,6 @@ func start_search(c: ChallengeData) -> void:
 	map_seed = c.map_seed
 	map_id = c.map_id
 	_go(TOWN_SCENE)
-
-
-static func map_hides_avatar(id: String) -> bool:
-	var m := MapDefinition.load_map(id)
-	return m == null or m.hide_subject != "critter"
 
 
 func start_debug(p_seed: int) -> void:
@@ -219,12 +213,10 @@ func _dev_challenge() -> ChallengeData:
 		if result["challenge"] == null:
 			push_error("--challenge: %s" % result["error"])
 		return result["challenge"]
-	var map_def := MapDefinition.load_map(map_id)
+	var map_def := MapDefinition.load_map(map_id, map_seed)
 	var layout := TownGenerator.generate(map_def, map_seed)
 	var avatar := my_avatar if has_avatar() else {"name": "", "look": AvatarKit.default_look()}
 	var at := parse_vec2(String(dev_args.get("at", "720,700")))
-	if map_def.hide_subject == "critter":
-		return ChallengeData.create_critter(layout, TownGenerator.critter_for_seed(map_seed), avatar["name"], at)
 	return ChallengeData.create(layout, avatar["look"], avatar["name"], at)
 
 

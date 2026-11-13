@@ -12,7 +12,7 @@ var layout: TownLayout
 var ground: GroundLayer
 ## All objects that interleave by depth live here, Y-sorted by ground point.
 var world: Node2D
-## The hider: a CharacterActor (avatar) or a PropActor (museum critter).
+## The hider's CharacterActor.
 var target: WorldActor = null
 
 var _characters: Array[CharacterActor] = []
@@ -32,12 +32,18 @@ func build(p_map: MapDefinition, p_layout: TownLayout) -> void:
 	ground.name = "Ground"
 	add_child(ground)
 	ground.setup(map_def)
+	ground.set_shadows(layout)
 	world = Node2D.new()
 	world.name = "World"
 	world.y_sort_enabled = true
 	add_child(world)
 	for obj in layout.objects:
 		spawn(obj)
+	if map_def.ground_style != "":
+		var paper := PaperOverlay.new()
+		paper.name = "Paper"
+		add_child(paper)
+		paper.setup(map_def.world_bounds)
 
 
 func spawn(obj: WorldObjectData) -> Node2D:
@@ -66,19 +72,8 @@ func place_target(look: Dictionary, at: Vector2) -> WorldActor:
 	return target
 
 
-## Puts (or moves) the hidden critter, in its original colours, at [param at].
-func place_critter_target(key: String, at: Vector2) -> WorldActor:
-	if target == null:
-		target = spawn(TownGenerator.make_object(TARGET_ID, key, at, "target")) as PropActor
-	else:
-		target.position = at
-	return target
-
-
 ## Puts the hider described by [param subject] (see VisibilityChecker) at [param at].
 func place_subject(subject: WorldObjectData, at: Vector2) -> WorldActor:
-	if VisibilityChecker.is_critter(subject):
-		return place_critter_target(subject.asset_key, at)
 	return place_target(subject.look, at)
 
 
@@ -124,17 +119,6 @@ func character_at(world_pos: Vector2, pad: float) -> CharacterActor:
 			continue
 		if best == null or c.position.y > best.position.y or (c.position.y == best.position.y and c.object_id > best.object_id):
 			best = c
-	return best
-
-
-## Front-most critter whose tap area contains [param world_pos] (museum).
-func critter_at(world_pos: Vector2, pad: float) -> PropActor:
-	var best: PropActor = null
-	for p in _props:
-		if not p.visible or not p.is_critter() or not p.hit_rect(pad).has_point(world_pos):
-			continue
-		if best == null or p.position.y > best.position.y or (p.position.y == best.position.y and p.object_id > best.object_id):
-			best = p
 	return best
 
 

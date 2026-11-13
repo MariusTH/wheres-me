@@ -82,15 +82,11 @@ static func from_dict(d: Dictionary) -> Dictionary:
 	var name_value: Variant = hider.get("name", "")
 	if not name_value is String:
 		return _fail("Hider name must be text.")
-	var critter := ""
 	if hider.has("critter"):
-		if version < 3 or not hider["critter"] is String or not AssetCatalog.has(hider["critter"]) or not AssetCatalog.is_critter(hider["critter"]):
-			return _fail("Unknown hidden critter (this build may be older than the challenge).")
-		critter = String(hider["critter"])
-	else:
-		var look_error := AvatarKit.validate(hider.get("look"))
-		if look_error != "":
-			return _fail(look_error)
+		return _fail("Museum challenges can't be played in this version of Where's Me.")
+	var look_error := AvatarKit.validate(hider.get("look"))
+	if look_error != "":
+		return _fail(look_error)
 	var target: Variant = d.get("target")
 	if not target is Dictionary:
 		return _fail("Missing target.")
@@ -107,8 +103,7 @@ static func from_dict(d: Dictionary) -> Dictionary:
 	c.map_seed = seed_value
 	c.challenge_id = String(d["challenge_id"])
 	c.hider_name = String(name_value).strip_edges().left(AvatarKit.MAX_NAME_LENGTH)
-	c.hider_critter = critter
-	c.hider_look = {} if critter != "" else AvatarKit.normalize(hider["look"])
+	c.hider_look = AvatarKit.normalize(hider["look"])
 	c.target_object_id = String(target["object_id"])
 	c.target_world_position = Vector2(float(pos[0]), float(pos[1]))
 	var rules: Variant = d.get("rules", {})

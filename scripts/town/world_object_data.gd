@@ -19,9 +19,6 @@ var is_interactive: bool = false
 var flip_h: bool = false
 ## For people: the part-kit look (see AvatarKit). Empty for scenery.
 var look: Dictionary = {}
-## For critters: hue rotation in turns (0 = the original colours, which only
-## the hidden critter has; decoys are always shifted).
-var hue: float = 0.0
 ## "fixed" (authored), "generated" (seeded) or "target" (the hider).
 var source: String = "generated"
 
@@ -38,6 +35,5 @@ func to_dict() -> Dictionary:
 		"is_interactive": is_interactive,
 		"flip_h": flip_h,
 		"look": look,
-		"hue": hue,
 		"source": source,
 	}

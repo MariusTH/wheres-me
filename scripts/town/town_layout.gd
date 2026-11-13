@@ -32,7 +32,5 @@ func signature() -> String:
 	for o in objects:
 		var look_text := AvatarKit.look_key(o.look) if o.is_interactive else ""
 		var line := "%s|%s|%d|%d|%s|%s" % [o.id, o.asset_key, int(o.world_position.x), int(o.world_position.y), o.flip_h, look_text]
-		if o.hue != 0.0:
-			line += "|%.4f" % o.hue
 		lines.append(line)
 	return "\n".join(lines)

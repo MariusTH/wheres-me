@@ -18,7 +18,15 @@ func check_eq(actual: Variant, expected: Variant, msg: String) -> bool:
 
 
 func load_map() -> MapDefinition:
-	return MapDefinition.load_map("town_demo_01")
+	return MapDefinition.load_map(AppState.TOWN_MAP_ID)
+
+
+## A spot hidden behind the first house of [param m] (inside its plot).
+func buried_spot(m: MapDefinition) -> Vector2:
+	for f in m.fixed_objects:
+		if AssetCatalog.entry(String(f["asset"])).has("footprint"):
+			return MapDefinition.vec2(f["pos"]) + Vector2(0, -60)
+	return Vector2.INF
 
 
 ## First spot (scanning a grid from [param from]) where [param look] passes the
