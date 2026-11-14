@@ -110,7 +110,7 @@ func test_search_verifies_challenge_against_map() -> void:
 	check(SearchController.verify(bad_gen, m, layout).contains("generator"), "generator mismatch detected")
 	var buried: ChallengeData = copy.call()
 	buried.target_world_position = buried_spot(m)  # behind a house
-	check(SearchController.verify(buried, m, layout).contains("visible"), "hidden-behind-building spot rejected: '%s'" % SearchController.verify(buried, m, layout))
+	check(SearchController.verify(buried, m, layout).contains("head must show"), "hidden-behind-building spot rejected: '%s'" % SearchController.verify(buried, m, layout))
 	var outside: ChallengeData = copy.call()
 	outside.target_world_position = Vector2(-50, 300)
 	check(SearchController.verify(outside, m, layout).contains("outside"), "off-map spot rejected")
@@ -139,3 +139,17 @@ func test_code_inside_a_shared_message_decodes() -> void:
 	check_eq(r["error"], "", "code found inside the share-sheet message")
 	if r["challenge"]:
 		_check_same(c, r["challenge"], "message")
+
+
+func test_deep_link_round_trip() -> void:
+	var c: ChallengeData = _make()[0]
+	var code := ChallengeCodec.encode(c)
+	var link := DeepLink.make(code)
+	check(link.begins_with(DeepLink.SCHEME + "://"), "link scheme")
+	check_eq(DeepLink.code_from(link), code, "code from link")
+	check_eq(DeepLink.code_from(link + "&utm=x"), code, "code from link with extra params")
+	check_eq(DeepLink.code_from("https://example.com/"), "", "not our link")
+	# A whole shared message (link last) still decodes when pasted.
+	var r := ChallengeCodec.decode("Can you find me in Where's Me? Tap the link:\n\n" + link)
+	check_eq(r["error"], "", "decode message with link")
+	_check_same(c, r["challenge"], "message with link")

@@ -14,15 +14,21 @@ var controller: Node = null
 
 func _ready() -> void:
 	var map_seed := AppState.map_seed
+	var size := AppState.map_size
 	if AppState.mode == AppState.Mode.SEARCH and AppState.challenge:
 		map_seed = AppState.challenge.map_seed
-	map_def = MapDefinition.load_map(AppState.map_id, map_seed)
+		size = AppState.challenge.town_size
+	map_def = MapDefinition.load_map(AppState.map_id, map_seed, size)
 	if map_def == null:
 		AppState.go_menu("Could not load map '%s'. See the console for details." % AppState.map_id)
 		return
 	layout = TownGenerator.generate(map_def, map_seed)
 	for s in layout.shortfalls:
 		push_warning("Generator shortfall: " + s)
+	if AppState.mode == AppState.Mode.SEARCH and AppState.challenge == null and not AppState.auto_hide.is_empty():
+		# The computer hides (Play, Daily, practice partners): pick the spot on
+		# this exact town before building it, so it's built only once.
+		AppState.challenge = AutoHider.make(map_def, layout, String(AppState.auto_hide["difficulty"]), AppState.auto_hide.get("who", {}))
 	town.build(map_def, layout)
 	camera.setup(map_def.world_bounds)
 	debug_overlay.setup(map_def, layout, town)
@@ -34,12 +40,12 @@ func _ready() -> void:
 			if AppState.has_avatar():
 				subject = VisibilityChecker.subject_for_look(AppState.my_avatar["look"])
 			else:
-				AppState.start_creator(map_seed)
+				AppState.start_creator(map_seed, true)
 				return
 			var hc := HideController.new()
 			hc.name = "HideController"
 			add_child(hc)
-			hc.start(town, camera, hud_layer, subject, hider_name)
+			hc.start(town, camera, hud_layer, subject, hider_name, String(AppState.session.get("difficulty", "")))
 			controller = hc
 		AppState.Mode.SEARCH:
 			if AppState.challenge == null:

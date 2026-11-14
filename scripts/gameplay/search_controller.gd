@@ -25,10 +25,14 @@ func start(town: TownController, camera: MapCamera, hud_layer: CanvasLayer, chal
 	_challenge = challenge
 	_hud = HUD_SCENE.instantiate() as SearchHud
 	hud_layer.add_child(_hud)
-	_hud.setup(challenge)
+	_hud.setup(challenge, _kicker())
 	_hud.give_up_pressed.connect(give_up)
-	_hud.menu_pressed.connect(func() -> void: AppState.go_menu())
-	town.ensure_unique(challenge.hider_look)
+	_hud.menu_pressed.connect(func() -> void:
+		if AppState.session.get("kind") == AppState.KIND_FRIEND:
+			AppState.go_friends()
+		else:
+			AppState.go_menu())
+	town.prepare_crowd(challenge.hider_look, challenge.decoys)
 	var err := verify(challenge, town.map_def, town.layout)
 	if err != "":
 		push_warning("Challenge rejected: " + err)
@@ -58,7 +62,7 @@ static func verify(c: ChallengeData, map_def: MapDefinition, layout: TownLayout)
 		return "This challenge was made with map version %d, but this build has version %d." % [c.map_version, map_def.map_version]
 	if c.generator_version != layout.generator_version:
 		return "This challenge was made with town generator v%d, but this build uses v%d." % [c.generator_version, layout.generator_version]
-	var result := VisibilityChecker.new(map_def, layout.objects).check_subject(c.subject(), c.target_world_position)
+	var result := c.checker(map_def, layout).check_subject(c.subject(), c.target_world_position)
 	if not result["ok"]:
 		return "The hiding spot isn't valid in this town (%s)" % String(result["reason"]).trim_suffix(".")
 	return ""
@@ -114,7 +118,64 @@ func _finish(p_found: bool) -> void:
 		var tween := create_tween()
 		tween.tween_method(func(k: float) -> void:
 			_camera.set_view(from.lerp(t.position + Vector2(0, 60), k), lerpf(from_zoom, to_zoom, k)), 0.0, 1.0, 0.6).set_trans(Tween.TRANS_SINE)
-	_hud.show_result(p_found, _elapsed, _taps, _wrong,
-		func() -> void: AppState.start_search(_challenge),
-		func() -> void: AppState.start_hide(_challenge.map_seed, _challenge.map_id),
-		func() -> void: AppState.go_menu())
+	var outcome := _record(p_found)
+	_hud.show_result(p_found, _elapsed, _taps, _wrong, outcome["lines"], outcome["actions"])
+
+
+## Small line over the intro title: "Daily #3 · Hard", "Play · Expert", "Round 4 with Alex".
+func _kicker() -> String:
+	var s := AppState.session
+	match String(s.get("kind", "")):
+		AppState.KIND_DAILY:
+			return "Daily #%d · %s" % [Progress.daily_number(String(s["date"])), Difficulty.get_level(String(s["difficulty"]))["name"]]
+		AppState.KIND_PLAY:
+			return "Play · %s" % Difficulty.get_level(String(s["difficulty"]))["name"]
+		AppState.KIND_FRIEND:
+			var f := FriendsStore.get_friend(String(s.get("friend_id", "")))
+			if not f.is_empty():
+				return "Round %d with %s%s" % [FriendsStore.stats(f)["rounds"] / 2 + 1, f["name"], " (practice partner)" if f.get("bot") else ""]
+	return ""
+
+
+## Saves the result for this kind of game; returns {"lines": [...], "actions": [[text, Callable, Color]]}.
+func _record(p_found: bool) -> Dictionary:
+	var s := AppState.session
+	var c := _challenge
+	var menu := ["Menu", func() -> void: AppState.go_menu(), UiKit.MUTED]
+	match String(s.get("kind", "")):
+		AppState.KIND_DAILY:
+			var date := String(s["date"])
+			var r := Progress.record_daily(date, p_found, _elapsed, _taps, _wrong)
+			var lines: Array = []
+			if r["counted"]:
+				lines.append("Score %d%s" % [r["score"], "  ·  New best!" if r["new_best"] else ""])
+				lines.append("Your best daily score: %d  ·  Streak: %d day%s" % [r["best"], r["streak"], "" if r["streak"] == 1 else "s"])
+			else:
+				lines.append("Replay: only your first try today counts (score %d)." % Progress.daily_result(date).get("score", 0))
+			lines.append("A new town every day. Come back tomorrow!")
+			return {"lines": lines, "actions": [
+				["Play a random town", func() -> void: AppState.go_menu("", "play"), UiKit.GOOD], menu]}
+		AppState.KIND_PLAY:
+			var diff := String(s["difficulty"])
+			var r := Progress.record_play(diff, p_found, _elapsed, _wrong)
+			var lines: Array = ["Score %d%s" % [r["score"], "  ·  New best!" if r["new_best"] else ""]]
+			lines.append("Your best on %s: %d" % [Difficulty.get_level(diff)["name"], r["best"]])
+			return {"lines": lines, "actions": [
+				["Next town", func() -> void: AppState.start_play(diff), UiKit.GOOD],
+				["Difficulty", func() -> void: AppState.go_menu("", "play"), UiKit.ACCENT], menu]}
+		AppState.KIND_FRIEND:
+			var friend_id := String(s.get("friend_id", ""))
+			FriendsStore.record_my_find(friend_id, c, p_found, _elapsed, _taps, _wrong)
+			var f := FriendsStore.get_friend(friend_id)
+			var st := FriendsStore.stats(f)
+			var lines: Array = []
+			if float(st["my_best"]) > 0.0:
+				lines.append("Your fastest find vs %s: %s" % [f.get("name", "them"), UiKit.format_time(st["my_best"])])
+			lines.append("Now hide, and your time goes along with your code.")
+			return {"lines": lines, "actions": [
+				["Hide and send back", func() -> void: AppState.start_friend_hide(friend_id, String(f.get("difficulty", Difficulty.DEFAULT_ID))), UiKit.GOOD],
+				["Friends", func() -> void: AppState.go_friends(), UiKit.MUTED]]}
+	return {"lines": [], "actions": [
+		["Retry", func() -> void: AppState.start_search(c), UiKit.ACCENT],
+		["Swap roles: you hide", func() -> void: AppState.start_hide(c.map_seed, c.map_id), UiKit.GOOD],
+		menu]}

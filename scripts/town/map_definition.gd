@@ -46,7 +46,9 @@ static func map_exists(id: String) -> bool:
 ## Loads and parses a map. Returns null (and pushes an error) on failure.
 ## Procedural maps ("procedural": "wfc") are built from [param map_seed]
 ## (the map's default_seed when it is negative), so pass the seed being played.
-static func load_map(id: String, map_seed: int = -1) -> MapDefinition:
+## [param size] picks one of the template's "sizes" (S, M, L, XL); "" or an
+## unknown size means the template as written (L).
+static func load_map(id: String, map_seed: int = -1, size: String = "") -> MapDefinition:
 	var path := map_path(id)
 	if not FileAccess.file_exists(path):
 		push_error("Map file not found: %s" % path)
@@ -59,10 +61,39 @@ static func load_map(id: String, map_seed: int = -1) -> MapDefinition:
 	if not json.data is Dictionary:
 		push_error("Map %s: root must be an object" % path)
 		return null
-	var d: Dictionary = json.data
+	var d: Dictionary = apply_size(json.data, size)
 	if String(d.get("procedural", "")) == "wfc":
 		d = WfcTown.build(d, map_seed if map_seed >= 0 else int(d.get("default_seed", 0)))
 	return from_dict(d)
+
+
+## Town sizes this map offers (keys of "sizes", in file order).
+static func sizes(id: String) -> PackedStringArray:
+	var out := PackedStringArray()
+	if not map_exists(id):
+		return out
+	var d: Variant = JSON.parse_string(FileAccess.get_file_as_string(map_path(id)))
+	if d is Dictionary and d.get("sizes") is Dictionary:
+		for k: String in d["sizes"]:
+			if not k.begins_with("_"):
+				out.append(k)
+	return out
+
+
+## [param template] with the overrides of size [param size] merged in (one
+## level deep, so {"grid": {"cols": 38}} keeps the other grid keys).
+static func apply_size(template: Dictionary, size: String) -> Dictionary:
+	var all: Variant = template.get("sizes", {})
+	if size == "" or not all is Dictionary or not (all as Dictionary).get(size) is Dictionary:
+		return template
+	var out := template.duplicate(true)
+	var over: Dictionary = all[size]
+	for key: String in over:
+		if over[key] is Dictionary and out.get(key) is Dictionary:
+			(out[key] as Dictionary).merge(over[key], true)
+		else:
+			out[key] = over[key]
+	return out
 
 
 static func from_dict(d: Dictionary) -> MapDefinition:

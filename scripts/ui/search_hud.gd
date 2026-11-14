@@ -29,6 +29,7 @@ var _bottom: VBoxContainer
 var _stats := [0.0, 0, 0]
 var _on_start: Callable
 var _result_args: Array = []
+var _kicker := ""
 var _error_args: Array = []
 
 
@@ -39,8 +40,10 @@ func _ready() -> void:
 	AppState.layout_changed.connect(_rebuild)
 
 
-func setup(challenge: ChallengeData) -> void:
+## [param kicker]: small line above the intro title ("Daily #3 · Hard").
+func setup(challenge: ChallengeData, kicker: String = "") -> void:
 	_challenge = challenge
+	_kicker = kicker
 	_rebuild()
 
 
@@ -214,6 +217,10 @@ func show_intro(on_start: Callable) -> void:
 		var v := UiKit.vbox(12)
 		v.alignment = BoxContainer.ALIGNMENT_CENTER
 		v.custom_minimum_size = Vector2(width, 0)
+		if _kicker != "":
+			var k := UiKit.label(_kicker, 18, UiKit.ACCENT, false)
+			k.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			v.add_child(k)
 		v.add_child(heading)
 		v.add_child(glass)
 		v.add_child(info)
@@ -230,7 +237,10 @@ func _hint_line() -> String:
 
 
 func _intro_line() -> String:
-	return "Remember this look. They're hiding somewhere in the crowd. The clock starts when you press Start."
+	var line := "Remember this look. They're hiding somewhere in the crowd. The clock starts when you press Start."
+	if _challenge.difficulty != "":
+		line = Difficulty.describe(_challenge.difficulty) + "." + (" Watch out for look-alikes!" if _challenge.decoys > 0 else "") + "\n" + line
+	return line
 
 
 func hide_intro() -> void:
@@ -266,8 +276,9 @@ func toast(text: String, color: Color = UiKit.INK) -> void:
 	_toast_tween.tween_property(_toast, "modulate:a", 0.0, 0.4)
 
 
-func show_result(found: bool, elapsed: float, taps: int, wrong: int, on_retry: Callable, on_swap: Callable, on_menu: Callable) -> void:
-	_result_args = [found, elapsed, taps, wrong, on_retry, on_swap, on_menu]
+## [param lines]: extra text (score, bests). [param actions]: [[text, Callable, Color], …].
+func show_result(found: bool, elapsed: float, taps: int, wrong: int, lines: Array, actions: Array) -> void:
+	_result_args = [found, elapsed, taps, wrong, lines, actions]
 	_give_up.disabled = true
 	_show_result_card()
 
@@ -280,13 +291,13 @@ func _show_result_card() -> void:
 	var line := UiKit.label("Time %s  ·  %d taps  ·  %d wrong" % [UiKit.format_time(_result_args[1]), _result_args[2], _result_args[3]], 18)
 	line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(line)
+	for extra: String in _result_args[4]:
+		var l := UiKit.label(extra, 17, UiKit.INK)
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		v.add_child(l)
 	if not found:
 		v.add_child(UiKit.label("The hiding spot is marked on the map.", 16, UiKit.MUTED))
-	v.add_child(UiKit.button_row([
-		UiKit.button("Retry", _result_args[4]),
-		UiKit.button("Swap roles: you hide", _result_args[5], UiKit.GOOD),
-		UiKit.button("Menu", _result_args[6], UiKit.MUTED),
-	]))
+	v.add_child(HideHud.action_buttons(_result_args[5]))
 	# Result card sits at the bottom so the revealed target stays visible.
 	var card := UiKit.panel(v)
 	card.size_flags_horizontal = Control.SIZE_SHRINK_CENTER

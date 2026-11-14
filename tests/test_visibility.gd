@@ -1,5 +1,6 @@
 extends TestSuite
-## The 70%-visible hide rule, measured with the real drawing code.
+## The hide rule (half the head and 70% overall must show), measured with the
+## real drawing code.
 
 const AVATAR_PRESET := 0
 
@@ -61,6 +62,36 @@ func test_partial_cover_by_bench_is_allowed() -> void:
 	var f := v.visible_fraction(_look(), Vector2(900, 500))
 	check(f > VisibilityChecker.MIN_VISIBLE and f < 1.0, "bench in front hides only the legs: %.2f" % f)
 	check(v.check(_look(), Vector2(900, 500))["ok"], "allowed")
+
+
+func test_head_must_show_even_when_body_is_visible() -> void:
+	# Somewhere at the edge of a tree crown the head is under the leaves while
+	# most of the body stands in the open. Feet and legs look alike on
+	# everyone, so that spot must be rejected for the head, not accepted for 70%.
+	var v := _checker([["tree", "tree_round", Vector2(800, 500)]])
+	var found := 0
+	for y in range(400, 640, 4):
+		for x in range(640, 960, 4):
+			var feet := Vector2(x, y)
+			var m := v.measure(VisibilityChecker.subject_for_look(_look()), feet)
+			if float(m["fraction"]) >= VisibilityChecker.MIN_VISIBLE and float(m["head"]) < VisibilityChecker.MIN_HEAD:
+				found += 1
+				var r := v.check(_look(), feet)
+				if r["ok"] or not String(r["reason"]).contains("head"):
+					check(false, "head %.2f / body %.2f at %s should fail on the head: %s" % [m["head"], m["fraction"], feet, r])
+					return
+	check(found > 0, "found %d spots with the body showing but the head hidden, all rejected" % found)
+
+
+func test_old_codes_keep_their_rule() -> void:
+	check(is_equal_approx(ChallengeData.new().min_head, VisibilityChecker.MIN_HEAD), "new challenges carry the head rule")
+	var c := ChallengeData.create(TownGenerator.generate(load_map(), 7), _look(), "Ann", Vector2(400, 500))
+	var d := c.to_dict()
+	(d["rules"] as Dictionary).erase("min_head")
+	var parsed := ChallengeCodec.from_dict(d)
+	check(parsed["challenge"] != null, "old-style dict parses: %s" % parsed.get("error", ""))
+	if parsed["challenge"] != null:
+		check(is_equal_approx((parsed["challenge"] as ChallengeData).min_head, 0.0), "a code without the head rule keeps playing without it")
 
 
 func test_building_and_decals() -> void:

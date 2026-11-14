@@ -2410,5 +2410,53 @@
   "model": "flux-2-klein-base-4b.safetensors",
   "raw": "art_src/raw/iso_trash_can.png",
   "generated_at": "2026-11-13 14:10:36"
+ },
+ "app_icon_1": {
+  "prompt": "STYLE: original whimsical storybook illustration, delicate scratchy dark brown ink linework with fine hatching, soft watercolour washes in warm pastel colours, cream paper tones, crooked wonky leaning houses with curly wrought-iron details. Eccentric, cosy and playful, soft daylight from upper left. Square app icon artwork filling the whole frame edge to edge, full-bleed background, bold simple readable shapes, strong contrast. A big round magnifying glass with a honey-coloured turned wooden handle and a brass rim, tilted, fills most of the frame, held over a tiny busy crooked town street crowded with small people seen from above. Inside the lens, magnified, one cheerful little person in a mustard yellow coat and a teal knitted hat waves at the viewer. Background outside the lens slightly muted. No text, no letters, no border, no frame, no rounded corners.",
+  "seed": 9501,
+  "width": 1024,
+  "height": 1024,
+  "background": "none",
+  "seconds": 239.6,
+  "workflow": "art_src/workflows/flux2_klein_4b_base_only.json",
+  "model": "flux-2-klein-base-4b.safetensors",
+  "raw": "art_src/raw/app_icon_1.png",
+  "generated_at": "2026-11-14 10:16:54"
+ },
+ "app_icon_2": {
+  "prompt": "STYLE: original whimsical storybook illustration, delicate scratchy dark brown ink linework with fine hatching, soft watercolour washes in warm pastel colours, cream paper tones, crooked wonky leaning houses with curly wrought-iron details. Eccentric, cosy and playful, soft daylight from upper left. Square app icon artwork filling the whole frame edge to edge, full-bleed background, bold simple readable shapes, strong contrast. A big round magnifying glass with a honey-coloured turned wooden handle and a brass rim, tilted, fills most of the frame, held over a tiny busy crooked town street crowded with small people seen from above. Inside the lens, magnified, one cheerful little person in a mustard yellow coat and a teal knitted hat waves at the viewer. Background outside the lens slightly muted. No text, no letters, no border, no frame, no rounded corners.",
+  "seed": 9502,
+  "width": 1024,
+  "height": 1024,
+  "background": "none",
+  "seconds": 241.8,
+  "workflow": "art_src/workflows/flux2_klein_4b_base_only.json",
+  "model": "flux-2-klein-base-4b.safetensors",
+  "raw": "art_src/raw/app_icon_2.png",
+  "generated_at": "2026-11-14 10:20:56"
+ },
+ "splash_1": {
+  "prompt": "STYLE: original whimsical storybook illustration, delicate scratchy dark brown ink linework with fine hatching, soft watercolour washes in warm pastel colours, cream paper tones, crooked wonky leaning houses with curly wrought-iron details. Eccentric, cosy and playful, soft daylight from upper left. Wide panoramic illustration of a crowded wonky storybook town seen from a high angle three-quarter view: crooked leaning pastel houses all around the edges, striped market stalls, round trees and pink blossom trees, lanterns, a few ducks, many tiny people milling about. The centre of the picture is a calm, open, pale cobblestone plaza with lots of empty space. No text, no letters, no border, no frame.",
+  "seed": 9601,
+  "width": 1536,
+  "height": 864,
+  "background": "none",
+  "seconds": 246.3,
+  "workflow": "art_src/workflows/flux2_klein_4b_base_only.json",
+  "model": "flux-2-klein-base-4b.safetensors",
+  "raw": "art_src/raw/splash_1.png",
+  "generated_at": "2026-11-14 10:32:34"
+ },
+ "splash_2": {
+  "prompt": "STYLE: original whimsical storybook illustration, delicate scratchy dark brown ink linework with fine hatching, soft watercolour washes in warm pastel colours, cream paper tones, crooked wonky leaning houses with curly wrought-iron details. Eccentric, cosy and playful, soft daylight from upper left. Wide panoramic illustration of a crowded wonky storybook town seen from a high angle three-quarter view: crooked leaning pastel houses all around the edges, striped market stalls, round trees and pink blossom trees, lanterns, a few ducks, many tiny people milling about. The centre of the picture is a calm, open, pale cobblestone plaza with lots of empty space. No text, no letters, no border, no frame.",
+  "seed": 9602,
+  "width": 1536,
+  "height": 864,
+  "background": "none",
+  "seconds": 233.4,
+  "workflow": "art_src/workflows/flux2_klein_4b_base_only.json",
+  "model": "flux-2-klein-base-4b.safetensors",
+  "raw": "art_src/raw/splash_2.png",
+  "generated_at": "2026-11-14 10:36:28"
  }
 }

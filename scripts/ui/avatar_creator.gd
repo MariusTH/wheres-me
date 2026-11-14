@@ -216,4 +216,4 @@ func _randomize() -> void:
 
 func _done() -> void:
 	AppState.save_my_avatar(_name_edit.text, _look)
-	AppState.start_hide(AppState.map_seed)
+	AppState.finish_creator()

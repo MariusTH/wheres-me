@@ -111,7 +111,44 @@ static func from_dict(d: Dictionary) -> Dictionary:
 		if _is_int(rules.get("wrong_tap_limit", 0)):
 			c.wrong_tap_limit = maxi(0, int(rules.get("wrong_tap_limit", 0)))
 		c.show_target_on_finish = bool(rules.get("show_target_on_finish", true))
+		if _is_number(rules.get("min_visible")):
+			c.min_visible = clampf(float(rules["min_visible"]), 0.05, 1.0)
+		# Codes from before the head rule were made without it.
+		c.min_head = clampf(float(rules["min_head"]), 0.0, 1.0) if _is_number(rules.get("min_head")) else 0.0
+		if _is_int(rules.get("decoys")):
+			c.decoys = clampi(int(rules["decoys"]), 0, 40)
+	var size: Variant = d.get("size", "")
+	if not size is String:
+		return _fail("Town size must be text.")
+	if size != "" and not MapDefinition.sizes(c.map_id).has(size):
+		return _fail("Unknown town size '%s' (this build may be older than the challenge)." % size)
+	c.town_size = size
+	var diff: Variant = d.get("difficulty", "")
+	c.difficulty = String(diff) if diff is String and Difficulty.exists(String(diff)) else ""
+	var from: Variant = d.get("from", "")
+	if from is String and _is_player_id(from):
+		c.from_id = from
+		c.round = maxi(0, int(d.get("round", 0))) if _is_int(d.get("round", 0)) else 0
+	var rep: Variant = d.get("reply")
+	if rep is Dictionary and rep.get("to") is String:
+		c.reply = {
+			"to": String(rep["to"]).left(64),
+			"found": bool(rep.get("found", false)),
+			"time": maxf(0.0, float(rep.get("time", 0.0))) if _is_number(rep.get("time")) else 0.0,
+			"taps": maxi(0, int(rep.get("taps", 0))) if _is_int(rep.get("taps", 0)) else 0,
+			"wrong": maxi(0, int(rep.get("wrong", 0))) if _is_int(rep.get("wrong", 0)) else 0,
+		}
 	return {"challenge": c, "error": ""}
+
+
+## Player ids are short lowercase hex strings (see AppState.player_id).
+static func _is_player_id(s: String) -> bool:
+	if s.length() < 4 or s.length() > 32:
+		return false
+	for ch in s:
+		if not (ch >= "0" and ch <= "9" or ch >= "a" and ch <= "f" or ch == "-" or ch >= "g" and ch <= "z"):
+			return false
+	return true
 
 
 ## Writes the challenge JSON and returns its path ("" on failure).

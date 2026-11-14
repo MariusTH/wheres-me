@@ -9,6 +9,13 @@
  "notes": "Isometric procedural town: the town_wfc rules laid out on a 2:1 isometric grid (see WfcTown). Only cells showing inside view take part; every house gets its own square plot of grid.plot plan px. house_subset = [houses, shops] picked per seed from buildings, so towns differ in look. Bump map_version whenever WfcTown or this file changes in a way that would move anything. roads = per-line widths/offsets and jogs on straight stretches; plots = small buildings, garden gaps and seeded plot jitter/setback in house rows.",
  "view": [3600, 2400],
  "grid": {"cols": 30, "rows": 30, "cell": 144, "carriageway": 64, "plot": 112},
+ "sizes": {
+  "_doc": "Town sizes picked by difficulty (MapDefinition.load_map size argument). Overrides merged into the template; L is the classic town and has no overrides, so old codes rebuild unchanged. The view must fit inside the iso grid diamond: view.x/2/(cols*cell) + view.y/2/(rows*cell/2) <= 1.",
+  "S": {"view": [1800, 1200], "quality": {"min_house_fronts": 7}},
+  "M": {"view": [2600, 1750], "quality": {"min_house_fronts": 15}},
+  "L": {},
+  "XL": {"view": [4400, 2900], "grid": {"cols": 38, "rows": 38}, "quality": {"min_house_fronts": 42}}
+ },
  "roads": {
   "widths": [40, 52, 64, 64, 76],
   "offset": 28,

@@ -93,6 +93,24 @@ func ensure_unique(look: Dictionary) -> PackedStringArray:
 	return changed
 
 
+## Decoys (see Decoys) then the twin rule, on data and nodes. Hider, seeker
+## and AutoHider all run this in the same order, so the crowd matches.
+func prepare_crowd(look: Dictionary, decoys: int) -> void:
+	for id in Decoys.apply(layout, look, decoys, layout.map_seed):
+		var node := world.get_node_or_null(NodePath(id)) as CharacterActor
+		var obj := _object(id)
+		if node and obj:
+			node.set_look(obj.look)
+	ensure_unique(look)
+
+
+func _object(id: String) -> WorldObjectData:
+	for obj in layout.objects:
+		if obj.id == id:
+			return obj
+	return null
+
+
 func clear_target() -> void:
 	if target:
 		if target is CharacterActor:

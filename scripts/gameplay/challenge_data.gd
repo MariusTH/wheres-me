@@ -8,7 +8,10 @@ extends RefCounted
 ## v2: custom avatar look + free placement (v1 used preset avatars and hide points).
 ## v3: the hider could be a museum critter (museum removed; such codes are
 ## rejected, avatar v3 codes still load).
-const SCHEMA_VERSION := 3
+## v4: town size + difficulty rules (min_visible, min_head, decoys), and the
+## friend-game fields: who sent it ("from"), the round and a reply carrying
+## the sender's result on the challenge it answers.
+const SCHEMA_VERSION := 4
 ## Oldest version this build still reads.
 const MIN_SCHEMA_VERSION := 2
 const TARGET_OBJECT_ID := "target_player"
@@ -26,6 +29,21 @@ var target_object_id: String = TARGET_OBJECT_ID
 var target_world_position: Vector2 = Vector2.ZERO
 var wrong_tap_limit: int = 0
 var show_target_on_finish: bool = true
+## Town size (MapDefinition sizes); "" = the template as written (L).
+var town_size: String = ""
+## Difficulty id ("" for older codes, which play like the classic rule).
+var difficulty: String = ""
+## The hide rule this challenge was made under (see VisibilityChecker).
+var min_visible: float = VisibilityChecker.MIN_VISIBLE
+var min_head: float = VisibilityChecker.MIN_HEAD
+## Look-alike crowd members (see Decoys).
+var decoys: int = 0
+## Friend games: the sender's player id ("" = not a friend game), the round
+## number in that friendship, and the sender's result on the challenge this
+## one answers: {"to": challenge_id, "found": bool, "time": float, "taps": int, "wrong": int}.
+var from_id: String = ""
+var round: int = 0
+var reply: Dictionary = {}
 
 
 static func create(layout: TownLayout, look: Dictionary, hider_name_text: String, feet: Vector2) -> ChallengeData:
@@ -41,6 +59,21 @@ static func create(layout: TownLayout, look: Dictionary, hider_name_text: String
 	return c
 
 
+## Sets the size and hide rules of [param id] (see Difficulty).
+func apply_difficulty(id: String) -> void:
+	var l := Difficulty.get_level(id)
+	difficulty = String(l["id"])
+	town_size = String(l["size"])
+	min_visible = float(l["min_visible"])
+	min_head = float(l["min_head"])
+	decoys = int(l["decoys"])
+
+
+## A checker for this challenge's rule.
+func checker(map_def: MapDefinition, layout: TownLayout) -> VisibilityChecker:
+	return VisibilityChecker.new(map_def, layout.objects, min_visible, min_head)
+
+
 ## What is hidden, as VisibilityChecker / TownController.place_subject take it.
 func subject() -> WorldObjectData:
 	return VisibilityChecker.subject_for_look(hider_look)
@@ -52,7 +85,7 @@ func seeker_title() -> String:
 
 
 func to_dict() -> Dictionary:
-	return {
+	var d := {
 		"schema_version": schema_version,
 		"map_id": map_id,
 		"map_version": map_version,
@@ -67,8 +100,21 @@ func to_dict() -> Dictionary:
 		"rules": {
 			"wrong_tap_limit": wrong_tap_limit,
 			"show_target_on_finish": show_target_on_finish,
+			"min_visible": snappedf(min_visible, 0.01),
+			"min_head": snappedf(min_head, 0.01),
+			"decoys": decoys,
 		},
 	}
+	if town_size != "":
+		d["size"] = town_size
+	if difficulty != "":
+		d["difficulty"] = difficulty
+	if from_id != "":
+		d["from"] = from_id
+		d["round"] = round
+	if not reply.is_empty():
+		d["reply"] = reply
+	return d
 
 
 ## Random id for naming files only; never feeds map generation.

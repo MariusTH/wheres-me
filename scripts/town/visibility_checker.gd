@@ -1,7 +1,9 @@
 class_name VisibilityChecker
 extends RefCounted
-## The hide rule: the hider may stand anywhere on the map as long as at least MIN_VISIBLE of it is visible in the
-## rendered scene.
+## The hide rule: the hider may stand anywhere on the map as long as at least
+## MIN_HEAD of their head and at least MIN_VISIBLE of them overall are visible in
+## the rendered scene. The head comes first: feet and legs look much the same on
+## everyone, so it's the face, hair and hat a seeker recognises.
 ##
 ## Visibility is measured by replaying the real drawing code into MaskCanvas:
 ## the avatar's opaque pixels (sampled every SAMPLE_STEP px) are tested
@@ -10,23 +12,37 @@ extends RefCounted
 ## canopy (tree crowns, awnings, parasols), which always draw above people.
 
 const MIN_VISIBLE := 0.70
+## Floor for every mode: at least half the head always shows. Difficulty levels
+## may ask for more, never less (old codes without the rule use 0.0).
+const MIN_HEAD := 0.50
 const SAMPLE_STEP := 2.0
 ## Only objects this close (feet to feet) can overlap the avatar on screen.
 const NEIGHBOUR_DX := 180.0
 const NEIGHBOUR_DY := 520.0
 ## Avatar bounds relative to its feet, generous enough for hats and balloons.
 const AVATAR_REGION := Rect2(-40, -120, 80, 126)
+## The face, hair and hat, relative to the feet (see PlaceholderArt.draw_character:
+## the neck is at y -44, the tallest hats reach about -70). Where's Wally almost
+## always shows his head: the face and hat are what the seeker recognises, so
+## harder difficulties may hide more of the body but keep some head showing.
+const HEAD_REGION := Rect2(-14, -72, 28, 30)
 
 var _map: MapDefinition
 var _objects: Array[WorldObjectData]
+## The rule being checked: at least [member min_visible] of the whole avatar and
+## at least [member min_head] of its head must show. Defaults: the classic rule.
+var min_visible := MIN_VISIBLE
+var min_head := MIN_HEAD
 
 
-func _init(map_def: MapDefinition, objects: Array[WorldObjectData]) -> void:
+func _init(map_def: MapDefinition, objects: Array[WorldObjectData], p_min_visible: float = MIN_VISIBLE, p_min_head: float = MIN_HEAD) -> void:
 	_map = map_def
 	_objects = objects
+	min_visible = p_min_visible
+	min_head = p_min_head
 
 
-## Avatar check. {"fraction": float 0..1, "ok": bool, "reason": String ("" when ok)}.
+## Avatar check. {"fraction": float 0..1, "head": float 0..1, "ok": bool, "reason": String ("" when ok)}.
 func check(look: Dictionary, feet: Vector2) -> Dictionary:
 	return check_subject(subject_for_look(look), feet)
 
@@ -35,12 +51,18 @@ func check(look: Dictionary, feet: Vector2) -> Dictionary:
 func check_subject(subject: WorldObjectData, feet: Vector2) -> Dictionary:
 	var body := Rect2(feet + Vector2(-14, -64), Vector2(28, 64))
 	if not _map.world_bounds.encloses(body):
-		return {"fraction": 0.0, "ok": false, "reason": "That's outside the %s." % _map.title.to_lower()}
-	var fraction := visible_fraction_of(subject, feet)
-	if fraction + 0.0005 < MIN_VISIBLE:
-		return {"fraction": fraction, "ok": false,
-			"reason": "Only %d%% of you is visible. At least %d%% must show." % [floori(fraction * 100.0), roundi(MIN_VISIBLE * 100.0)]}
-	return {"fraction": fraction, "ok": true, "reason": ""}
+		return {"fraction": 0.0, "head": 0.0, "ok": false, "reason": "That's outside the %s." % _map.title.to_lower()}
+	var m := measure(subject, feet)
+	var fraction: float = m["fraction"]
+	var head: float = m["head"]
+	# Head first: it's what the seeker recognises.
+	if head + 0.0005 < min_head:
+		return {"fraction": fraction, "head": head, "ok": false,
+			"reason": "Your head is too hidden (%d%% shows). At least %d%% of your head must show." % [floori(head * 100.0), roundi(min_head * 100.0)]}
+	if fraction + 0.0005 < min_visible:
+		return {"fraction": fraction, "head": head, "ok": false,
+			"reason": "Only %d%% of you is visible. At least %d%% must show." % [floori(fraction * 100.0), roundi(min_visible * 100.0)]}
+	return {"fraction": fraction, "head": head, "ok": true, "reason": ""}
 
 
 static func subject_for_look(look: Dictionary) -> WorldObjectData:
@@ -55,6 +77,11 @@ func visible_fraction(look: Dictionary, feet: Vector2) -> float:
 
 
 func visible_fraction_of(subject: WorldObjectData, feet: Vector2) -> float:
+	return measure(subject, feet)["fraction"]
+
+
+## {"fraction": visible share of the whole avatar, "head": visible share of its head}.
+func measure(subject: WorldObjectData, feet: Vector2) -> Dictionary:
 	var region := AVATAR_REGION
 	var grid := PackedVector2Array()
 	var y := region.position.y
@@ -69,7 +96,7 @@ func visible_fraction_of(subject: WorldObjectData, feet: Vector2) -> float:
 	_draw_subject(avatar, subject)
 	var body := avatar.covered_points()
 	if body.is_empty():
-		return 0.0
+		return {"fraction": 0.0, "head": 0.0}
 	var occ := MaskCanvas.new(body)
 	for obj in _objects:
 		if obj == subject:
@@ -78,7 +105,18 @@ func visible_fraction_of(subject: WorldObjectData, feet: Vector2) -> float:
 		if absf(d.x) > NEIGHBOUR_DX or absf(d.y) > NEIGHBOUR_DY:
 			continue
 		draw_cover(occ, obj, feet.y)
-	return 1.0 - float(occ.covered_count()) / float(body.size())
+	var head_rect := Rect2(feet + HEAD_REGION.position, HEAD_REGION.size)
+	var head_total := 0
+	var head_seen := 0
+	for i in body.size():
+		if head_rect.has_point(body[i]):
+			head_total += 1
+			if occ.hit[i] == 0:
+				head_seen += 1
+	return {
+		"fraction": 1.0 - float(occ.covered_count()) / float(body.size()),
+		"head": float(head_seen) / float(head_total) if head_total > 0 else 0.0,
+	}
 
 
 static func _draw_subject(canvas: MaskCanvas, subject: WorldObjectData) -> void:

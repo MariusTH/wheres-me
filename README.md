@@ -1,8 +1,13 @@
 # Where's Me (Godot POC)
 
-A hidden-object game in the style of *Where's Waldo*, with a social twist. You build your own avatar, hide it anywhere in a crowded, hand-drawn town (at least 70% of it must stay visible), send the puzzle to a friend as a code, and they search the map to find you.
+A hidden-object game in the style of *Where's Waldo*, with a social twist. You build your own avatar, hide it anywhere in a crowded, hand-drawn town (at least half your head and 70% of you must stay visible), send the puzzle to a friend as a code, and they search the map to find you.
 
 This is a local-first proof of concept: it has no backend, no accounts and no networking. Challenges travel as share codes (`WM1-…`; older `HF1-` codes still work). It ships as a web build on itch.io: https://parchnipp.itch.io/wheres-me.
+
+## Game modes
+- **Play with friends** (Friends screen): **Send a game** (pick a difficulty, hide, share the code), **Play with random**, and a box for codes friends send you. Each game shows whose turn it is (find them / hide and send back / waiting), rounds played, wins, and fastest and average find times. Codes carry the sender's player id, the round, and their result on the code they answer, so the loop works with no server (`FriendsStore`, `scripts/social/`). "Play with random" goes through `Matchmaker`. Until matchmaking is online it pairs you with a practice partner: a computer player who hides with `AutoHider` and gets a simulated search time on your spots.
+- **Daily challenge**: the same town and hider for everyone each day (seed from the date). It ramps through the week: Monday easy, Saturday expert. Only the first try counts. Your best score and streak show on the menu (`Progress`). Scores go through the `Leaderboard` seam, which only stores locally for now.
+- **Play**: pick Easy / Normal / Hard / Expert and the computer hides someone. Each level sets the town size (S/M/L/XL), how hidden the person is, how much of the head must show, and how many look-alike decoys are in the crowd (`Difficulty`). The design reasoning is in [wherewally.md](wherewally.md).
 
 ## Requirements
 - Godot **4.5.x** (developed with 4.5.1-stable), standard build. No plugins are needed.
@@ -14,6 +19,21 @@ tools/publish_itch.sh --dry-run   # export to build/web only
 tools/publish_itch.sh             # export + butler push to parchnipp/wheres-me:html5
 ```
 Needs the Godot 4.5.1 web export templates and `butler login` once. The build is single-threaded, so itch.io's SharedArrayBuffer option is not needed. To test locally: `python3 -m http.server 8765 --directory build/web`, then open http://localhost:8765.
+
+## Publish to TestFlight (iOS)
+```
+tools/publish_testflight.sh              # build, archive, upload to App Store Connect
+tools/publish_testflight.sh --no-upload  # build, archive, export the .ipa to build/ios/ipa only
+VERSION=1.0.1 tools/publish_testflight.sh
+tools/run_ios_sim.sh ['wheresme://play?c=WM1-…']   # Simulator build (x86_64/Rosetta: slow), optional deep link
+```
+App "Where's Me?" (Apple ID 6834707882, bundle `com.caboodle.app`, team 5LMLNW3DV5). Needs Xcode, the Godot 4.7.2 iOS export templates, and either your Apple ID signed in under Xcode > Settings > Accounts or an App Store Connect API key (`ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_PATH`). The build number is a UTC timestamp, so every upload is new. Exporting iOS from the editor needs `tools/build_ios_native.sh` first.
+
+Native glue: `native/ios/WMNative.m` (linked by `addons/wm_ios_native`) opens the iOS share sheet (`NativeShare`) and receives `wheresme://play?c=WM1-…` deep links (`DeepLink`). Shared messages end in such a link: tapping it opens the app straight into that challenge; pasting the whole message still works. On desktop: `godot --path . -- --link='wheresme://play?c=WM1-…'`.
+
+Debug console: shake the phone, tap with three fingers, or press F12 (desktop; or start with `-- --console`). It shows device/app info, recent logs and the native iOS log, with Copy / Share for sending to a developer.
+
+Branding: `python3 -I tools/gen_assets.py app_icon_1 splash_1` renders with ComfyUI (see BRANDING in that script), `python3 -I tools/make_branding.py` writes the icon, launch screen / boot splash and itch.io cover to `art/branding/`.
 
 ## Phones
 The UI scales by the screen's shorter side: desktop windows keep the 1280×720 design size, and phones get 480 UI units across the short side, so buttons are about 44 px, Apple's minimum touch size (`AppState._apply_ui_scale`). Below 700 units wide (phone in portrait) screens switch to stacked layouts: the creator gets a compact header, the hide panel becomes a bottom sheet, and the search clock gets its own row. Below 600 tall (phone in landscape) the intro card goes side by side. Screens rebuild when the phone rotates (`AppState.layout_changed`). Try it on desktop with `$GODOT --path . --resolution 393x852`.
@@ -37,7 +57,7 @@ On the first launch, run `$GODOT --headless --path . --import` once (or open the
 ## How to play the hide → search loop
 1. **Main menu → "Create" next to your avatar (or "Hide in this town").** In the avatar creator, build your look from parts: skin, body, hair, hat, top, pattern, trousers, an extra, and glasses. You can start from a preset or hit **Randomize**, then type the name the seeker will see. **Hide me!** saves your avatar (`user://my_avatar.json`) and opens the town. The menu then shows your avatar, and **Hide in this town** goes straight to the town. **Town no.** picks the town (every number is a different town); **New town** rolls a random one.
 2. **Tap anywhere on the map** to put yourself there; the tap marks your middle. **Drag yourself** to fine-tune. Dragging anywhere else pans the map.
-3. The panel shows **Visible: NN%** live. You may hide anywhere, even in the road, among the market stalls or beside the bins, as long as **at least 70% of you is visible** in the rendered scene. Tree crowns, awnings, people standing in front of you and buildings all count as cover.
+3. The panel shows **Head NN% · Visible NN%** live. You may hide anywhere, even in the road, among the market stalls or beside the bins, as long as **at least half your head and 70% of you are visible** in the rendered scene. The head counts first: feet and legs look alike on everyone, so the face, hair and hat are what make you findable. Difficulty levels change the overall percentage, but the head never drops below half. Tree crowns, awnings, people standing in front of you and buildings all count as cover.
 4. **Confirm hiding spot.** The share dialog shows an `WM1-…` code. **Copy code** puts it on the clipboard, and a JSON copy is saved under `user://challenges/`.
 5. Either press **Search now (pass the device)**, or have a friend paste the code on the main menu (**Paste** → **Find them!**). **Open last saved** opens the newest saved file.
 6. **Search.** A big card shows who you're looking for (the map stays hidden behind it). Press **Start** to start the clock, which runs at the top centre and turns orange and then red, pulsing each second, after 1 and 2 minutes. The card at the top left keeps showing the hider's look and name. Tap people; wrong guesses flash red and count. **Give up** reveals the hider.
@@ -67,14 +87,16 @@ Buildings are drawn in thin vertical slices sorted by the wall in front of them,
 $GODOT --headless --path . --import            # once, or after adding files
 $GODOT --headless --path . -s res://tests/run_tests.gd
 ```
-The run prints PASS/FAIL per test and exits with code 0 only when everything passes. Coverage includes determinism (including a golden hash of the town), the town generator's guarantees (connected roads, houses facing a kerb, sliced building depth), challenge round trips (code, JSON and file), malformed input, the 70% visibility rule, tap selection after pan and zoom, depth setup, crowd twins of the hider and scene restarts. See `docs/POC_NOTES.md`.
+The run prints PASS/FAIL per test and exits with code 0 only when everything passes. Coverage includes determinism (including a golden hash of the town), the town generator's guarantees (connected roads, houses facing a kerb, sliced building depth), challenge round trips (code, JSON and file), malformed input, the visibility rule (head first, then 70% overall), tap selection after pan and zoom, depth setup, crowd twins of the hider and scene restarts. See `docs/POC_NOTES.md`.
 
 ## Developer flags
 Pass these after `--`, for example `$GODOT --path . -- --mode=search --preset=2 --at=1000,700`.
 
 | Flag | Effect |
 |---|---|
-| `--mode=create\|hide\|search\|debug` | Skip the menu |
+| `--mode=create\|hide\|search\|debug\|play\|daily\|friends` | Skip the menu |
+| `--difficulty=easy\|normal\|hard\|expert` | Difficulty for `--mode=play` |
+| `--size=S\|M\|L\|XL` | Town size for hide or debug |
 | `--map=town_iso` | Map for hide, debug and `--at` (the default) |
 | `--hud=0` | Hide the HUD (clean screenshots, e.g. the menu backdrop) |
 | `--seed=N` | Town seed for hide or debug |

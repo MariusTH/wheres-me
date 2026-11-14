@@ -13,7 +13,7 @@ asset in art_src/manifest.json. Uses art_src/workflows/flux2_klein_4b_base_only.
 
 Asset tables: the isometric town (ISO_BUILDINGS, ISO_SMALL_BUILDINGS, ISO_PROPS,
 ISO_EXTRA_PROPS), props shared with it that read the same from any angle
-(SHARED_PROPS), ground textures (GROUND) and HUD art (UI). tools/import_assets.py reads the same tables.
+(SHARED_PROPS), ground textures (GROUND), HUD art (UI) and branding (BRANDING, finished by tools/make_branding.py). tools/import_assets.py reads the same tables.
 """
 import json
 import shutil
@@ -214,6 +214,28 @@ GROUND = {
 
 
 
+# --- Branding (app icon, splash / launch screen, itch.io cover) --------------
+# Full-bleed scenes, no cut-out background. Several seeds per image; the pick and the
+# final crops/sizes are made by tools/make_branding.py. key -> (prompt, w, h, seed).
+BRANDING_STYLE = ("STYLE: original whimsical storybook illustration, delicate scratchy dark brown ink linework with fine "
+                  "hatching, soft watercolour washes in warm pastel colours, cream paper tones, crooked wonky leaning "
+                  "houses with curly wrought-iron details. Eccentric, cosy and playful, soft daylight from upper left. ")
+ICON_SUBJECT = ("Square app icon artwork filling the whole frame edge to edge, full-bleed background, bold simple readable "
+                "shapes, strong contrast. A big round magnifying glass with a honey-coloured turned wooden handle and a "
+                "brass rim, tilted, fills most of the frame, held over a tiny busy crooked town street crowded with small "
+                "people seen from above. Inside the lens, magnified, one cheerful little person in a mustard yellow coat "
+                "and a teal knitted hat waves at the viewer. Background outside the lens slightly muted. "
+                "No text, no letters, no border, no frame, no rounded corners.")
+SPLASH_SUBJECT = ("Wide panoramic illustration of a crowded wonky storybook town seen from a high angle three-quarter view: "
+                  "crooked leaning pastel houses all around the edges, striped market stalls, round trees and pink blossom "
+                  "trees, lanterns, a few ducks, many tiny people milling about. The centre of the picture is a calm, "
+                  "open, pale cobblestone plaza with lots of empty space. No text, no letters, no border, no frame.")
+BRANDING = {
+    **{f"app_icon_{i}": (ICON_SUBJECT, 1024, 1024, 9500 + i) for i in range(1, 5)},
+    **{f"splash_{i}": (SPLASH_SUBJECT, 1536, 864, 9600 + i) for i in range(1, 4)},
+}
+
+
 def build_jobs() -> dict:
     manifest = json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {}
     jobs = {}
@@ -239,6 +261,8 @@ def build_jobs() -> dict:
             12000 + i, 1024, 1024, "none")
     for i, (key, (subject, bg, w, h)) in enumerate(UI.items()):
         add(key, WONKY_PROP_STYLE + FRONT_CAMERA + subject.capitalize() + ". " + BACKGROUNDS[bg] + SUFFIX, 9100 + i, w, h, bg)
+    for key, (subject, w, h, seed) in BRANDING.items():
+        add(key, BRANDING_STYLE + subject, seed, w, h, "none")
     return jobs
 
 
