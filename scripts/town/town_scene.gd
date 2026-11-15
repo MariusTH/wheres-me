@@ -13,6 +13,19 @@ var controller: Node = null
 
 
 func _ready() -> void:
+	# Show a loading card first: building a big town blocks for a moment.
+	var curtain: LoadingCurtain = null
+	if LoadingCurtain.wanted():
+		curtain = LoadingCurtain.cover(self)
+		await curtain.settle()
+	_build()
+	if curtain:
+		# The first frame after the build draws (and meshes) every person.
+		await curtain.settle()
+		curtain.lift()
+
+
+func _build() -> void:
 	var map_seed := AppState.map_seed
 	var size := AppState.map_size
 	if AppState.mode == AppState.Mode.SEARCH and AppState.challenge:
@@ -30,7 +43,7 @@ func _ready() -> void:
 		# this exact town before building it, so it's built only once.
 		AppState.challenge = AutoHider.make(map_def, layout, String(AppState.auto_hide["difficulty"]), AppState.auto_hide.get("who", {}))
 	town.build(map_def, layout)
-	camera.setup(map_def.world_bounds)
+	camera.setup(MapFrame.padded(map_def.world_bounds))
 	debug_overlay.setup(map_def, layout, town)
 
 	match AppState.mode:

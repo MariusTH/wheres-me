@@ -74,7 +74,9 @@ func _context_line() -> String:
 func place_at(feet: Vector2) -> Dictionary:
 	if _confirmed:
 		return last_check
-	_feet = feet.round()
+	# Stay inside the town: the margin round the map (MapFrame) is empty paper.
+	var b := _town.map_def.world_bounds
+	_feet = Vector2(clampf(feet.x, b.position.x + 16.0, b.end.x - 16.0), clampf(feet.y, b.position.y + 80.0, b.end.y - 4.0)).round()
 	var target := _town.place_subject(_subject, _feet)
 	last_check = _checker.check_subject(_subject, _feet)
 	target.marker = WorldActor.Marker.PREVIEW_OK if last_check["ok"] else WorldActor.Marker.PREVIEW_BAD

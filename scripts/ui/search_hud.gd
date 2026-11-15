@@ -4,20 +4,21 @@ extends Control
 ## result and error dialogs. Desktop: who-card left, clock centre, stats
 ## right. Phone portrait: the clock gets its own top row with a small portrait
 ## and the buttons below it. Rebuilds when the screen's size class changes.
+## A small "Hide UI" button (or the H key) clears everything off the map
+## while searching; it stays in the corner to bring the UI back.
 
 signal give_up_pressed
 signal menu_pressed
-
-## The clock turns orange, then red, and pulses each second past these marks.
-const WARN_AFTER_S := 60.0
-const ALARM_AFTER_S := 120.0
 
 var _challenge: ChallengeData
 var _root: Control
 var _intro: Control
 var _clock: PanelContainer
 var _time: Label
-var _last_second := -1
+## Everything except the Hide/Show UI toggle and modal cards.
+var _chrome: Control
+var _ui_toggle: Button
+var _ui_hidden := false
 var _taps: Label
 var _toast: PanelContainer
 var _toast_label: Label
@@ -62,15 +63,20 @@ func _rebuild() -> void:
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for side in ["left", "right", "top", "bottom"]:
 		margin.add_theme_constant_override("margin_" + side, 8 if narrow else 12)
-	_root.add_child(margin)
+	_chrome = _ignore(Control.new())
+	_chrome.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_root.add_child(_chrome)
+	_chrome.add_child(margin)
 	var column := _ignore(UiKit.vbox(8))
 	margin.add_child(column)
 
-	var clock_box := UiKit.hbox(6)
-	clock_box.add_child(UiKit.icon("ui_stopwatch", 40 if narrow else 52))
-	_time = UiKit.title("0:00", 36 if narrow else 44, UiKit.INK)
+	# A small, calm clock: it's there if you want it, never nags.
+	var clock_box := UiKit.hbox(4)
+	clock_box.add_child(UiKit.icon("ui_stopwatch", 26 if narrow else 30))
+	_time = UiKit.title("0:00", 22 if narrow else 26, UiKit.INK)
 	_time.add_theme_constant_override("outline_size", 0)
-	_time.custom_minimum_size = Vector2(100 if narrow else 120, 0)
+	_time.add_theme_color_override("font_color", UiKit.INK)
+	_time.custom_minimum_size = Vector2(62 if narrow else 72, 0)
 	clock_box.add_child(_time)
 	_clock = UiKit.panel(clock_box)
 	_clock.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -138,7 +144,7 @@ func _rebuild() -> void:
 		clock_row.set_anchors_preset(Control.PRESET_TOP_WIDE)
 		clock_row.offset_top = 12
 		clock_row.add_child(_clock)
-		_root.add_child(clock_row)
+		_chrome.add_child(clock_row)
 
 	var fill := _ignore(Control.new())
 	fill.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -159,6 +165,18 @@ func _rebuild() -> void:
 	hint.add_theme_constant_override("outline_size", 4)
 	column.add_child(hint)
 
+	_ui_toggle = UiKit.button("", toggle_ui, UiKit.MUTED)
+	_ui_toggle.custom_minimum_size = Vector2(0, 40)
+	_ui_toggle.add_theme_font_size_override("font_size", 16)
+	_ui_toggle.modulate.a = 0.85
+	_ui_toggle.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	_ui_toggle.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_ui_toggle.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_ui_toggle.offset_right = -8 if narrow else -12
+	_ui_toggle.offset_bottom = -8 if narrow else -12
+	_root.add_child(_ui_toggle)
+	_apply_ui_hidden()
+
 	set_stats(_stats[0], _stats[1], _stats[2])
 	if _on_start.is_valid():
 		show_intro(_on_start)
@@ -166,6 +184,24 @@ func _rebuild() -> void:
 		_show_result_card()
 	if not _error_args.is_empty():
 		_show_error_dialog()
+
+
+## Hides (or brings back) everything on the map except the toggle itself.
+func toggle_ui() -> void:
+	_ui_hidden = not _ui_hidden
+	_apply_ui_hidden()
+
+
+func _apply_ui_hidden() -> void:
+	_chrome.visible = not _ui_hidden
+	_ui_toggle.text = "Show UI" if _ui_hidden else "Hide UI"
+
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	var key := event as InputEventKey
+	if key and key.pressed and not key.echo and key.keycode == KEY_H and _intro == null and _root:
+		toggle_ui()
+		get_viewport().set_input_as_handled()
 
 
 func _ignore(c: Control) -> Control:
@@ -253,26 +289,17 @@ func hide_intro() -> void:
 func set_stats(elapsed: float, taps: int, wrong: int) -> void:
 	_stats = [elapsed, taps, wrong]
 	_time.text = UiKit.format_time(elapsed)
-	var color := UiKit.BAD if elapsed >= ALARM_AFTER_S else (UiKit.ACCENT if elapsed >= WARN_AFTER_S else UiKit.INK)
-	_time.add_theme_color_override("font_color", color)
-	var second := int(elapsed)
-	if second != _last_second:
-		_last_second = second
-		if elapsed >= WARN_AFTER_S:
-			_clock.pivot_offset = _clock.size / 2.0
-			_clock.scale = Vector2.ONE * 1.12
-			create_tween().tween_property(_clock, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_SINE)
 	_taps.text = "Taps %d  ·  Wrong %d" % [taps, wrong]
 
 
-func toast(text: String, color: Color = UiKit.INK) -> void:
+func toast(text: String, color: Color = UiKit.INK, hold: float = 1.2) -> void:
 	_toast_label.text = text
 	_toast_label.add_theme_color_override("font_color", color)
 	if _toast_tween:
 		_toast_tween.kill()
 	_toast.modulate.a = 1.0
 	_toast_tween = create_tween()
-	_toast_tween.tween_interval(1.2)
+	_toast_tween.tween_interval(hold)
 	_toast_tween.tween_property(_toast, "modulate:a", 0.0, 0.4)
 
 
@@ -280,6 +307,8 @@ func toast(text: String, color: Color = UiKit.INK) -> void:
 func show_result(found: bool, elapsed: float, taps: int, wrong: int, lines: Array, actions: Array) -> void:
 	_result_args = [found, elapsed, taps, wrong, lines, actions]
 	_give_up.disabled = true
+	if _ui_hidden:
+		toggle_ui()
 	_show_result_card()
 
 

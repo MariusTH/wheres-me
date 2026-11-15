@@ -136,21 +136,29 @@ func _apply_ui_scale() -> void:
 		layout_changed.emit()
 
 
-## Avatar creator; continues to hide mode with [param p_seed] when done.
-## [param keep_session]: return to the same game (e.g. a friend hide) after.
+## Avatar creator. [param keep_session]: it was opened on the way into a hide
+## (e.g. a friend hide); Save carries on into that hide. Otherwise Save goes
+## back to the main menu.
 func start_creator(p_seed: int, keep_session: bool = false) -> void:
 	mode = Mode.CREATE
 	map_seed = p_seed
 	challenge = null
+	_creator_continues_hide = keep_session
 	if not keep_session:
 		session = {"kind": KIND_QUICK}
 		map_size = ""
 	_go(CREATOR_SCENE)
 
 
-## The creator's "Hide me!": hide in the game the creator was opened from.
+var _creator_continues_hide := false
+
+
+## The creator's Save: back to the menu, or on into the hide it interrupted.
 func finish_creator() -> void:
-	_enter_hide(map_seed)
+	if _creator_continues_hide:
+		_enter_hide(map_seed)
+	else:
+		go_menu()
 
 
 func has_avatar() -> bool:

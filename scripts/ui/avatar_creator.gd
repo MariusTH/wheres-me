@@ -1,7 +1,10 @@
 extends Control
 ## Avatar creator: build your look from the part kit (data/assets/avatar_kit.json),
-## name yourself, then go hide. The UI is generated from the kit, so new parts
+## name yourself, then Save. The UI is generated from the kit, so new parts
 ## or colours only need a JSON change. Saved to user://my_avatar.json.
+## Save only shows when something changed. Opened from the menu it returns to
+## the menu; opened on the way into a hide (no avatar yet, or "Edit" while
+## hiding) it carries on into that hide.
 
 const SWATCH_SIZE := Vector2(44, 44)
 
@@ -10,6 +13,11 @@ var _preview: AvatarPortrait
 var _name_edit: LineEdit
 var _selfie_status: Label
 var _content: Control
+var _save: Button
+## Name + look as last saved, to tell whether Save has anything to do.
+var _saved_key := ""
+## Stylebox per (colour, selected) so a tap doesn't build hundreds anew.
+var _boxes: Dictionary = {}
 ## field -> {"row": Control, "buttons": Array[Button], "values": Array}
 var _rows: Dictionary = {}
 
@@ -24,13 +32,15 @@ func _ready() -> void:
 		var rng := RandomNumberGenerator.new()
 		rng.randomize()
 		_look = AvatarKit.normalize(AvatarKit.presets()[rng.randi_range(0, AvatarKit.presets().size() - 1)]["look"])
+	if AppState.has_avatar():
+		_saved_key = _key(String(AppState.my_avatar.get("name", "")), AvatarKit.normalize(AppState.my_avatar["look"]))
 	_build(String(AppState.my_avatar.get("name", "")))
 	AppState.layout_changed.connect(func() -> void: _build(_name_edit.text))
 
 
 ## Desktop / landscape: preview column + parts list side by side. Phone
 ## portrait (narrow): compact header with a small preview, the parts list
-## filling the middle, and Back / Hide me! pinned at the bottom.
+## filling the middle, and Back / Save pinned at the bottom.
 func _build(name_text: String) -> void:
 	if _content:
 		_content.queue_free()
@@ -55,13 +65,14 @@ func _build(name_text: String) -> void:
 	_name_edit.custom_minimum_size = Vector2(0, 48)
 	_name_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_name_edit.text = name_text
+	_name_edit.text_changed.connect(func(_t: String) -> void: _update_save())
 	var random_button := UiKit.button("Randomize", _randomize, UiKit.MUTED)
 	random_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var actions := UiKit.hbox(8)
 	actions.add_child(UiKit.button("Back", func() -> void: AppState.go_menu(), UiKit.MUTED))
-	var go := UiKit.button("Hide me!", _done, UiKit.GOOD)
-	go.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	actions.add_child(go)
+	_save = UiKit.button("Save", _done, UiKit.GOOD)
+	_save.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	actions.add_child(_save)
 	_selfie_status = UiKit.label("", 15, UiKit.MUTED)
 	_selfie_status.visible = false
 
@@ -164,6 +175,7 @@ func _make_row(field: String) -> Control:
 ## Re-applies the selection highlight, hides irrelevant rows, redraws preview.
 func _refresh() -> void:
 	_preview.look = _look
+	_update_save()
 	for field: String in _rows:
 		var r: Dictionary = _rows[field]
 		(r["row"] as Control).visible = AvatarKit.is_relevant(field, _look)
@@ -173,14 +185,22 @@ func _refresh() -> void:
 			var selected: bool = vals[i] == _look[field]
 			var b: Button = buttons[i]
 			if AvatarKit.is_color_field(field):
+				if b.has_meta("selected") and b.get_meta("selected") == selected:
+					continue
+				b.set_meta("selected", selected)
 				var c := Color.html(String(vals[i]))
-				var border := UiKit.ACCENT if selected else UiKit.INK
+				var box := _box("swatch", c, selected)
 				for state in ["normal", "hover", "pressed", "focus"]:
-					b.add_theme_stylebox_override(state, UiKit._flat(c, 22, border, 5 if selected else 2))
+					b.add_theme_stylebox_override(state, box)
 			else:
+				if b.has_meta("selected") and b.get_meta("selected") == selected:
+					continue
+				b.set_meta("selected", selected)
 				var c := UiKit.ACCENT if selected else Color("8a8290")
+				var box := _box("part", c, selected)
+				var hover := _box("part", c.lightened(0.1), selected)
 				for state in ["normal", "hover", "pressed"]:
-					b.add_theme_stylebox_override(state, UiKit._flat(c if state != "hover" else c.lightened(0.1), 12, UiKit.INK))
+					b.add_theme_stylebox_override(state, hover if state == "hover" else box)
 
 
 ## "Look like me": on-device face analysis in the browser fills in skin, hair,
@@ -212,6 +232,26 @@ func _randomize() -> void:
 	rng.randomize()
 	_look = AvatarKit.normalize(AvatarKit.random_look(rng))
 	_refresh()
+
+
+func _box(kind: String, c: Color, selected: bool) -> StyleBoxFlat:
+	var k := "%s|%s|%s" % [kind, c.to_html(), selected]
+	if not _boxes.has(k):
+		if kind == "swatch":
+			_boxes[k] = UiKit._flat(c, 22, UiKit.ACCENT if selected else UiKit.INK, 5 if selected else 2)
+		else:
+			_boxes[k] = UiKit._flat(c, 12, UiKit.INK)
+	return _boxes[k]
+
+
+static func _key(avatar_name: String, look: Dictionary) -> String:
+	return avatar_name.strip_edges() + "|" + AvatarKit.look_key(look)
+
+
+## Save shows only when there's something new to save (always for a first avatar).
+func _update_save() -> void:
+	if _save:
+		_save.visible = _key(_name_edit.text, AvatarKit.normalize(_look)) != _saved_key
 
 
 func _done() -> void:

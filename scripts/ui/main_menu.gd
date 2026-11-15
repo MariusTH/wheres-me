@@ -177,7 +177,31 @@ func _build_play(v: VBoxContainer) -> void:
 		text.add_child(UiKit.label(rec, 13, UiKit.MUTED))
 		row.add_child(text)
 		v.add_child(row)
+	v.add_child(_help_toggle())
 	v.add_child(UiKit.button("Back", func() -> void: _go_page(""), UiKit.MUTED))
+
+
+## "Help when stuck" (SearchHelp): after 5 minutes the crowd thins and the
+## hider steps out of hiding a bit. Applies to every search.
+func _help_toggle() -> Control:
+	var row := UiKit.hbox(10)
+	var b := UiKit.button("", func() -> void: pass, UiKit.MUTED)
+	b.custom_minimum_size = Vector2(130, 48)
+	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var paint := func() -> void:
+		var on := SearchHelp.enabled()
+		b.text = "Help: On" if on else "Help: Off"
+		for state in ["normal", "hover", "pressed", "focus"]:
+			b.add_theme_stylebox_override(state, UiKit._button_box(UiKit.GOOD if on else UiKit.MUTED, state == "pressed"))
+	b.pressed.connect(func() -> void:
+		SearchHelp.set_enabled(not SearchHelp.enabled())
+		paint.call())
+	paint.call()
+	row.add_child(b)
+	var note := UiKit.label("Stuck for %d minutes? Some of the crowd goes home and the hider steps out a bit." % roundi(float(SearchHelp.STAGES[0]["after"]) / 60.0), 14, UiKit.MUTED)
+	note.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(note)
+	return row
 
 
 func _peek(b: Button, reveal: float, look: Dictionary = {}) -> PeekButton:

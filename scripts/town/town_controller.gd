@@ -39,11 +39,15 @@ func build(p_map: MapDefinition, p_layout: TownLayout) -> void:
 	add_child(world)
 	for obj in layout.objects:
 		spawn(obj)
+	var frame := MapFrame.new()
+	frame.name = "Frame"
+	add_child(frame)
+	frame.setup(map_def.world_bounds)
 	if map_def.ground_style != "":
 		var paper := PaperOverlay.new()
 		paper.name = "Paper"
 		add_child(paper)
-		paper.setup(map_def.world_bounds)
+		paper.setup(MapFrame.padded(map_def.world_bounds))
 
 
 func spawn(obj: WorldObjectData) -> Node2D:

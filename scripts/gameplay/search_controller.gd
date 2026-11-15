@@ -17,6 +17,9 @@ var _taps := 0
 var _wrong := 0
 var _running := false
 var found := false
+## SearchHelp stages already applied this search (-1 = none yet).
+var _help_stage := -1
+var _help_on := true
 
 
 func start(town: TownController, camera: MapCamera, hud_layer: CanvasLayer, challenge: ChallengeData) -> void:
@@ -51,6 +54,7 @@ func begin() -> void:
 	_hud.hide_intro()
 	_elapsed = 0.0
 	_running = true
+	_help_on = SearchHelp.enabled()
 
 
 ## "" if the challenge fits this build's town, otherwise why not. Re-runs the
@@ -72,6 +76,32 @@ func _process(delta: float) -> void:
 	if _running:
 		_elapsed += delta
 		_hud.set_stats(_elapsed, _taps, _wrong)
+		var next := _help_stage + 1
+		if _help_on and next < SearchHelp.STAGES.size() and _elapsed >= float(SearchHelp.STAGES[next]["after"]):
+			apply_help(next)
+
+
+## Makes the search easier (see SearchHelp): some of the crowd leaves and the
+## hider steps out of hiding a bit. Public so tests can drive it.
+func apply_help(stage: int) -> void:
+	_help_stage = stage
+	var st: Dictionary = SearchHelp.STAGES[stage]
+	var gone := SearchHelp.leavers(_town.layout, float(st["thin"]), _town.layout.map_seed)
+	for c in _town.characters():
+		if c != _town.target and c.visible and gone.has(c.object_id):
+			var t := c.create_tween()
+			t.tween_property(c, "modulate:a", 0.0, 0.8)
+			t.tween_callback(func() -> void: c.visible = false)
+	var target := _town.target
+	var to := SearchHelp.step_out(_town.map_def, _town.layout, _challenge.hider_look, target.position, float(st["visible"]), gone)
+	if to != target.position:
+		var t := target.create_tween()
+		t.tween_property(target, "position", to, 1.2).set_trans(Tween.TRANS_SINE)
+	_hud.toast("Hint: the crowd thinned and %s stepped out" % _hider_name(), UiKit.GOOD, 4.0)
+
+
+func _hider_name() -> String:
+	return _challenge.hider_name if _challenge.hider_name.strip_edges() != "" else "they"
 
 
 ## Returns the tapped person (or null). Public so tests can drive it.

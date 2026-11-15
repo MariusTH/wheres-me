@@ -11,6 +11,7 @@ const SUITES := [
 	"res://tests/test_photo_to_look.gd",
 	"res://tests/test_iso_town.gd",
 	"res://tests/test_modes.gd",
+	"res://tests/test_search_help.gd",
 ]
 
 var _passed := 0

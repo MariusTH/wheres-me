@@ -38,4 +38,6 @@ func hit_rect(pad: float) -> Rect2:
 
 func _draw() -> void:
 	_draw_marker()
-	PlaceholderArt.draw_character(self, look, flip_h)
+	# One cached mesh per look: a crowd of thousands stays a few thousand
+	# draw calls instead of ~20 per person (see MeshCanvas).
+	draw_mesh(MeshCanvas.character_mesh(look, flip_h), null)

@@ -33,6 +33,10 @@ const POOL := {
 }
 
 var _map: MapDefinition
+## Everything below is recorded once into a few meshes (MeshCanvas) and
+## replayed each frame: thousands of edge strokes become a handful of draw calls.
+var _c: MeshCanvas = null
+var _ops: Array = []
 var _textures: Dictionary = {}
 var _shadows: Array = []
 ## Isometric only: kerb lines (plan space) whose raised face shows on screen.
@@ -51,7 +55,7 @@ func setup(map_def: MapDefinition) -> void:
 			var path := "res://art/ground/ground_%s.png" % type
 			if ResourceLoader.exists(path):
 				_textures[type] = load(path)
-	queue_redraw()
+	queue_rebuild()
 
 
 ## Soft watercolour shadows under buildings, trees and props (storybook maps
@@ -77,25 +81,39 @@ func set_shadows(layout: TownLayout) -> void:
 		else:
 			w = minf(w * 0.9, 70.0)
 		_shadows.append({"p": p, "w": w})
-	queue_redraw()
+	queue_rebuild()
 
 
 ## Tiles [param tex] over [param r] in world-aligned UVs, so neighbouring rects
 ## of the same type join without visible seams.
 func _draw_textured(r: Rect2, tex: Texture2D) -> void:
 	var scale := float(tex.get_width()) / TEXTURE_WORLD_SIZE
-	draw_texture_rect_region(tex, r, Rect2(r.position * scale, r.size * scale))
+	_c.draw_texture_rect_region(tex, r, Rect2(r.position * scale, r.size * scale))
 
 
 func _draw() -> void:
 	if _map == null:
 		return
+	if _ops.is_empty():
+		_c = MeshCanvas.new()
+		_record()
+		_ops = _c.finish()
+		_c = null
+	MeshCanvas.replay(self, _ops)
+
+
+func queue_rebuild() -> void:
+	_ops = []
+	queue_redraw()
+
+
+func _record() -> void:
 	# Isometric maps paint the ground on the plan, through the projection.
-	draw_set_transform_matrix(_map.ground_transform)
+	_c.draw_set_transform_matrix(_map.ground_transform)
 	if _textures.has(_map.base_ground):
 		_draw_textured(_map.plan_bounds, _textures[_map.base_ground])
 	else:
-		draw_rect(_map.plan_bounds, COLORS.get(_map.base_ground, COLORS["grass"]))
+		_c.draw_rect(_map.plan_bounds, COLORS.get(_map.base_ground, COLORS["grass"]))
 		if _map.base_ground == "grass":
 			_draw_grass_tufts()
 	for g in _map.ground:
@@ -123,18 +141,18 @@ func _draw() -> void:
 			"pavement":
 				_draw_tiles(r, COLORS["pavement"], 35.0, false)
 			_:
-				draw_rect(r, COLORS.get(type, Color.MAGENTA))
-				draw_rect(r, Color(0, 0, 0, 0.12), false, 2.0)
+				_c.draw_rect(r, COLORS.get(type, Color.MAGENTA))
+				_c.draw_rect(r, Color(0, 0, 0, 0.12), false, 2.0)
 	for path in _map.paths:
 		if path.surface != "":
 			_draw_path(path)
 	if _map.ground_style != "":
 		_draw_storybook_edges()
-		draw_set_transform_matrix(Transform2D.IDENTITY)
+		_c.draw_set_transform_matrix(Transform2D.IDENTITY)
 		if _kerb_faces.size() > 0:
 			_draw_kerb_faces()
 		_draw_shadows()
-	draw_set_transform_matrix(Transform2D.IDENTITY)
+	_c.draw_set_transform_matrix(Transform2D.IDENTITY)
 
 
 func _draw_shadows() -> void:
@@ -147,12 +165,12 @@ func _draw_shadows() -> void:
 			var rr := p + Vector2(fp.x, -fp.x * 0.5)
 			var tt := p + Vector2(fp.x - fp.y, -(fp.x + fp.y) * 0.5)
 			var o := Vector2(34, 8)
-			draw_colored_polygon(PackedVector2Array([l, p, p + o, rr + o, tt + o, tt]), Color(0.2, 0.14, 0.24, 0.16))
+			_c.draw_colored_polygon(PackedVector2Array([l, p, p + o, rr + o, tt + o, tt]), Color(0.2, 0.14, 0.24, 0.16))
 			continue
 		var w: float = sh["w"]
 		for i in 3:
 			var k := 1.0 - i * 0.22
-			draw_colored_polygon(PlaceholderArt.ellipse_points(p + Vector2(4, 1), w * k, w * 0.3 * k + 2.0, 20), Color(0.2, 0.14, 0.24, 0.1))
+			_c.draw_colored_polygon(PlaceholderArt.ellipse_points(p + Vector2(4, 1), w * k, w * 0.3 * k + 2.0, 20), Color(0.2, 0.14, 0.24, 0.1))
 
 
 ## Hand-inked outlines where two ground types meet, a kerb along every road,
@@ -237,14 +255,14 @@ func _draw_edge(a: String, b: String, horizontal: bool, l: int, from: int, to: i
 		var rev := inner.duplicate()
 		rev.reverse()
 		kerb.append_array(rev)
-		draw_colored_polygon(kerb, KERB_STONE)
+		_c.draw_colored_polygon(kerb, KERB_STONE)
 		_band(line, -out, 10.0, Color(0.1, 0.07, 0.12, 0.22))
-		draw_polyline(inner, INK, 1.5)
+		_c.draw_polyline(inner, INK, 1.5)
 		# Isometric: a kerb faces the viewer when the road lies towards plan
 		# +x or +y (down the screen) from it.
 		if _map.ground_transform != Transform2D.IDENTITY and (out.x < 0.0 or out.y < 0.0):
 			_kerb_faces.append(line)
-	draw_polyline(line, INK, 2.0)
+	_c.draw_polyline(line, INK, 2.0)
 
 
 ## Points along a straight edge nudged by smooth deterministic noise of the
@@ -273,7 +291,7 @@ func _band(line: PackedVector2Array, towards: Vector2, width: float, color: Colo
 	var rev := _offset(line, towards * width)
 	rev.reverse()
 	poly.append_array(rev)
-	draw_colored_polygon(poly, color)
+	_c.draw_colored_polygon(poly, color)
 
 
 ## Decorative only: seeded from the map id, never affects gameplay data.
@@ -283,17 +301,17 @@ func _draw_grass_tufts() -> void:
 	var tuft := COLORS["grass"].darkened(0.14) as Color
 	for i in 900:
 		var p := _map.plan_bounds.position + Vector2(rng.randf_range(0, _map.plan_bounds.size.x), rng.randf_range(0, _map.plan_bounds.size.y))
-		draw_line(p, p + Vector2(-3, -6), tuft, 1.5)
-		draw_line(p, p + Vector2(3, -6), tuft, 1.5)
+		_c.draw_line(p, p + Vector2(-3, -6), tuft, 1.5)
+		_c.draw_line(p, p + Vector2(3, -6), tuft, 1.5)
 
 
 func _draw_tiles(r: Rect2, base: Color, step: float, offset_rows: bool) -> void:
-	draw_rect(r, base)
+	_c.draw_rect(r, base)
 	var line := base.darkened(0.08)
 	var y := r.position.y + step
 	var row := 0
 	while y < r.end.y:
-		draw_line(Vector2(r.position.x, y), Vector2(r.end.x, y), line, 1.0)
+		_c.draw_line(Vector2(r.position.x, y), Vector2(r.end.x, y), line, 1.0)
 		y += step
 	var x := r.position.x + step
 	while x < r.end.x:
@@ -303,17 +321,17 @@ func _draw_tiles(r: Rect2, base: Color, step: float, offset_rows: bool) -> void:
 			while yy < r.end.y:
 				var sx := x + (step * 0.5 if row % 2 == 1 else 0.0)
 				if sx < r.end.x:
-					draw_line(Vector2(sx, yy), Vector2(sx, minf(yy + step, r.end.y)), line, 1.0)
+					_c.draw_line(Vector2(sx, yy), Vector2(sx, minf(yy + step, r.end.y)), line, 1.0)
 				yy += step
 				row += 1
 		else:
-			draw_line(Vector2(x, r.position.y), Vector2(x, r.end.y), line, 1.0)
+			_c.draw_line(Vector2(x, r.position.y), Vector2(x, r.end.y), line, 1.0)
 		x += step
-	draw_rect(r, base.darkened(0.15), false, 2.0)
+	_c.draw_rect(r, base.darkened(0.15), false, 2.0)
 
 
 func _draw_road(r: Rect2, dashes: bool) -> void:
-	draw_rect(r, COLORS["road"])
+	_c.draw_rect(r, COLORS["road"])
 	if not dashes:
 		return
 	var dash := Color("f4efe6")
@@ -321,13 +339,13 @@ func _draw_road(r: Rect2, dashes: bool) -> void:
 		var cy := r.get_center().y
 		var x := r.position.x + 10.0
 		while x < r.end.x:
-			draw_line(Vector2(x, cy), Vector2(minf(x + 34.0, r.end.x), cy), dash, 4.0)
+			_c.draw_line(Vector2(x, cy), Vector2(minf(x + 34.0, r.end.x), cy), dash, 4.0)
 			x += 70.0
 	else:
 		var cx := r.get_center().x
 		var y := r.position.y + 10.0
 		while y < r.end.y:
-			draw_line(Vector2(cx, y), Vector2(cx, minf(y + 34.0, r.end.y)), dash, 4.0)
+			_c.draw_line(Vector2(cx, y), Vector2(cx, minf(y + 34.0, r.end.y)), dash, 4.0)
 			y += 70.0
 
 
@@ -337,35 +355,35 @@ func _draw_crosswalk(r: Rect2) -> void:
 	if r.size.y > r.size.x:
 		var y := r.position.y + 6.0
 		while y + 10.0 < r.end.y:
-			draw_rect(Rect2(r.position.x, y, r.size.x, 11.0), bar)
+			_c.draw_rect(Rect2(r.position.x, y, r.size.x, 11.0), bar)
 			y += 22.0
 	else:
 		var x := r.position.x + 6.0
 		while x + 10.0 < r.end.x:
-			draw_rect(Rect2(x, r.position.y, 11.0, r.size.y), bar)
+			_c.draw_rect(Rect2(x, r.position.y, 11.0, r.size.y), bar)
 			x += 22.0
 
 
 func _draw_water(c: Vector2, rx: float, ry: float) -> void:
-	draw_colored_polygon(PlaceholderArt.ellipse_points(c, rx + 10.0, ry + 8.0, 40), Color("c9c2b8"))
-	draw_colored_polygon(PlaceholderArt.ellipse_points(c, rx, ry, 40), COLORS["water"])
-	draw_colored_polygon(PlaceholderArt.ellipse_points(c + Vector2(-20, -10), rx * 0.7, ry * 0.6, 32), COLORS["water"].lightened(0.12))
+	_c.draw_colored_polygon(PlaceholderArt.ellipse_points(c, rx + 10.0, ry + 8.0, 40), Color("c9c2b8"))
+	_c.draw_colored_polygon(PlaceholderArt.ellipse_points(c, rx, ry, 40), COLORS["water"])
+	_c.draw_colored_polygon(PlaceholderArt.ellipse_points(c + Vector2(-20, -10), rx * 0.7, ry * 0.6, 32), COLORS["water"].lightened(0.12))
 	var outline := PlaceholderArt.ellipse_points(c, rx, ry, 40)
 	outline.append(outline[0])
-	draw_polyline(outline, PlaceholderArt.OUTLINE, 2.0)
+	_c.draw_polyline(outline, PlaceholderArt.OUTLINE, 2.0)
 	for o in [Vector2(-120, 20), Vector2(60, -40), Vector2(150, 40), Vector2(-40, 60)]:
-		draw_arc(c + o, 14.0, PI * 1.15, PI * 1.85, 8, Color(1, 1, 1, 0.55), 2.0)
+		_c.draw_arc(c + o, 14.0, PI * 1.15, PI * 1.85, 8, Color(1, 1, 1, 0.55), 2.0)
 
 
 func _draw_path(path: MapPath) -> void:
 	var base: Color = COLORS.get(path.surface, COLORS["sand"])
 	var edge := base.darkened(0.18)
-	draw_polyline(path.points, edge, path.width + 6.0)
+	_c.draw_polyline(path.points, edge, path.width + 6.0)
 	for p in path.points:
-		draw_circle(p, (path.width + 6.0) / 2.0, edge)
-	draw_polyline(path.points, base, path.width)
+		_c.draw_circle(p, (path.width + 6.0) / 2.0, edge)
+	_c.draw_polyline(path.points, base, path.width)
 	for p in path.points:
-		draw_circle(p, path.width / 2.0, base)
+		_c.draw_circle(p, path.width / 2.0, base)
 
 
 ## Isometric: the side of the kerb stone shows below every kerb line that
@@ -382,5 +400,5 @@ func _draw_kerb_faces() -> void:
 		var rev := bottom.duplicate()
 		rev.reverse()
 		poly.append_array(rev)
-		draw_colored_polygon(poly, KERB_FACE)
-		draw_polyline(bottom, INK, 1.5)
+		_c.draw_colored_polygon(poly, KERB_FACE)
+		_c.draw_polyline(bottom, INK, 1.5)
