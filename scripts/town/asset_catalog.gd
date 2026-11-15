@@ -75,13 +75,27 @@ static func texture(key: String, field: String = "texture") -> Texture2D:
 		return null
 	if _textures.has(path):
 		return _textures[path]
-	var tex: Texture2D = null
-	if ResourceLoader.exists(path):
+	if not TextureAtlas.built():
+		TextureAtlas.build(all_texture_paths())
+	var tex: Texture2D = TextureAtlas.get_texture(path)
+	if tex == null and ResourceLoader.exists(path):
 		tex = load(path) as Texture2D
 	if tex == null:
 		push_warning("Asset %s: texture %s missing, using placeholder art" % [key, path])
 	_textures[path] = tex
 	return tex
+
+
+## Every texture the catalog refers to ("texture" and "canopy_texture").
+static func all_texture_paths() -> Array:
+	_ensure_loaded()
+	var out := {}
+	for key: String in _assets:
+		for field in ["texture", "canopy_texture"]:
+			var p := String((_assets[key] as Dictionary).get(field, ""))
+			if p != "":
+				out[p] = true
+	return out.keys()
 
 
 ## Isometric buildings ("footprint": [plan x, plan y] in the catalog) sit on a

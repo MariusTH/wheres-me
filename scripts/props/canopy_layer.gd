@@ -18,8 +18,12 @@ func setup(key: String, entry: Dictionary, flip: bool) -> void:
 	queue_redraw()
 
 
-func _draw() -> void:
+func draw_visual(ci: Variant) -> void:
 	if _texture:
-		PlaceholderArt.draw_grounded_texture(self, _texture, _entry, _flip, "canopy_ground_point", "canopy_height_px")
+		PlaceholderArt.draw_grounded_texture(ci, _texture, _entry, _flip, "canopy_ground_point", "canopy_height_px")
 	else:
-		PlaceholderArt.draw_canopy(self, _key, _entry, _flip)
+		PlaceholderArt.draw_canopy(ci, _key, _entry, _flip)
+
+
+func _draw() -> void:
+	draw_visual(self)

@@ -75,6 +75,8 @@ func _build() -> void:
 			hud.setup(layout)
 			debug_overlay.level = MapDebugOverlay.Level.SHAPES
 	_apply_dev_args()
+	if AppState.dev_args.get("bake", "1") != "0":
+		town.bake()
 
 
 func _unhandled_key_input(event: InputEvent) -> void:

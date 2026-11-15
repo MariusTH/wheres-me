@@ -72,6 +72,8 @@ On the first launch, run `$GODOT --headless --path . --import` once (or open the
 3. gives every road line a seeded width and offset, with jogs on straight stretches (`roads`); fills house rows plot by plot with a seeded subset of the buildings (`house_subset`), small buildings and garden gaps, each plot shifted sideways and back a little (`plots`); and splits open ground into parks (the biggest gets a pond), gardens, yards, markets and plazas (the most central gets the fountain);
 4. projects everything to the screen: zones and blocked areas become polygons clipped to the view, the ground stays flat and `GroundLayer` draws it through the projection. `TownGenerator` then dresses the zones with props and the crowd.
 
+**Drawing performance.** Godot pays per draw command, so the town is not drawn node by node. All catalog art is packed into one texture page at startup (`TextureAtlas`), people are recorded into cached meshes (`MeshCanvas`), and `TownBake` merges the whole sorted town (people, props, building slices, canopies) into ~70–140 meshes in exactly the order Godot's Y-sort would draw it. Anything that changes looks (markers, wrong-tap flash, help fading, the hider being dragged, faded tree crowns) must go through `WorldActor`'s API so the bake draws it live; it merges back when it's plain again. Zoomed all the way out on an XL town this took a frame from 6.4 ms to 1.2 ms (11.6 → 1.3 ms in landscape). Compare with `-- --bake=0`.
+
 Buildings are drawn in thin vertical slices sorted by the wall in front of them, so people beside a house sort correctly, and the 70% rule uses the same slices. Changing `WfcTown`, `WfcSolver` or the template in a way that moves anything needs a `map_version` bump and a new golden hash in `tests/test_iso_town.gd`. Look at towns with `$GODOT --path . -- --mode=debug --seed=7` and the **Seed ±1** buttons.
 
 ## Controls
@@ -100,6 +102,7 @@ Pass these after `--`, for example `$GODOT --path . -- --mode=search --preset=2 
 | `--size=S\|M\|L\|XL` | Town size for hide or debug |
 | `--map=town_iso` | Map for hide, debug and `--at` (the default) |
 | `--hud=0` | Hide the HUD (clean screenshots, e.g. the menu backdrop) |
+| `--bake=0` | Draw the town from its nodes instead of TownBake (to compare looks or speed) |
 | `--seed=N` | Town seed for hide or debug |
 | `--preset=N` | Use avatar preset N (0–7) as your avatar |
 | `--challenge=PATH_OR_CODE` | Challenge to search |

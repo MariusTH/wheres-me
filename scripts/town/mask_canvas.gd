@@ -151,6 +151,9 @@ func _mark(local_box: Rect2, test: Callable) -> void:
 
 
 static func _image_of(tex: Texture2D) -> Image:
+	# Atlas sprites carry their original image (see TextureAtlas).
+	if tex.has_meta("src_image"):
+		return tex.get_meta("src_image")
 	var key := tex.get_rid()
 	if _images.has(key):
 		return _images[key]

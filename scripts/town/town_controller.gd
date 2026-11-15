@@ -15,6 +15,9 @@ var world: Node2D
 ## The hider's CharacterActor.
 var target: WorldActor = null
 
+## Merged drawing of the world (see TownBake); null until bake().
+var town_bake: TownBake = null
+
 var _characters: Array[CharacterActor] = []
 var _props: Array[PropActor] = []
 
@@ -26,6 +29,7 @@ func build(p_map: MapDefinition, p_layout: TownLayout) -> void:
 	_characters.clear()
 	_props.clear()
 	target = null
+	town_bake = null
 	map_def = p_map
 	layout = p_layout
 	ground = GroundLayer.new()
@@ -56,12 +60,34 @@ func spawn(obj: WorldObjectData) -> Node2D:
 		c.setup(obj)
 		world.add_child(c)
 		_characters.append(c)
+		if town_bake:
+			town_bake.adopt(c)
 		return c
 	var p := PROP_SCENE.instantiate() as PropActor
 	p.setup(obj)
 	world.add_child(p)
 	_props.append(p)
+	if town_bake:
+		town_bake.adopt(p)
 	return p
+
+
+## Switches drawing to merged meshes (TownBake). Call once the town is set up;
+## later changes go through WorldActor's API and are drawn live.
+func bake() -> void:
+	if town_bake:
+		return
+	var b := TownBake.new()
+	b.name = "Bake"
+	add_child(b)
+	move_child(b, world.get_index() + 1)
+	var t0 := Time.get_ticks_msec()
+	var ok := b.bake(world)
+	print("[TownBake] %s in %d ms" % ["baked" if ok else "skipped (not on one atlas page)", Time.get_ticks_msec() - t0])
+	if ok:
+		town_bake = b
+	else:
+		b.queue_free()
 
 
 ## Puts (or moves) the hider's avatar at [param at]. There is only ever one.
@@ -72,7 +98,7 @@ func place_target(look: Dictionary, at: Vector2) -> WorldActor:
 		target = spawn(obj) as CharacterActor
 	else:
 		(target as CharacterActor).set_look(look)
-		target.position = at
+		target.move_to(at)
 	return target
 
 

@@ -16,6 +16,7 @@ extends Node
 ##   --center=X,Y --zoom=Z      initial camera view
 ##   --debug=1|2                debug overlay level
 ##   --hud=0                    hide the HUD (clean screenshots)
+##   --bake=0                   draw the town from its nodes, not TownBake (compare)
 ##   --start                    search: skip the intro and start the clock
 ##   --tap=X,Y                  simulate a tap (world coords) after loading (implies --start)
 ##   --shot=PATH [--shot-delay=S]  save a screenshot and quit

@@ -22,6 +22,7 @@ func setup(obj: WorldObjectData) -> void:
 func set_look(p_look: Dictionary) -> void:
 	look = AvatarKit.normalize(p_look)
 	queue_redraw()
+	visual_changed.emit(self)
 
 
 ## Body rectangle in local coordinates (feet at the bottom centre).
@@ -36,8 +37,7 @@ func hit_rect(pad: float) -> Rect2:
 	return Rect2(global_position + r.position, r.size).grow(pad)
 
 
-func _draw() -> void:
-	_draw_marker()
-	# One cached mesh per look: a crowd of thousands stays a few thousand
-	# draw calls instead of ~20 per person (see MeshCanvas).
-	draw_mesh(MeshCanvas.character_mesh(look, flip_h), null)
+func draw_visual(ci: Variant) -> void:
+	_draw_marker(ci)
+	# One cached mesh per look: ~20 shapes become one draw call (MeshCanvas).
+	ci.draw_mesh(MeshCanvas.character_mesh(look, flip_h), null)

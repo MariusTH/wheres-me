@@ -89,14 +89,11 @@ func apply_help(stage: int) -> void:
 	var gone := SearchHelp.leavers(_town.layout, float(st["thin"]), _town.layout.map_seed)
 	for c in _town.characters():
 		if c != _town.target and c.visible and gone.has(c.object_id):
-			var t := c.create_tween()
-			t.tween_property(c, "modulate:a", 0.0, 0.8)
-			t.tween_callback(func() -> void: c.visible = false)
+			c.leave(0.8)
 	var target := _town.target
 	var to := SearchHelp.step_out(_town.map_def, _town.layout, _challenge.hider_look, target.position, float(st["visible"]), gone)
 	if to != target.position:
-		var t := target.create_tween()
-		t.tween_property(target, "position", to, 1.2).set_trans(Tween.TRANS_SINE)
+		target.walk_to(to, 1.2)
 	_hud.toast("Hint: the crowd thinned and %s stepped out" % _hider_name(), UiKit.GOOD, 4.0)
 
 

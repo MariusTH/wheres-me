@@ -153,3 +153,64 @@ func test_hide_mode_free_placement() -> void:
 		check_eq(SearchController.verify(c, town.map_def, town.layout), "", "the new challenge verifies for the seeker")
 		DirAccess.remove_absolute("%s/%s.json" % [ChallengeCodec.SAVE_DIR, c.challenge_id])
 	scene.free()
+
+
+## TownBake draws the town from merged meshes; anything that changes must be
+## drawn live (a stand-in in the right place) and merged back afterwards.
+func test_bake_draws_changes_live() -> void:
+	var app_state: Node = tree.root.get_node("AppState")
+	var scene: Node = await _spawn(app_state.Mode.SEARCH, _challenge())
+	var town: TownController = scene.town
+	var bake := town.town_bake
+	if not check(bake != null, "town is baked"):
+		scene.free()
+		return
+	check(not town.world.visible, "nodes don't draw themselves once baked")
+	var sc: SearchController = scene.controller
+	sc.begin()
+	var other: CharacterActor = null
+	for ch in town.characters():
+		if ch != town.target and ch.position.distance_to(town.target.position) > 300:
+			other = ch
+			break
+	sc.handle_tap(other.position + Vector2(0, -30))
+	await tree.process_frame
+	check(bake._live.has(other), "a wrong guess flashes live")
+	var proxies: Array = bake._live[other]["proxies"]
+	check((proxies[0] as Node).is_inside_tree(), "its stand-in is drawn")
+	await tree.create_timer(0.8).timeout
+	await tree.process_frame
+	check(not bake._live.has(other), "merged back once the flash is over")
+	var spot := town.target.position
+	sc.apply_help(0)
+	await tree.create_timer(1.4).timeout
+	await tree.process_frame
+	if town.target.position != spot:
+		check(bake._live.has(town.target), "the hider who stepped out is drawn live")
+	var gone := 0
+	for ch in town.characters():
+		if not ch.visible:
+			gone += 1
+			check(bake._gone.has(ch), "%s left the town drawing" % ch.object_id)
+	check(gone > 0, "some of the crowd left")
+	scene.free()
+
+
+func test_bake_hide_mode_target_is_live() -> void:
+	var app_state: Node = tree.root.get_node("AppState")
+	var scene: Node = await _spawn(app_state.Mode.HIDE)
+	var hc: HideController = scene.controller
+	var town: TownController = scene.town
+	if not check(town.town_bake != null, "town is baked"):
+		scene.free()
+		return
+	var good := find_visible_spot(town.map_def, town.layout, _look(), Vector2(900, 650))
+	hc.place_at(good)
+	await tree.process_frame
+	check(town.town_bake._live.has(town.target), "a newly placed hider is drawn live")
+	var px: Node2D = town.town_bake._live[town.target]["proxies"][0]
+	check(px.is_inside_tree() and px.position == good, "stand-in sits at the hider's feet")
+	hc.place_at(good + Vector2(40, 30))
+	await tree.process_frame
+	check(px.is_inside_tree() and px.position == good + Vector2(40, 30), "stand-in follows a drag")
+	scene.free()

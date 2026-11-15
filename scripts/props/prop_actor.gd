@@ -54,10 +54,15 @@ func hit_rect(pad: float) -> Rect2:
 
 
 func set_canopy_faded(faded: bool) -> void:
+	var a := FADED_ALPHA if faded else 1.0
 	if canopy:
-		canopy.modulate.a = FADED_ALPHA if faded else 1.0
+		if canopy.modulate.a != a:
+			canopy.modulate.a = a
+			visual_changed.emit(self)
 	elif is_foreground():
-		modulate.a = FADED_ALPHA if faded else 1.0
+		if modulate.a != a:
+			modulate.a = a
+			visual_changed.emit(self)
 
 
 ## Drawn above everything ("foreground" depth mode).
@@ -65,14 +70,14 @@ func is_foreground() -> bool:
 	return z_index > CANOPY_Z
 
 
-func _draw() -> void:
-	_draw_marker()
+func draw_visual(ci: Variant) -> void:
+	_draw_marker(ci)
 	if _sliced:
 		return
 	if _texture:
-		PlaceholderArt.draw_grounded_texture(self, _texture, _entry, flip_h)
+		PlaceholderArt.draw_grounded_texture(ci, _texture, _entry, flip_h)
 	else:
-		PlaceholderArt.draw_prop(self, asset_key, _entry, flip_h)
+		PlaceholderArt.draw_prop(ci, asset_key, _entry, flip_h)
 
 
 ## One vertical slice of an isometric building (see AssetCatalog.strips).
@@ -90,5 +95,8 @@ class BuildingSlice:
 		_strip = strip
 		position = Vector2(0, strip.z)
 
+	func draw_visual(ci: Variant) -> void:
+		PlaceholderArt.draw_texture_strip(ci, _tex, _e, _flip, _strip)
+
 	func _draw() -> void:
-		PlaceholderArt.draw_texture_strip(self, _tex, _e, _flip, _strip)
+		draw_visual(self)
